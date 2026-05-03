@@ -8,7 +8,8 @@ import QiblaScreen from '../screens/QiblaScreen';
 import QuranScreen from '../screens/QuranScreen';
 import SquadsScreen from '../screens/SquadsScreen';
 import FajrAlarmScreen from '../screens/FajrAlarmScreen';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Platform } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,10 +21,23 @@ function MainTabs() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: '#022c22', // bg-emerald-950
-          borderTopColor: '#064e3b', // border-emerald-900
+          borderTopWidth: 0,
+          elevation: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 10,
+          height: Platform.OS === 'ios' ? 90 : 70,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+          paddingTop: 10,
         },
         tabBarActiveTintColor: '#fbbf24', // text-amber-400
-        tabBarInactiveTintColor: '#a7f3d0', // text-emerald-200
+        tabBarInactiveTintColor: '#34d399', // text-emerald-400
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
+        },
       }}
     >
       <Tab.Screen 
@@ -31,7 +45,7 @@ function MainTabs() {
         component={HomeScreen} 
         options={{ 
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🕌</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />
         }} 
       />
       <Tab.Screen 
@@ -39,7 +53,7 @@ function MainTabs() {
         component={QiblaScreen} 
         options={{ 
           tabBarLabel: 'Qibla',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🧭</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={size} color={color} />
         }} 
       />
       <Tab.Screen 
@@ -47,7 +61,7 @@ function MainTabs() {
         component={QuranScreen} 
         options={{ 
           tabBarLabel: 'Quran',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>📖</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="book" size={size} color={color} />
         }} 
       />
       <Tab.Screen 
@@ -55,7 +69,7 @@ function MainTabs() {
         component={SquadsScreen} 
         options={{ 
           tabBarLabel: 'Ummah',
-          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>👥</Text> 
+          tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />
         }} 
       />
     </Tab.Navigator>

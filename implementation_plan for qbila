@@ -1,0 +1,40 @@
+# Qibla Compass Enhancement Plan
+
+We need to upgrade the basic Qibla compass implementation to be highly accurate, use "Islamic premium design", and provide tactile feedback when aligned with Mecca.
+
+## User Review Required
+
+> [!WARNING]
+> We will need to install `expo-haptics` to provide physical feedback when pointing towards Mecca. Is it okay to add this dependency?
+> 
+> Also, different devices (especially Android) sometimes have flaky Magnetometer readings. I plan to use `Location.watchHeadingAsync` to get a stable compass heading from the OS directly.
+
+## Proposed Changes
+
+### Core Dependencies
+
+#### [NEW] Dependencies
+- `expo-haptics` mapped to `npx expo install expo-haptics`
+- `react-native-reanimated` mapped to `npx expo install react-native-reanimated` (for smooth dial rotations)
+
+---
+
+### UI and Components
+
+#### [MODIFY] src/screens/QiblaScreen.tsx
+- Replace the raw `Magnetometer` API reading with `Location.watchHeadingAsync` to ensure tilt-compensated compass accuracy.
+- Create a beautiful rotating Compass UI using structured layered Views matching the currently established Emerald and Amber theme.
+- Implement Haptic Feedback (`Haptics.impactAsync`) using `expo-haptics` when the user aligns their device perfectly (e.g. within 3 degrees of the Qibla).
+- Add visual indicators (a glowing effect or clear amber text reading "Aligned") when you align with the Kaaba.
+
+## Open Questions
+
+> [!IMPORTANT]
+> - Since the compass uses the hardware sensors, verifying on an emulator or web is difficult. You will need to build it and test it on a real mobile device via Expo Go or a development build.
+
+## Verification Plan
+
+### Manual Verification
+- Deploy to an actual physical device.
+- Point device towards Mecca, rotate around, and confirm the UI compass pointer smoothly stays fixed towards the Qibla destination.
+- Verify that a haptic "bump" fires exactly when oriented correctly.
