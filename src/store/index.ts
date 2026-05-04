@@ -7,6 +7,7 @@ export interface AppState {
   userLevel: number;
   sunnahStreak: number;
   completeOnboarding: () => void;
+  resetOnboarding: () => void;
   incrementStreak: () => void;
 }
 
@@ -17,6 +18,7 @@ export const useAppStore = create<AppState>()(
       userLevel: 1, // 1: The Seeker
       sunnahStreak: 0,
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+      resetOnboarding: () => set({ hasCompletedOnboarding: false, sunnahStreak: 0 }),
       incrementStreak: () => set((state) => ({ sunnahStreak: state.sunnahStreak + 1 })),
     }),
     {

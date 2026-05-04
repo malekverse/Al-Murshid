@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, StyleSheet, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import * as Location from 'expo-location';
 import { useAppStore } from '../store';
-import { getPrayerTimes, getNextPrayer } from '../utils/prayerTimes';
+import { getNextPrayer, detectCalcMethod } from '../utils/prayerTimes';
 import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,12 +14,39 @@ export default function HomeScreen({ navigation }: any) {
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
   const incrementStreak = useAppStore((state) => state.incrementStreak);
   const { insight } = useFatherlyCoach();
-  
+
   const [nextPrayer, setNextPrayer] = useState<string>('Loading...');
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+  const [hijriDate, setHijriDate] = useState('');
+
+  // Animation Refs
+  const fadeAnim1 = useRef(new Animated.Value(0)).current;
+  const slideAnim1 = useRef(new Animated.Value(20)).current;
+
+  const fadeAnim2 = useRef(new Animated.Value(0)).current;
+  const slideAnim2 = useRef(new Animated.Value(20)).current;
+
+  const fadeAnim3 = useRef(new Animated.Value(0)).current;
+  const slideAnim3 = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
+    // Staggered Entrance Animations
+    Animated.stagger(150, [
+      Animated.parallel([
+        Animated.timing(fadeAnim1, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.spring(slideAnim1, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true })
+      ]),
+      Animated.parallel([
+        Animated.timing(fadeAnim2, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.spring(slideAnim2, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true })
+      ]),
+      Animated.parallel([
+        Animated.timing(fadeAnim3, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.spring(slideAnim3, { toValue: 0, tension: 50, friction: 7, useNativeDriver: true })
+      ])
+    ]).start();
+
     (async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -30,7 +57,18 @@ export default function HomeScreen({ navigation }: any) {
         }
 
         let location = await Location.getCurrentPositionAsync({});
-        const currentNext = getNextPrayer(location.coords.latitude, location.coords.longitude);
+        const { latitude, longitude } = location.coords;
+
+        // Auto-detect calculation method from country
+        let method: any = 'MuslimWorldLeague';
+        try {
+          const [place] = await Location.reverseGeocodeAsync({ latitude, longitude });
+          if (place?.isoCountryCode) {
+            method = detectCalcMethod(place.isoCountryCode);
+          }
+        } catch {}
+
+        const currentNext = getNextPrayer(latitude, longitude, new Date(), method);
         setNextPrayer(currentNext === 'none' ? 'Isha (Tomorrow)' : currentNext);
         setLocationError(null);
       } catch (err) {
@@ -40,13 +78,26 @@ export default function HomeScreen({ navigation }: any) {
         setIsLoadingLocation(false);
       }
     })();
-  }, []);
 
-  const hijriDate = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }).format(new Date());
+    // Fetch accurate Hijri date from Aladhan API
+    (async () => {
+      try {
+        const now = new Date();
+        const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
+        const res = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`);
+        const json = await res.json();
+        if (json.code === 200) {
+          const h = json.data.hijri;
+          setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
+        }
+      } catch {
+        // Fallback to Intl if API fails
+        setHijriDate(new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        }).format(new Date()));
+      }
+    })();
+  }, []);
 
   return (
     <View className="flex-1 bg-emerald-950">
@@ -60,14 +111,17 @@ export default function HomeScreen({ navigation }: any) {
             <Text className="text-emerald-200 text-sm mt-1 font-medium">{hijriDate}</Text>
           </View>
           <View className="flex-row items-center">
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('FajrAlarm')}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Settings')}
               className="bg-emerald-900/80 w-12 h-12 rounded-full border border-emerald-800 mr-3 items-center justify-center shadow-lg"
             >
               <Ionicons name="settings-outline" size={24} color="#fbbf24" />
             </TouchableOpacity>
-            
-            <View className="rounded-full border border-emerald-700/50 shadow-lg overflow-hidden">
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ProgressTracker')}
+              className="rounded-full border border-emerald-700/50 shadow-lg overflow-hidden"
+            >
               <LinearGradient
                 colors={['#065f46', '#022c22']}
                 style={StyleSheet.absoluteFillObject}
@@ -76,30 +130,117 @@ export default function HomeScreen({ navigation }: any) {
                 <Ionicons name="flame" size={16} color="#fbbf24" style={{ marginRight: 6 }} />
                 <Text className="text-amber-300 font-bold text-base">{sunnahStreak}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Current State Widget: Spiritual Energy */}
-        <View className="mb-8">
-          <View className="flex-row justify-between items-end mb-3">
-            <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">Spiritual Energy</Text>
-            <Text className="text-amber-400 font-bold text-sm">{sunnahStreak * 10}%</Text>
-          </View>
-          <View className="w-full bg-emerald-900/60 h-3 rounded-full overflow-hidden border border-emerald-800">
-            <View className="h-full rounded-full overflow-hidden" style={{ width: `${Math.min(sunnahStreak * 10, 100)}%` }}>
+        <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ProgressTracker')}
+            className="mb-8 active:opacity-80"
+          >
+            <View className="flex-row justify-between items-end mb-3">
+              <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">Spiritual Energy</Text>
+              <Text className="text-amber-400 font-bold text-sm">{sunnahStreak * 10}%</Text>
+            </View>
+            <View className="w-full bg-emerald-900/60 h-3 rounded-full overflow-hidden border border-emerald-800">
+              <View className="h-full rounded-full overflow-hidden" style={{ width: `${Math.min(sunnahStreak * 10, 100)}%` }}>
+                <LinearGradient
+                  colors={['#f59e0b', '#fbbf24']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={StyleSheet.absoluteFillObject}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Quick Tools */}
+        <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }} className="mb-8">
+          <Text className="text-emerald-50 text-xl font-bold tracking-wide mb-4">Quick Tools</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 24 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ZakatCalculator')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-amber-500/30"
+            >
               <LinearGradient
-                colors={['#f59e0b', '#fbbf24']}
+                colors={['#064e3b', '#022c22']}
                 start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFillObject}
               />
-            </View>
-          </View>
-        </View>
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
+                  <Ionicons name="calculator" size={20} color="#fbbf24" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">Zakat</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">Calculate easily</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('HijriCalendar')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-teal-700/40"
+            >
+              <LinearGradient
+                colors={['#0f766e', '#042f2e']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-teal-500/20 items-center justify-center mb-3 border border-teal-500/30">
+                  <Ionicons name="calendar" size={20} color="#6ee7b7" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">Hijri Calendar</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">Islamic events</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Locator')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-emerald-700/40"
+            >
+              <LinearGradient
+                colors={['#064e3b', '#022c22']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-emerald-500/20 items-center justify-center mb-3 border border-emerald-500/30">
+                  <Ionicons name="location" size={20} color="#6ee7b7" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">Nearby</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">Mosques & Halal</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SunnahSleep')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-indigo-700/40"
+            >
+              <LinearGradient
+                colors={['#3730a3', '#1e1b4b']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-indigo-500/20 items-center justify-center mb-3 border border-indigo-500/30">
+                  <Ionicons name="moon" size={20} color="#c7d2fe" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">Sleep Sunnah</Text>
+                <Text className="text-indigo-300/80 text-xs font-medium">Rest & Qailulah</Text>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+        </Animated.View>
 
         {/* Prayer Times Widget */}
-        <View className="rounded-3xl mb-6 shadow-2xl border border-emerald-700/40 overflow-hidden">
+        <Animated.View style={{ opacity: fadeAnim2, transform: [{ translateY: slideAnim2 }] }} className="rounded-3xl mb-6 shadow-2xl border border-emerald-700/40 overflow-hidden">
           <LinearGradient
             colors={['#064e3b', '#022c22']}
             start={{ x: 0, y: 0 }}
@@ -112,7 +253,7 @@ export default function HomeScreen({ navigation }: any) {
                 <Ionicons name="time-outline" size={18} color="#6ee7b7" style={{ marginRight: 6 }} />
                 <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">Next Prayer</Text>
               </View>
-              
+
               {isLoadingLocation ? (
                 <ActivityIndicator size="small" color="#fbbf24" style={{ alignSelf: 'flex-start', marginTop: 8 }} />
               ) : locationError ? (
@@ -123,14 +264,17 @@ export default function HomeScreen({ navigation }: any) {
                 <Text className="text-amber-400 text-4xl font-extrabold capitalize tracking-tight">{nextPrayer}</Text>
               )}
             </View>
-            <TouchableOpacity className="bg-emerald-800/80 w-12 h-12 items-center justify-center rounded-full border border-emerald-700/50">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PrayerTimes')}
+              className="bg-emerald-800/80 w-12 h-12 items-center justify-center rounded-full border border-emerald-700/50"
+            >
               <Ionicons name="chevron-forward" size={24} color="#6ee7b7" />
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Deen Widget: Verse of the Hour */}
-        <View className="rounded-3xl mb-6 shadow-2xl border border-teal-700/40 relative overflow-hidden">
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }} className="rounded-3xl mb-6 shadow-2xl border border-teal-700/40 relative overflow-hidden">
           <LinearGradient
             colors={['#0f766e', '#042f2e']}
             start={{ x: 0, y: 0 }}
@@ -150,37 +294,46 @@ export default function HomeScreen({ navigation }: any) {
               "Indeed, with hardship [will be] ease." (94:6)
             </Text>
           </View>
-        </View>
+        </Animated.View>
 
         {/* AI Mentor Insight */}
-        <View className="bg-emerald-900/40 rounded-3xl p-6 mb-8 shadow-lg border border-amber-500/20">
-          <View className="flex-row items-center mb-3">
-            <View className="bg-amber-500/20 p-2 rounded-full mr-3">
-              <Ionicons name="chatbubbles-outline" size={20} color="#fbbf24" />
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('AICoach')}
+            className="bg-emerald-900/40 rounded-3xl p-6 mb-8 shadow-lg border border-amber-500/20 active:opacity-80"
+          >
+            <View className="flex-row items-center mb-3">
+              <View className="bg-amber-500/20 p-2 rounded-full mr-3">
+                <Ionicons name="chatbubbles-outline" size={20} color="#fbbf24" />
+              </View>
+              <Text className="text-amber-400 font-bold text-base tracking-wide">Al-Murshid Says...</Text>
+              <View className="flex-1" />
+              <Ionicons name="chevron-forward" size={18} color="#fbbf24" />
             </View>
-            <Text className="text-amber-400 font-bold text-base tracking-wide">Al-Murshid Says...</Text>
-          </View>
-          <Text className="text-emerald-100 text-base italic leading-relaxed font-medium">
-            "{insight}"
-          </Text>
-        </View>
+            <Text className="text-emerald-100 text-base italic leading-relaxed font-medium">
+              "{insight}"
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         {/* Action Button */}
-        <TouchableOpacity 
-          onPress={incrementStreak}
-          className="shadow-2xl active:opacity-80 rounded-full overflow-hidden"
-        >
-          <LinearGradient
-            colors={['#f59e0b', '#d97706']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={StyleSheet.absoluteFillObject}
-          />
-          <View className="py-4 items-center flex-row justify-center">
-            <Ionicons name="checkmark-circle" size={24} color="#022c22" style={{ marginRight: 8 }} />
-            <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">Log Current Prayer</Text>
-          </View>
-        </TouchableOpacity>
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
+          <TouchableOpacity
+            onPress={incrementStreak}
+            className="shadow-2xl active:opacity-80 rounded-full overflow-hidden"
+          >
+            <LinearGradient
+              colors={['#f59e0b', '#d97706']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+            <View className="py-4 items-center flex-row justify-center">
+              <Ionicons name="checkmark-circle" size={24} color="#022c22" style={{ marginRight: 8 }} />
+              <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">Log Current Prayer</Text>
+            </View>
+          </TouchableOpacity>
+        </Animated.View>
       </ScrollView>
     </View>
   );

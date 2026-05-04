@@ -152,7 +152,7 @@ export default function FajrAlarmScreen() {
       </View>
 
       {/* Custom Toast */}
-      {toastMsg && (
+      {!!toastMsg && (
         <Animated.View 
           style={{ opacity: fadeAnim }} 
           className="absolute bottom-10 left-6 right-6 bg-emerald-800 rounded-2xl p-4 flex-row items-center shadow-2xl border border-emerald-600/50 z-50"
@@ -166,14 +166,16 @@ export default function FajrAlarmScreen() {
       <Modal visible={isCameraActive} animationType="fade" transparent={true}>
         <View className="flex-1 bg-emerald-950/95">
           {hasPermission ? (
-            <CameraView 
-              style={{ flex: 1 }} 
-              facing="front"
-            >
-              <View className="flex-1 relative">
+            <View style={{ flex: 1 }}>
+              <CameraView 
+                style={StyleSheet.absoluteFillObject} 
+                facing="front"
+              />
+              <View className="absolute inset-0 z-10 pointer-events-box-none">
                 <LinearGradient 
                   colors={['rgba(2,44,34,0.8)', 'transparent', 'rgba(2,44,34,0.9)']}
                   style={StyleSheet.absoluteFillObject}
+                  pointerEvents="none"
                 />
                 <View className="flex-1 items-center justify-center p-6">
                   <Text className="text-amber-400 text-3xl font-extrabold mb-12 tracking-wide text-center">
@@ -181,7 +183,7 @@ export default function FajrAlarmScreen() {
                   </Text>
                   
                   {/* Face Scanning Frame Outline */}
-                  <View className="w-64 h-80 border-4 border-amber-400/80 rounded-[100px] items-center justify-center mb-12 relative shadow-2xl bg-black/20">
+                  <View className="w-64 h-80 border-4 border-amber-400/80 rounded-[100px] items-center justify-center mb-12 relative shadow-2xl bg-black/20 pointer-events-none">
                     <View className="absolute w-full h-full border-2 border-emerald-400/50 rounded-[100px]" style={{ transform: [{ scale: 1.15 }] }} />
                     {scanProgress < 100 ? (
                       <ActivityIndicator size="large" color="#fbbf24" />
@@ -191,7 +193,7 @@ export default function FajrAlarmScreen() {
                   </View>
 
                   {/* Progress Bar */}
-                  <View className="w-full max-w-xs bg-emerald-900/80 h-3 rounded-full overflow-hidden border border-emerald-700 mb-4 shadow-inner">
+                  <View className="w-full max-w-xs bg-emerald-900/80 h-3 rounded-full overflow-hidden border border-emerald-700 mb-4 shadow-inner pointer-events-none">
                     <View className="h-full rounded-full overflow-hidden" style={{ width: `${scanProgress}%` }}>
                       <LinearGradient
                         colors={['#f59e0b', '#fbbf24']}
@@ -201,11 +203,11 @@ export default function FajrAlarmScreen() {
                       />
                     </View>
                   </View>
-                  <Text className="text-emerald-100 font-semibold tracking-wide">{scanProgress}% - Analyzing skin dampness...</Text>
+                  <Text className="text-emerald-100 font-semibold tracking-wide pointer-events-none">{scanProgress}% - Analyzing skin dampness...</Text>
 
                   <TouchableOpacity 
                     onPress={() => setIsCameraActive(false)}
-                    className="mt-auto mb-10 w-full max-w-xs shadow-xl active:opacity-80 rounded-full overflow-hidden border border-red-800/50"
+                    className="mt-auto mb-10 w-full max-w-xs shadow-xl active:opacity-80 rounded-full overflow-hidden border border-red-800/50 z-50 pointer-events-auto"
                   >
                     <LinearGradient
                       colors={['#991b1b', '#7f1d1d']}
@@ -220,7 +222,7 @@ export default function FajrAlarmScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </CameraView>
+            </View>
           ) : (
             <View className="flex-1 items-center justify-center p-8">
               <Ionicons name="camera-reverse" size={64} color="#6ee7b7" style={{ marginBottom: 24 }} />

@@ -1,115 +1,141 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { Coordinates, Qibla } from 'adhan';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function QiblaScreen() {
-  const [qiblaHeading, setQiblaHeading] = useState<number>(0);
-  const [heading, setHeading] = useState<number>(0);
-  const [isAligned, setIsAligned] = useState<boolean>(false);
+  const [qiblaDirection, setQiblaDirection] = useState<number | null>(null);
+  const [deviceHeading, setDeviceHeading] = useState<number>(0);
+  const [isAligned, setIsAligned] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const rotationAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
-  const prevDirection = useRef(0);
+  const prevRotation = useRef(0);
   const wasAligned = useRef(false);
 
   useEffect(() => {
-    let locationSub: Location.LocationSubscription;
+    let headingSub: Location.LocationSubscription;
 
     (async () => {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setErrorMsg('Location permission is required.');
+          setErrorMsg('Location permission is required for the Qibla compass.');
+          setIsLoading(false);
           return;
         }
 
-        const location = await Location.getCurrentPositionAsync({});
-        const coords = new Coordinates(location.coords.latitude, location.coords.longitude);
-        // @ts-ignore
-        const qibla = new Qibla(coords);
-        setQiblaHeading(qibla.direction);
+        // Get user's current position
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
 
-        locationSub = await Location.watchHeadingAsync((headingData) => {
-          const currentHeading =
-            headingData.trueHeading !== -1
+        // Calculate Qibla bearing from user's location
+        // Qibla() is a function that returns degrees from True North
+        const coords = new Coordinates(
+          location.coords.latitude,
+          location.coords.longitude
+        );
+        const qibla = Qibla(coords);
+        setQiblaDirection(qibla);
+        setIsLoading(false);
+
+        // Subscribe to device heading updates
+        headingSub = await Location.watchHeadingAsync((headingData) => {
+          // Prefer trueHeading (GPS-corrected); fall back to magHeading
+          const heading =
+            headingData.trueHeading >= 0
               ? headingData.trueHeading
               : headingData.magHeading;
-          setHeading(currentHeading);
+          setDeviceHeading(heading);
         });
       } catch (e) {
-        setErrorMsg('Unable to access location/compass.');
+        console.error('Qibla error:', e);
+        setErrorMsg('Unable to access location or compass sensor.');
+        setIsLoading(false);
       }
     })();
 
     return () => {
-      if (locationSub) locationSub.remove();
+      if (headingSub) headingSub.remove();
     };
   }, []);
 
+  // React to heading changes — rotate the needle
   useEffect(() => {
-    const direction = (qiblaHeading - heading + 360) % 360;
+    if (qiblaDirection === null) return;
 
-    // Calculate shortest rotation path across 0/360 boundary
-    let diff = direction - prevDirection.current;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-    const newTarget = prevDirection.current + diff;
-    prevDirection.current = newTarget;
+    // How many degrees the user needs to rotate clockwise to face Qibla
+    const rawDiff = (qiblaDirection - deviceHeading + 360) % 360;
+
+    // Compute the shortest-path rotation to avoid 359→1 jumps
+    let delta = rawDiff - (prevRotation.current % 360 + 360) % 360;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    const newTarget = prevRotation.current + delta;
+    prevRotation.current = newTarget;
 
     Animated.spring(rotationAnim, {
       toValue: newTarget,
-      damping: 15,
-      stiffness: 80,
-      mass: 1,
+      damping: 20,
+      stiffness: 100,
+      mass: 0.8,
       useNativeDriver: true,
     }).start();
 
-    const errorMargin = 3;
-    const aligned = direction <= errorMargin || direction >= 360 - errorMargin;
+    // Alignment detection (±5° tolerance)
+    const aligned = rawDiff <= 5 || rawDiff >= 355;
     setIsAligned(aligned);
 
     if (aligned) {
-      Animated.timing(glowAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
+      Animated.timing(glowAnim, { toValue: 1, duration: 300, useNativeDriver: false }).start();
       if (!wasAligned.current) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         wasAligned.current = true;
       }
     } else {
-      Animated.timing(glowAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
+      Animated.timing(glowAnim, { toValue: 0, duration: 300, useNativeDriver: false }).start();
       wasAligned.current = false;
     }
-  }, [heading, qiblaHeading]);
+  }, [deviceHeading, qiblaDirection]);
 
-  const rotateInterpolation = rotationAnim.interpolate({
+  const rotateStr = rotationAnim.interpolate({
     inputRange: [-360, 0, 360],
     outputRange: ['-360deg', '0deg', '360deg'],
-  });
-
-  const glowShadowRadius = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 30],
   });
 
   const glowBorderColor = glowAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['#065f46', '#f59e0b'],
   });
+  const glowShadowRadius = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 30],
+  });
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <LinearGradient colors={['#022c22', '#064e3b', '#022c22']} style={styles.container}>
+        <ActivityIndicator size="large" color="#fbbf24" />
+        <Text style={styles.helperText}>{'Locating you...'}</Text>
+      </LinearGradient>
+    );
+  }
 
   return (
     <LinearGradient colors={['#022c22', '#064e3b', '#022c22']} style={styles.container}>
       <Text style={styles.title}>Qibla Compass</Text>
+
+      {qiblaDirection !== null && (
+        <Text style={styles.bearingText}>
+          Qibla bearing: {qiblaDirection.toFixed(1)}° from True North
+        </Text>
+      )}
 
       <Animated.View
         style={[
@@ -121,11 +147,11 @@ export default function QiblaScreen() {
           },
         ]}
       >
-        {/* Cardinal markers */}
-        <View style={styles.markerN} />
-        <View style={styles.markerS} />
-        <View style={styles.markerW} />
-        <View style={styles.markerE} />
+        {/* Cardinal labels (fixed on the compass ring) */}
+        <Text style={[styles.cardinalLabel, { top: 16 }]}>N</Text>
+        <Text style={[styles.cardinalLabel, { bottom: 16 }]}>S</Text>
+        <Text style={[styles.cardinalLabel, { left: 16 }]}>W</Text>
+        <Text style={[styles.cardinalLabel, { right: 16 }]}>E</Text>
 
         {/* Tick marks around the edge */}
         {[...Array(36)].map((_, i) => (
@@ -133,45 +159,60 @@ export default function QiblaScreen() {
             key={i}
             style={[
               styles.tick,
+              i % 9 === 0 && styles.tickMajor,
               {
                 transform: [
                   { rotate: `${i * 10}deg` },
-                  { translateY: -120 },
+                  { translateY: -125 },
                 ],
               },
             ]}
           />
         ))}
 
-        {/* Rotating needle */}
+        {/* Rotating Qibla pointer */}
         <Animated.View
           style={[
             styles.pointerContainer,
-            { transform: [{ rotate: rotateInterpolation }] },
+            { transform: [{ rotate: rotateStr }] },
           ]}
         >
+          {/* Arrow pointing UP = towards Qibla */}
           <View style={styles.needleUp} />
           <View style={styles.needleTail} />
+
+          {/* Kaaba icon at tip */}
+          <View style={styles.kaabaTip}>
+            <Text style={styles.kaabaEmoji}>🕋</Text>
+          </View>
         </Animated.View>
 
-        {/* Center Kaaba motif */}
-        <View style={styles.centerDiamond}>
-          <View style={styles.centerInner} />
+        {/* Center dot */}
+        <View style={styles.centerDot}>
+          <View style={styles.centerDotInner} />
         </View>
       </Animated.View>
 
-      {/* Status text */}
+      {/* Status */}
       <View style={styles.statusContainer}>
         {errorMsg ? (
-           <Text style={styles.errorText}>{errorMsg}</Text>
+          <Text style={styles.errorText}>{errorMsg}</Text>
         ) : isAligned ? (
-          <Text style={styles.alignedText}>ALIGNED</Text>
+          <View style={styles.alignedContainer}>
+            <Text style={styles.alignedText}>ALIGNED ✓</Text>
+            <Text style={styles.alignedSub}>You are facing the Kaaba</Text>
+          </View>
         ) : (
           <Text style={styles.helperText}>
-            Follow the golden arrow{'\n'}to face the Kaaba
+            {'Rotate your device until the\narrow points up'}
           </Text>
         )}
       </View>
+
+      {/* Current heading readout */}
+      <Text style={styles.headingReadout}>
+        Device heading: {deviceHeading.toFixed(0)}°
+      </Text>
     </LinearGradient>
   );
 }
@@ -183,13 +224,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 32,
   },
-
   title: {
     color: '#fbbf24',
     fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 40,
+    marginBottom: 8,
     letterSpacing: 2,
+  },
+  bearingText: {
+    color: 'rgba(167, 243, 208, 0.6)',
+    fontSize: 13,
+    marginBottom: 32,
+    fontWeight: '600',
   },
   compassOuter: {
     width: 280,
@@ -214,79 +260,58 @@ const styles = StyleSheet.create({
   },
   needleUp: {
     position: 'absolute',
-    top: 24,
+    top: 28,
     width: 0,
     height: 0,
     borderStyle: 'solid',
-    borderLeftWidth: 14,
-    borderRightWidth: 14,
-    borderBottomWidth: 100,
+    borderLeftWidth: 12,
+    borderRightWidth: 12,
+    borderBottomWidth: 90,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderBottomColor: '#f59e0b',
   },
   needleTail: {
     position: 'absolute',
-    bottom: 40,
-    width: 6,
-    height: 80,
+    bottom: 44,
+    width: 4,
+    height: 70,
     backgroundColor: '#047857',
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
   },
-  centerDiamond: {
+  kaabaTip: {
     position: 'absolute',
-    width: 30,
-    height: 30,
+    top: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kaabaEmoji: {
+    fontSize: 18,
+  },
+  centerDot: {
+    position: 'absolute',
+    width: 24,
+    height: 24,
     backgroundColor: '#d97706',
-    borderRadius: 6,
-    borderWidth: 2,
+    borderRadius: 12,
+    borderWidth: 3,
     borderColor: '#022c22',
-    transform: [{ rotate: '45deg' }],
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
   },
-  centerInner: {
-    width: 12,
-    height: 12,
+  centerDotInner: {
+    width: 8,
+    height: 8,
     backgroundColor: '#022c22',
-    borderRadius: 2,
+    borderRadius: 4,
   },
-  markerN: {
+  cardinalLabel: {
     position: 'absolute',
-    top: 12,
-    width: 4,
-    height: 18,
-    backgroundColor: '#10b981',
-    borderRadius: 2,
-    zIndex: 10,
-  },
-  markerS: {
-    position: 'absolute',
-    bottom: 12,
-    width: 4,
-    height: 18,
-    backgroundColor: '#047857',
-    borderRadius: 2,
-    zIndex: 10,
-  },
-  markerW: {
-    position: 'absolute',
-    left: 12,
-    width: 18,
-    height: 4,
-    backgroundColor: '#047857',
-    borderRadius: 2,
-    zIndex: 10,
-  },
-  markerE: {
-    position: 'absolute',
-    right: 12,
-    width: 18,
-    height: 4,
-    backgroundColor: '#047857',
-    borderRadius: 2,
+    color: '#6ee7b7',
+    fontSize: 14,
+    fontWeight: 'bold',
     zIndex: 10,
   },
   tick: {
@@ -296,28 +321,48 @@ const styles = StyleSheet.create({
     backgroundColor: '#065f46',
     borderRadius: 1,
   },
+  tickMajor: {
+    width: 3,
+    height: 14,
+    backgroundColor: '#10b981',
+  },
   statusContainer: {
-    height: 64,
-    marginTop: 48,
+    height: 70,
+    marginTop: 40,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  alignedContainer: {
+    alignItems: 'center',
   },
   alignedText: {
     color: '#fbbf24',
     fontSize: 28,
     fontWeight: 'bold',
-    letterSpacing: 6,
+    letterSpacing: 4,
+  },
+  alignedSub: {
+    color: '#6ee7b7',
+    fontSize: 14,
+    marginTop: 4,
+    fontWeight: '600',
   },
   helperText: {
     color: 'rgba(209, 250, 229, 0.7)',
-    fontSize: 17,
+    fontSize: 16,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 24,
   },
   errorText: {
     color: '#ef4444',
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  headingReadout: {
+    color: 'rgba(167, 243, 208, 0.4)',
+    fontSize: 12,
+    marginTop: 16,
+    fontWeight: '600',
   },
 });

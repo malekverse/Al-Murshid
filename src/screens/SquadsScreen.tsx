@@ -3,8 +3,10 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SquadsScreen() {
+  const navigation = useNavigation<any>();
   return (
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
@@ -77,6 +79,31 @@ export default function SquadsScreen() {
           </View>
         </View>
 
+        {/* Proof of Salah & Heatmap */}
+        <View className="flex-row space-x-4 mb-8">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('ProofOfSalah')}
+            className="flex-1 bg-emerald-800/80 p-4 rounded-3xl border border-emerald-600/50 shadow-lg items-center justify-center mr-2"
+          >
+            <View className="w-12 h-12 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
+              <Ionicons name="camera" size={24} color="#fbbf24" />
+            </View>
+            <Text className="text-emerald-50 font-bold text-center">Proof of Salah</Text>
+            <Text className="text-emerald-300 text-xs text-center mt-1">Masjid Check-in</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('CommunityHeatmap')}
+            className="flex-1 bg-teal-900/80 p-4 rounded-3xl border border-teal-700/50 shadow-lg items-center justify-center ml-2"
+          >
+            <View className="w-12 h-12 rounded-full bg-teal-500/20 items-center justify-center mb-3 border border-teal-500/30">
+              <Ionicons name="map" size={24} color="#6ee7b7" />
+            </View>
+            <Text className="text-teal-50 font-bold text-center">City Heatmap</Text>
+            <Text className="text-teal-300 text-xs text-center mt-1">Live Sabiqoon</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Knowledge Duel */}
         <View className="rounded-3xl mb-8 shadow-2xl border border-teal-700/40 overflow-hidden">
           <LinearGradient
@@ -90,7 +117,10 @@ export default function SquadsScreen() {
               <Text className="text-teal-50 text-xl font-bold mb-2 tracking-wide">Knowledge Duel</Text>
               <Text className="text-teal-200 text-sm leading-relaxed">Challenge friends to a 60-second Seerah quiz to earn Noor Points.</Text>
             </View>
-            <TouchableOpacity className="shadow-lg active:opacity-80 rounded-full overflow-hidden border-2 border-amber-300/30">
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('KnowledgeDuel')}
+              className="shadow-lg active:opacity-80 rounded-full overflow-hidden border-2 border-amber-300/30"
+            >
               <LinearGradient
                 colors={['#f59e0b', '#d97706']}
                 style={StyleSheet.absoluteFillObject}
