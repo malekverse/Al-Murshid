@@ -5,8 +5,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
+
 export default function ZakatCalculatorScreen() {
   const navigation = useNavigation();
+  const { t, i18n } = useTranslation();
   
   const [cash, setCash] = useState('');
   const [goldValue, setGoldValue] = useState('');
@@ -52,9 +56,9 @@ export default function ZakatCalculatorScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Zakat Calculator</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('zakat.title')}</Text>
         <View className="w-10" />
       </View>
 
@@ -62,9 +66,9 @@ export default function ZakatCalculatorScreen() {
         
         {/* Intro */}
         <View className="mb-8 mt-2">
-          <Text className="text-amber-400 text-3xl font-extrabold tracking-tight mb-2">Purify Your Wealth</Text>
+          <Text className="text-amber-400 text-3xl font-extrabold tracking-tight mb-2">{t('zakat.subtitle')}</Text>
           <Text className="text-emerald-200 text-sm leading-relaxed font-medium">
-            "And establish prayer and give Zakat, and whatever good you put forward for yourselves - you will find it with Allah." (2:110)
+            {t('zakat.verse')}
           </Text>
         </View>
 
@@ -77,16 +81,16 @@ export default function ZakatCalculatorScreen() {
             style={StyleSheet.absoluteFillObject}
           />
           <View className="p-6">
-            <Text className="text-white text-xl font-bold tracking-wide mb-6">Eligible Assets</Text>
+            <Text className="text-white text-xl font-bold tracking-wide mb-6">{t('zakat.assets')}</Text>
             
-            {renderInputField('Cash at Home & Bank', 'wallet', cash, setCash, '0.00')}
-            {renderInputField('Value of Gold', 'sparkles', goldValue, setGoldValue, '0.00')}
-            {renderInputField('Value of Silver', 'moon', silverValue, setSilverValue, '0.00')}
-            {renderInputField('Investments & Shares', 'trending-up', investments, setInvestments, '0.00')}
+            {renderInputField(t('zakat.cash'), 'wallet', cash, setCash, '0.00')}
+            {renderInputField(t('zakat.gold'), 'sparkles', goldValue, setGoldValue, '0.00')}
+            {renderInputField(t('zakat.silver'), 'moon', silverValue, setSilverValue, '0.00')}
+            {renderInputField(t('zakat.investments'), 'trending-up', investments, setInvestments, '0.00')}
             
             <View className="border-t border-emerald-700/50 pt-6 mt-2">
-              <Text className="text-white text-xl font-bold tracking-wide mb-6">Liabilities & Debts</Text>
-              {renderInputField('Money you owe', 'cash', liabilities, setLiabilities, '0.00')}
+              <Text className="text-white text-xl font-bold tracking-wide mb-6">{t('zakat.liabilities')}</Text>
+              {renderInputField(t('zakat.owe'), 'cash', liabilities, setLiabilities, '0.00')}
             </View>
           </View>
         </View>
@@ -104,12 +108,12 @@ export default function ZakatCalculatorScreen() {
         <View className="px-8 pt-6 pb-10">
           <View className="flex-row justify-between items-center mb-6">
             <View>
-              <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest mb-1">Total Net Assets</Text>
+              <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest mb-1">{t('zakat.netAssets')}</Text>
               <Text className="text-teal-50 text-xl font-semibold">${netAssets.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             </View>
             <View className="h-10 w-px bg-teal-700/50 mx-4" />
             <View className="items-end">
-              <Text className="text-amber-400 text-sm font-bold uppercase tracking-widest mb-1">Zakat Rate</Text>
+              <Text className="text-amber-400 text-sm font-bold uppercase tracking-widest mb-1">{t('zakat.rate')}</Text>
               <Text className="text-teal-50 text-xl font-semibold">2.5%</Text>
             </View>
           </View>
@@ -117,7 +121,7 @@ export default function ZakatCalculatorScreen() {
           <View className="flex-row justify-between items-end mb-6 bg-teal-900/40 p-4 rounded-2xl border border-teal-700/50">
             <View className="flex-row items-center">
               <Ionicons name="gift" size={24} color="#fbbf24" style={{ marginRight: 8 }} />
-              <Text className="text-white text-lg font-bold">Zakat Due</Text>
+              <Text className="text-white text-lg font-bold">{t('zakat.due')}</Text>
             </View>
             <Text className="text-amber-400 text-3xl font-extrabold tracking-tighter">
               ${zakatDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -133,7 +137,7 @@ export default function ZakatCalculatorScreen() {
             />
             <View className="py-4 items-center flex-row justify-center">
               <Ionicons name="heart" size={20} color="#022c22" style={{ marginRight: 8 }} />
-              <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">Donate Zakat</Text>
+              <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">{t('zakat.donate')}</Text>
             </View>
           </TouchableOpacity>
         </View>

@@ -8,9 +8,10 @@ import { getNextPrayer, detectCalcMethod } from '../utils/prayerTimes';
 import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { flipIcon } from '../utils/rtl';
 
 export default function HomeScreen({ navigation }: any) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
   const incrementStreak = useAppStore((state) => state.incrementStreak);
   const { insight } = useFatherlyCoach();
@@ -29,6 +30,8 @@ export default function HomeScreen({ navigation }: any) {
 
   const fadeAnim3 = useRef(new Animated.Value(0)).current;
   const slideAnim3 = useRef(new Animated.Value(20)).current;
+
+  const isArabic = i18n.language === 'ar';
 
   useEffect(() => {
     // Staggered Entrance Animations
@@ -88,11 +91,14 @@ export default function HomeScreen({ navigation }: any) {
         const json = await res.json();
         if (json.code === 200) {
           const h = json.data.hijri;
-          setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
+          // Use Arabic month name if language is Arabic
+          const monthName = isArabic ? h.month.ar : h.month.en;
+          setHijriDate(`${h.day} ${monthName} ${h.year} ${isArabic ? 'هـ' : 'AH'}`);
         }
       } catch {
         // Fallback to Intl if API fails
-        setHijriDate(new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+        const locale = isArabic ? 'ar-u-ca-islamic-umalqura' : 'en-u-ca-islamic-umalqura';
+        setHijriDate(new Intl.DateTimeFormat(locale, {
           day: 'numeric', month: 'long', year: 'numeric'
         }).format(new Date()));
       }
@@ -106,8 +112,8 @@ export default function HomeScreen({ navigation }: any) {
         {/* Header */}
         <View className="flex-row justify-between items-center mb-8">
           <View>
-            <Text className="text-amber-400 text-lg font-semibold">{t('greeting', 'As-salamu alaykum')}</Text>
-            <Text className="text-white text-3xl font-bold mt-1 tracking-tight">Al-Murshid</Text>
+            <Text className="text-amber-400 text-lg font-semibold">{t('greeting')}</Text>
+            <Text className="text-white text-3xl font-bold mt-1 tracking-tight">{t('appName')}</Text>
             <Text className="text-emerald-200 text-sm mt-1 font-medium">{hijriDate}</Text>
           </View>
           <View className="flex-row items-center">
@@ -141,7 +147,7 @@ export default function HomeScreen({ navigation }: any) {
             className="mb-8 active:opacity-80"
           >
             <View className="flex-row justify-between items-end mb-3">
-              <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">Spiritual Energy</Text>
+              <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">{t('home.spiritualEnergy')}</Text>
               <Text className="text-amber-400 font-bold text-sm">{sunnahStreak * 10}%</Text>
             </View>
             <View className="w-full bg-emerald-900/60 h-3 rounded-full overflow-hidden border border-emerald-800">
@@ -159,7 +165,7 @@ export default function HomeScreen({ navigation }: any) {
 
         {/* Quick Tools */}
         <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }} className="mb-8">
-          <Text className="text-emerald-50 text-xl font-bold tracking-wide mb-4">Quick Tools</Text>
+          <Text className="text-emerald-50 text-xl font-bold tracking-wide mb-4">{t('home.quickTools')}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 24 }}>
             <TouchableOpacity
               onPress={() => navigation.navigate('ZakatCalculator')}
@@ -175,8 +181,8 @@ export default function HomeScreen({ navigation }: any) {
                 <View className="w-10 h-10 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
                   <Ionicons name="calculator" size={20} color="#fbbf24" />
                 </View>
-                <Text className="text-emerald-50 font-bold text-base mb-1">Zakat</Text>
-                <Text className="text-emerald-300/80 text-xs font-medium">Calculate easily</Text>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('home.zakat')}</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">{t('home.zakatSubtitle')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -194,8 +200,8 @@ export default function HomeScreen({ navigation }: any) {
                 <View className="w-10 h-10 rounded-full bg-teal-500/20 items-center justify-center mb-3 border border-teal-500/30">
                   <Ionicons name="calendar" size={20} color="#6ee7b7" />
                 </View>
-                <Text className="text-emerald-50 font-bold text-base mb-1">Hijri Calendar</Text>
-                <Text className="text-emerald-300/80 text-xs font-medium">Islamic events</Text>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('home.hijriCalendar')}</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">{t('home.hijriCalendarSubtitle')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -213,8 +219,8 @@ export default function HomeScreen({ navigation }: any) {
                 <View className="w-10 h-10 rounded-full bg-emerald-500/20 items-center justify-center mb-3 border border-emerald-500/30">
                   <Ionicons name="location" size={20} color="#6ee7b7" />
                 </View>
-                <Text className="text-emerald-50 font-bold text-base mb-1">Nearby</Text>
-                <Text className="text-emerald-300/80 text-xs font-medium">Mosques & Halal</Text>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('home.nearby')}</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">{t('home.nearbySubtitle')}</Text>
               </View>
             </TouchableOpacity>
 
@@ -232,8 +238,8 @@ export default function HomeScreen({ navigation }: any) {
                 <View className="w-10 h-10 rounded-full bg-indigo-500/20 items-center justify-center mb-3 border border-indigo-500/30">
                   <Ionicons name="moon" size={20} color="#c7d2fe" />
                 </View>
-                <Text className="text-emerald-50 font-bold text-base mb-1">Sleep Sunnah</Text>
-                <Text className="text-indigo-300/80 text-xs font-medium">Rest & Qailulah</Text>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('home.sleepSunnah')}</Text>
+                <Text className="text-indigo-300/80 text-xs font-medium">{t('home.sleepSunnahSubtitle')}</Text>
               </View>
             </TouchableOpacity>
           </ScrollView>
@@ -251,7 +257,7 @@ export default function HomeScreen({ navigation }: any) {
             <View className="flex-1">
               <View className="flex-row items-center mb-2">
                 <Ionicons name="time-outline" size={18} color="#6ee7b7" style={{ marginRight: 6 }} />
-                <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">Next Prayer</Text>
+                <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">{t('home.nextPrayer')}</Text>
               </View>
 
               {isLoadingLocation ? (
@@ -268,7 +274,7 @@ export default function HomeScreen({ navigation }: any) {
               onPress={() => navigation.navigate('PrayerTimes')}
               className="bg-emerald-800/80 w-12 h-12 items-center justify-center rounded-full border border-emerald-700/50"
             >
-              <Ionicons name="chevron-forward" size={24} color="#6ee7b7" />
+              <Ionicons name={flipIcon('chevron-forward') as any} size={24} color="#6ee7b7" />
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -285,13 +291,13 @@ export default function HomeScreen({ navigation }: any) {
             <Ionicons name="book-outline" size={100} color="rgba(255,255,255,0.03)" style={{ position: 'absolute', right: -20, bottom: -20 }} />
             <View className="flex-row items-center mb-4">
               <Ionicons name="star" size={16} color="#fbbf24" style={{ marginRight: 8 }} />
-              <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest">Verse of the Hour</Text>
+              <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest">{t('home.verseOfTheHour')}</Text>
             </View>
             <Text className="text-amber-300 text-3xl font-serif text-right leading-relaxed mb-4" style={{ fontFamily: 'sans-serif' }}>
               "إِنَّ مَعَ الْعُسْرِ يُسْرًا"
             </Text>
             <Text className="text-teal-50 text-base italic font-medium leading-relaxed">
-              "Indeed, with hardship [will be] ease." (94:6)
+              {isArabic ? '(الشرح: 6)' : '"Indeed, with hardship [will be] ease." (94:6)'}
             </Text>
           </View>
         </Animated.View>
@@ -306,9 +312,9 @@ export default function HomeScreen({ navigation }: any) {
               <View className="bg-amber-500/20 p-2 rounded-full mr-3">
                 <Ionicons name="chatbubbles-outline" size={20} color="#fbbf24" />
               </View>
-              <Text className="text-amber-400 font-bold text-base tracking-wide">Al-Murshid Says...</Text>
+              <Text className="text-amber-400 font-bold text-base tracking-wide">{t('home.alMurshidSays')}</Text>
               <View className="flex-1" />
-              <Ionicons name="chevron-forward" size={18} color="#fbbf24" />
+              <Ionicons name={flipIcon('chevron-forward') as any} size={18} color="#fbbf24" />
             </View>
             <Text className="text-emerald-100 text-base italic leading-relaxed font-medium">
               "{insight}"
@@ -330,7 +336,7 @@ export default function HomeScreen({ navigation }: any) {
             />
             <View className="py-4 items-center flex-row justify-center">
               <Ionicons name="checkmark-circle" size={24} color="#022c22" style={{ marginRight: 8 }} />
-              <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">Log Current Prayer</Text>
+              <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">{t('home.logCurrentPrayer')}</Text>
             </View>
           </TouchableOpacity>
         </Animated.View>

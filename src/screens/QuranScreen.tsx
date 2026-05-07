@@ -8,6 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { fetchSurahList, fetchSurahDetail, fetchMushafPage, TOTAL_MUSHAF_PAGES } from '../services/quranService';
 import type { SurahMeta, Ayah, MushafPageAyah, MushafPageData } from '../services/quranService';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -15,6 +17,7 @@ type ViewMode = 'list' | 'detail' | 'mushaf';
 
 export default function QuranScreen() {
   const navigation = useNavigation<any>();
+  const { t, i18n } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -265,7 +268,7 @@ export default function QuranScreen() {
         {/* Top Bar */}
         <View style={mStyles.topBar}>
           <TouchableOpacity onPress={goBack} style={mStyles.topBtn}>
-            <Ionicons name="arrow-back" size={18} color="#065f46" />
+            <Ionicons name={flipIcon('arrow-back') as any} size={18} color="#065f46" />
           </TouchableOpacity>
 
           {showGoTo ? (
@@ -281,7 +284,7 @@ export default function QuranScreen() {
                 style={mStyles.goToInput}
               />
               <TouchableOpacity onPress={handleGoToPage} style={[mStyles.topBtn, { marginLeft: 6 }]}>
-                <Ionicons name="arrow-forward" size={16} color="#065f46" />
+                <Ionicons name={flipIcon('arrow-forward') as any} size={16} color="#065f46" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => { setShowGoTo(false); setGoToPageText(''); }} style={[mStyles.topBtn, { marginLeft: 4 }]}>
                 <Ionicons name="close" size={16} color="#065f46" />
@@ -289,9 +292,9 @@ export default function QuranScreen() {
             </View>
           ) : (
             <TouchableOpacity onPress={() => setShowGoTo(true)} style={{ flex: 1, alignItems: 'center', marginHorizontal: 8 }}>
-              <Text style={{ color: '#064e3b', fontSize: 14, fontWeight: '800' }}>Page {currentPage}</Text>
+              <Text style={{ color: '#064e3b', fontSize: 14, fontWeight: '800' }}>{t('quran.page')} {currentPage}</Text>
               <Text style={{ color: '#047857', fontSize: 9, fontWeight: '600' }}>
-                Juz {juzNumber || '—'} · {hizbLabel}
+                {t('quran.juz')} {juzNumber || '—'} · {hizbLabel}
               </Text>
             </TouchableOpacity>
           )}
@@ -314,7 +317,7 @@ export default function QuranScreen() {
         {mushafLoading && !currentMushafData ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0fdf4' }}>
             <ActivityIndicator size="large" color="#059669" />
-            <Text style={{ color: '#065f46', marginTop: 16, fontWeight: '600' }}>Loading page…</Text>
+            <Text style={{ color: '#065f46', marginTop: 16, fontWeight: '600' }}>{t('quran.loadingPage')}</Text>
           </View>
         ) : (
           <View style={{ flex: 1, backgroundColor: '#f0fdf4' }}>
@@ -366,7 +369,7 @@ export default function QuranScreen() {
                             <View style={mStyles.surahDecorRight}><Text style={mStyles.surahDecorText}>❁</Text></View>
                             {s.number !== 9 && s.number !== 1 && (
                               <Text style={[mStyles.bismillah, { fontSize: mushafFontSize }]}>
-                                بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                                {t('quran.bismillahTranslation')}
                               </Text>
                             )}
                           </View>
@@ -422,18 +425,18 @@ export default function QuranScreen() {
                 disabled={currentPage <= 1}
                 style={[mStyles.navBtn, currentPage <= 1 && { opacity: 0.25 }]}
               >
-                <Ionicons name="chevron-back" size={18} color="#065f46" />
+                <Ionicons name={flipIcon('chevron-back') as any} size={18} color="#065f46" />
               </TouchableOpacity>
               <View style={{ alignItems: 'center' }}>
                 <Text style={{ color: '#064e3b', fontSize: 16, fontWeight: '800' }}>{currentPage}</Text>
-                <Text style={{ color: '#047857', fontSize: 8, fontWeight: '600' }}>of {TOTAL_MUSHAF_PAGES}</Text>
+                <Text style={{ color: '#047857', fontSize: 8, fontWeight: '600' }}>{t('quran.of')} {TOTAL_MUSHAF_PAGES}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigateToPage(currentPage + 1)}
                 disabled={currentPage >= TOTAL_MUSHAF_PAGES}
                 style={[mStyles.navBtn, currentPage >= TOTAL_MUSHAF_PAGES && { opacity: 0.25 }]}
               >
-                <Ionicons name="chevron-forward" size={18} color="#065f46" />
+                <Ionicons name={flipIcon('chevron-forward') as any} size={18} color="#065f46" />
               </TouchableOpacity>
             </View>
           </View>
@@ -456,21 +459,27 @@ export default function QuranScreen() {
             onPress={goBack}
             className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
           >
-            <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+            <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
           </TouchableOpacity>
           <View className="items-center flex-1 mx-4">
-            <Text className="text-emerald-50 text-lg font-bold tracking-wide" numberOfLines={1}>{selectedSurah.englishName}</Text>
-            <Text className="text-emerald-400 text-xs font-medium">{selectedSurah.englishNameTranslation} • {selectedSurah.numberOfAyahs} Ayat</Text>
+            <Text className="text-emerald-50 text-lg font-bold tracking-wide" numberOfLines={1}>
+              {i18n.language === 'ar' ? selectedSurah.name : selectedSurah.englishName}
+            </Text>
+            <Text className="text-emerald-400 text-xs font-medium">
+              {i18n.language === 'ar' ? selectedSurah.englishNameTranslation : selectedSurah.englishNameTranslation} • {selectedSurah.numberOfAyahs} {t('quran.ayat')}
+            </Text>
           </View>
           <View className="bg-emerald-900/60 px-3 py-1.5 rounded-full border border-emerald-700/50">
-            <Text className="text-emerald-200 text-xs font-bold">{selectedSurah.revelationType}</Text>
+            <Text className="text-emerald-200 text-xs font-bold">
+              {selectedSurah.revelationType === 'Meccan' ? (i18n.language === 'ar' ? 'مكية' : 'Meccan') : (i18n.language === 'ar' ? 'مدنية' : 'Medinan')}
+            </Text>
           </View>
         </View>
 
         {detailLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#fbbf24" />
-            <Text className="text-emerald-300 mt-4 font-medium">Loading Surah…</Text>
+            <Text className="text-emerald-300 mt-4 font-medium">{t('quran.loadingSurah')}</Text>
           </View>
         ) : (
           <FlatList
@@ -485,19 +494,19 @@ export default function QuranScreen() {
                     <LinearGradient colors={['#064e3b', '#022c22']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
                     <View className="py-6 items-center">
                       <Text className="text-amber-400 text-2xl text-center px-4" style={{ fontFamily: 'sans-serif', lineHeight: 42 }}>
-                        بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                        {t('quran.bismillahTranslation')}
                       </Text>
-                      <Text className="text-emerald-300/60 text-xs mt-2 font-medium">In the name of Allah, the Entirely Merciful, the Especially Merciful</Text>
+                      <Text className="text-emerald-300/60 text-xs mt-2 font-medium">{t('quran.bismillahTranslation')}</Text>
                     </View>
                   </View>
                 )}
                 <View className="bg-emerald-900/30 rounded-2xl p-4 mb-4 border border-emerald-800/30 flex-row items-center justify-between">
                   <View className="flex-row items-center">
                     <Ionicons name="book-outline" size={16} color="#6ee7b7" style={{ marginRight: 6 }} />
-                    <Text className="text-emerald-300/80 text-xs font-medium">Juz {arabicAyahs[0]?.juz} • Page {arabicAyahs[0]?.page}</Text>
+                    <Text className="text-emerald-300/80 text-xs font-medium">{t('quran.juz')} {arabicAyahs[0]?.juz} • {t('quran.page')} {arabicAyahs[0]?.page}</Text>
                   </View>
                   <Text className="text-emerald-400/60 text-xs font-bold uppercase tracking-wider">
-                    Uthmani • Saheeh Int'l
+                    {t('quran.uthmaniSaheeh')}
                   </Text>
                 </View>
               </>
@@ -541,8 +550,8 @@ export default function QuranScreen() {
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
       <View className="px-6 pt-16 pb-4">
-        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">The Noble Quran</Text>
-        <Text className="text-emerald-200 text-sm mt-1 font-medium">114 Surahs • 6,236 Ayat</Text>
+        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('quran.title')}</Text>
+        <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('quran.subtitle')}</Text>
       </View>
 
       {/* Search */}
@@ -552,9 +561,10 @@ export default function QuranScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search by name, number, or meaning…"
+            placeholder={t('quran.searchPlaceholder')}
             placeholderTextColor="rgba(110, 231, 183, 0.3)"
             className="flex-1 text-emerald-50 text-base font-medium py-3"
+            style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -567,7 +577,7 @@ export default function QuranScreen() {
       {listLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#fbbf24" />
-          <Text className="text-emerald-300 mt-4 font-medium">Loading Quran data…</Text>
+          <Text className="text-emerald-300 mt-4 font-medium">{t('quran.loadingQuran')}</Text>
         </View>
       ) : (
         <FlatList
@@ -590,8 +600,8 @@ export default function QuranScreen() {
                     <View className="w-12 h-12 rounded-full bg-emerald-100 items-center justify-center mb-2 border border-emerald-300">
                       <Text style={{ fontSize: 22 }}>📖</Text>
                     </View>
-                    <Text style={{ color: '#064e3b', fontWeight: '800', fontSize: 13 }}>Mushaf</Text>
-                    <Text style={{ color: '#047857', fontSize: 9, fontWeight: '600', textAlign: 'center', marginTop: 2 }}>Page-by-page{'\n'}like the book</Text>
+                    <Text style={{ color: '#064e3b', fontWeight: '800', fontSize: 13 }}>{t('quran.mushaf')}</Text>
+                    <Text style={{ color: '#047857', fontSize: 9, fontWeight: '600', textAlign: 'center', marginTop: 2 }}>{t('quran.mushafDesc')}</Text>
                   </View>
                 </TouchableOpacity>
 
@@ -606,17 +616,16 @@ export default function QuranScreen() {
                     <View className="w-12 h-12 rounded-full bg-amber-500/15 items-center justify-center mb-2 border border-amber-500/30">
                       <Ionicons name="ribbon" size={22} color="#fbbf24" />
                     </View>
-                    <Text className="text-emerald-50 font-extrabold text-[13px]">Khatmah</Text>
-                    <Text className="text-emerald-300/80 text-[9px] font-semibold text-center mt-0.5">Track reading{'\n'}progress</Text>
+                    <Text className="text-emerald-50 font-extrabold text-[13px]">{t('quran.khatmah')}</Text>
+                    <Text className="text-emerald-300/80 text-[9px] font-semibold text-center mt-0.5">{t('quran.khatmahDesc')}</Text>
                   </View>
                 </TouchableOpacity>
               </View>
 
-              {/* Source Attribution */}
               <View className="bg-emerald-900/30 rounded-xl p-3 mb-4 border border-emerald-800/30 flex-row items-center">
                 <Ionicons name="shield-checkmark" size={14} color="#6ee7b7" style={{ marginRight: 8 }} />
                 <Text className="text-emerald-400/60 text-[10px] font-bold flex-1">
-                  Arabic: Uthmani Mushaf (King Fahd Complex) • Translation: Saheeh International
+                  {t('quran.sourceAttribution')}
                 </Text>
               </View>
             </>
@@ -632,12 +641,20 @@ export default function QuranScreen() {
                   <Text className="text-amber-400 font-bold text-sm">{surah.number}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-emerald-50 font-bold text-base">{surah.englishName}</Text>
-                  <Text className="text-emerald-400/70 text-xs font-medium">{surah.englishNameTranslation} • {surah.numberOfAyahs} ayat</Text>
+                  <Text className="text-emerald-50 font-bold text-base">
+                    {i18n.language === 'ar' ? surah.name : surah.englishName}
+                  </Text>
+                  <Text className="text-emerald-400/70 text-xs font-medium">
+                    {surah.englishNameTranslation} • {surah.numberOfAyahs} {t('quran.ayat')}
+                  </Text>
                 </View>
                 <View className="items-end">
-                  <Text className="text-amber-300 text-lg mb-1" style={{ fontFamily: 'sans-serif' }}>{surah.name}</Text>
-                  <Text className="text-emerald-500/60 text-[10px] font-bold uppercase">{surah.revelationType}</Text>
+                  {i18n.language !== 'ar' && (
+                    <Text className="text-amber-300 text-lg mb-1" style={{ fontFamily: 'sans-serif' }}>{surah.name}</Text>
+                  )}
+                  <Text className="text-emerald-500/60 text-[10px] font-bold uppercase">
+                    {surah.revelationType === 'Meccan' ? (i18n.language === 'ar' ? 'مكية' : 'Meccan') : (i18n.language === 'ar' ? 'مدنية' : 'Medinan')}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>

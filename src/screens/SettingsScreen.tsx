@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Animated, ActionSheetIOS, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAppStore } from '../store';
 import { useTranslation } from 'react-i18next';
+import { setAppLanguage } from '../i18n';
+import { flipIcon } from '../utils/rtl';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
   const resetOnboarding = useAppStore((state) => state.resetOnboarding);
+  const language = useAppStore((state) => state.language);
+  const setLanguage = useAppStore((state) => state.setLanguage);
   const { t, i18n } = useTranslation();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -22,7 +26,7 @@ export default function SettingsScreen() {
   const sectionTranslates = useRef([new Animated.Value(20), new Animated.Value(20), new Animated.Value(20)]).current;
 
   useEffect(() => {
-    const animations = sectionOpacities.map((_, i) => 
+    const animations = sectionOpacities.map((_, i) =>
       Animated.parallel([
         Animated.timing(sectionOpacities[i], { toValue: 1, duration: 500, useNativeDriver: true }),
         Animated.spring(sectionTranslates[i], { toValue: 0, tension: 50, friction: 7, useNativeDriver: true })
@@ -32,47 +36,36 @@ export default function SettingsScreen() {
   }, []);
 
   const handleChangeLanguage = () => {
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['Cancel', 'English', 'العربية', 'Français'],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 1) i18n.changeLanguage('en');
-          if (buttonIndex === 2) i18n.changeLanguage('ar');
-          if (buttonIndex === 3) i18n.changeLanguage('fr');
-        }
-      );
-    } else {
-      // Simple toggle for Android for demo purposes
-      const nextLang = i18n.language === 'en' ? 'ar' : i18n.language === 'ar' ? 'fr' : 'en';
-      i18n.changeLanguage(nextLang);
-    }
+    const targetLang = i18n.language === 'ar' ? 'en' : 'ar';
+    // Instant switch — no restart needed for text
+    setLanguage(targetLang);
+    setAppLanguage(targetLang);
   };
+
+  const currentLanguageLabel = i18n.language === 'ar' ? t('settings.languageArabic') : t('settings.languageEnglish');
 
   const settingsSections = [
     {
-      title: 'Prayer Settings',
+      title: t('settings.prayerSettings'),
       items: [
-        { label: 'Prayer Time Alerts', subtitle: 'Get notified before each prayer', icon: 'notifications', value: prayerAlerts, onToggle: setPrayerAlerts },
-        { label: 'Calculation Method', subtitle: 'Muslim World League', icon: 'calculator', action: true },
+        { label: t('settings.prayerTimeAlerts'), subtitle: t('settings.prayerTimeAlertsSubtitle'), icon: 'notifications', value: prayerAlerts, onToggle: setPrayerAlerts },
+        { label: t('settings.calculationMethod'), subtitle: t('settings.calculationMethodSubtitle'), icon: 'calculator', action: true },
       ],
     },
     {
-      title: 'App Preferences',
+      title: t('settings.appPreferences'),
       items: [
-        { label: 'Notifications', subtitle: 'AI insights & reminders', icon: 'mail', value: notificationsEnabled, onToggle: setNotificationsEnabled },
-        { label: 'Dark Mode', subtitle: 'Currently active', icon: 'moon', value: darkMode, onToggle: setDarkMode },
-        { label: 'Haptic Feedback', subtitle: 'Vibrations on interactions', icon: 'phone-portrait', value: hapticFeedback, onToggle: setHapticFeedback },
+        { label: t('settings.notifications'), subtitle: t('settings.notificationsSubtitle'), icon: 'mail', value: notificationsEnabled, onToggle: setNotificationsEnabled },
+        { label: t('settings.darkMode'), subtitle: t('settings.darkModeSubtitle'), icon: 'moon', value: darkMode, onToggle: setDarkMode },
+        { label: t('settings.hapticFeedback'), subtitle: t('settings.hapticFeedbackSubtitle'), icon: 'phone-portrait', value: hapticFeedback, onToggle: setHapticFeedback },
       ],
     },
     {
-      title: 'Account',
+      title: t('settings.account'),
       items: [
-        { label: 'Language', subtitle: i18n.language === 'en' ? 'English' : i18n.language === 'ar' ? 'العربية' : 'Français', icon: 'language', action: true, onPress: handleChangeLanguage },
-        { label: 'Privacy Policy', subtitle: 'Your data stays local', icon: 'shield-checkmark', action: true },
-        { label: 'About Al-Murshid', subtitle: 'Version 1.0.0', icon: 'information-circle', action: true },
+        { label: t('settings.language'), subtitle: currentLanguageLabel, icon: 'language', action: true, onPress: handleChangeLanguage },
+        { label: t('settings.privacyPolicy'), subtitle: t('settings.privacyPolicySubtitle'), icon: 'shield-checkmark', action: true },
+        { label: t('settings.aboutAlMurshid'), subtitle: t('settings.version'), icon: 'information-circle', action: true },
       ],
     },
   ];
@@ -87,9 +80,9 @@ export default function SettingsScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Settings</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('settings.title')}</Text>
         <View className="w-10" />
       </View>
 
@@ -108,14 +101,14 @@ export default function SettingsScreen() {
               <Ionicons name="person" size={32} color="#fbbf24" />
             </View>
             <View className="flex-1">
-              <Text className="text-white text-xl font-bold">Al-Talib</Text>
-              <Text className="text-emerald-300 text-sm font-medium">Level 2 — The Seeker</Text>
+              <Text className="text-white text-xl font-bold">{t('settings.profileName')}</Text>
+              <Text className="text-emerald-300 text-sm font-medium">{t('settings.profileLevel')}</Text>
               <View className="flex-row items-center mt-1">
                 <Ionicons name="flame" size={12} color="#fbbf24" style={{ marginRight: 4 }} />
-                <Text className="text-amber-400 text-xs font-bold">Active streak</Text>
+                <Text className="text-amber-400 text-xs font-bold">{t('settings.activeStreak')}</Text>
               </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#6ee7b7" />
+            <Ionicons name={flipIcon('chevron-forward') as any} size={20} color="#6ee7b7" />
           </View>
         </View>
 
@@ -154,7 +147,7 @@ export default function SettingsScreen() {
                           thumbColor="#ecfdf5"
                         />
                       ) : (
-                        <Ionicons name="chevron-forward" size={18} color="#6ee7b7" />
+                        <Ionicons name={flipIcon('chevron-forward') as any} size={18} color="#6ee7b7" />
                       )}
                     </Wrapper>
                   );
@@ -166,21 +159,21 @@ export default function SettingsScreen() {
 
         {/* Danger Zone */}
         <Animated.View style={{ opacity: sectionOpacities[2], transform: [{ translateY: sectionTranslates[2] }] }}>
-          <Text className="text-red-400 text-sm font-bold tracking-widest uppercase mb-4 ml-2">Danger Zone</Text>
+          <Text className="text-red-400 text-sm font-bold tracking-widest uppercase mb-4 ml-2">{t('settings.dangerZone')}</Text>
           <TouchableOpacity
             onPress={resetOnboarding}
             className="rounded-2xl overflow-hidden shadow-lg border border-red-800/50 active:opacity-80 mb-4"
           >
             <View className="bg-red-950/60 p-4 flex-row items-center justify-center">
               <Ionicons name="trash-outline" size={20} color="#fca5a5" style={{ marginRight: 8 }} />
-              <Text className="text-red-300 font-bold text-base">Clear All Data</Text>
+              <Text className="text-red-300 font-bold text-base">{t('settings.clearAllData')}</Text>
             </View>
           </TouchableOpacity>
         </Animated.View>
 
         <View className="items-center mt-4 mb-8">
           <Text className="text-emerald-700 text-xs font-medium">Al-Murshid v1.0.0</Text>
-          <Text className="text-emerald-800 text-xs mt-1">Made with Taqwa ♥</Text>
+          <Text className="text-emerald-800 text-xs mt-1">{t('settings.madeWith')}</Text>
         </View>
 
       </ScrollView>

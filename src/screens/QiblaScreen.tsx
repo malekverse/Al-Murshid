@@ -4,8 +4,10 @@ import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { Coordinates, Qibla } from 'adhan';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 export default function QiblaScreen() {
+  const { t } = useTranslation();
   const [qiblaDirection, setQiblaDirection] = useState<number | null>(null);
   const [deviceHeading, setDeviceHeading] = useState<number>(0);
   const [isAligned, setIsAligned] = useState(false);
@@ -24,7 +26,7 @@ export default function QiblaScreen() {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setErrorMsg('Location permission is required for the Qibla compass.');
+          setErrorMsg(t('qibla.locationPermission'));
           setIsLoading(false);
           return;
         }
@@ -55,7 +57,7 @@ export default function QiblaScreen() {
         });
       } catch (e) {
         console.error('Qibla error:', e);
-        setErrorMsg('Unable to access location or compass sensor.');
+        setErrorMsg(t('qibla.sensorError'));
         setIsLoading(false);
       }
     })();
@@ -122,18 +124,18 @@ export default function QiblaScreen() {
     return (
       <LinearGradient colors={['#022c22', '#064e3b', '#022c22']} style={styles.container}>
         <ActivityIndicator size="large" color="#fbbf24" />
-        <Text style={styles.helperText}>{'Locating you...'}</Text>
+        <Text style={styles.helperText}>{t('locatingYou')}</Text>
       </LinearGradient>
     );
   }
 
   return (
     <LinearGradient colors={['#022c22', '#064e3b', '#022c22']} style={styles.container}>
-      <Text style={styles.title}>Qibla Compass</Text>
+      <Text style={styles.title}>{t('qibla.title')}</Text>
 
       {qiblaDirection !== null && (
         <Text style={styles.bearingText}>
-          Qibla bearing: {qiblaDirection.toFixed(1)}° from True North
+          {t('qibla.bearing', { degrees: qiblaDirection.toFixed(1) })}
         </Text>
       )}
 
@@ -199,19 +201,19 @@ export default function QiblaScreen() {
           <Text style={styles.errorText}>{errorMsg}</Text>
         ) : isAligned ? (
           <View style={styles.alignedContainer}>
-            <Text style={styles.alignedText}>ALIGNED ✓</Text>
-            <Text style={styles.alignedSub}>You are facing the Kaaba</Text>
+            <Text style={styles.alignedText}>{t('qibla.aligned')}</Text>
+            <Text style={styles.alignedSub}>{t('qibla.facingKaaba')}</Text>
           </View>
         ) : (
           <Text style={styles.helperText}>
-            {'Rotate your device until the\narrow points up'}
+            {t('qibla.rotateDevice')}
           </Text>
         )}
       </View>
 
       {/* Current heading readout */}
       <Text style={styles.headingReadout}>
-        Device heading: {deviceHeading.toFixed(0)}°
+        {t('qibla.deviceHeading', { degrees: deviceHeading.toFixed(0) })}
       </Text>
     </LinearGradient>
   );

@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { WebView } from 'react-native-webview';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -145,6 +147,7 @@ const RADIUS_LABELS = ['2 km', '5 km', '10 km'];
 
 export default function LocatorScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'mosque' | 'halal'>('mosque');
   const [isLoading, setIsLoading] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -176,7 +179,7 @@ export default function LocatorScreen() {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setLocationError('Location permission is required.');
+          setLocationError(t('locator.permRequired'));
           setIsLoading(false);
           return;
         }
@@ -186,7 +189,7 @@ export default function LocatorScreen() {
         setUserCoords({ lat, lon });
         await fetchData(lat, lon, RADIUS_OPTIONS[radiusIdx]);
       } catch {
-        setLocationError('Unable to access location services.');
+        setLocationError(t('locator.error'));
         setIsLoading(false);
       }
     })();
@@ -221,9 +224,9 @@ export default function LocatorScreen() {
       {/* Header */}
       <View className="px-6 pt-16 pb-3 flex-row justify-between items-center z-10">
         <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Nearby</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('locator.title')}</Text>
         <TouchableOpacity onPress={() => setShowMap(!showMap)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
           <Ionicons name={showMap ? 'list' : 'map'} size={20} color="#fbbf24" />
         </TouchableOpacity>
@@ -237,14 +240,14 @@ export default function LocatorScreen() {
               {activeTab === tab && <LinearGradient colors={['#064e3b', '#022c22']} style={StyleSheet.absoluteFillObject} />}
               <View className="flex-row items-center">
                 <Ionicons name={tab === 'mosque' ? 'location' : 'restaurant'} size={15} color={activeTab === tab ? '#fbbf24' : '#6b7280'} style={{ marginRight: 5 }} />
-                <Text className={`font-bold text-sm ${activeTab === tab ? 'text-amber-400' : 'text-emerald-500'}`}>{tab === 'mosque' ? 'Mosques' : 'Halal Food'}</Text>
+                <Text className={`font-bold text-sm ${activeTab === tab ? 'text-amber-400' : 'text-emerald-500'}`}>{tab === 'mosque' ? t('locator.mosques') : t('locator.halal')}</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
         {/* Radius toggle */}
         <View className="flex-row justify-between items-center mt-3">
-          <Text className="text-emerald-400/60 text-xs font-bold uppercase tracking-widest">Search radius</Text>
+          <Text className="text-emerald-400/60 text-xs font-bold uppercase tracking-widest">{t('locator.radius')}</Text>
           <TouchableOpacity onPress={handleRadiusChange} className="bg-emerald-900/60 px-4 py-1.5 rounded-full border border-emerald-700/50 flex-row items-center">
             <Ionicons name="resize" size={12} color="#6ee7b7" style={{ marginRight: 6 }} />
             <Text className="text-emerald-200 text-xs font-bold">{RADIUS_LABELS[radiusIdx]}</Text>
@@ -277,7 +280,7 @@ export default function LocatorScreen() {
           <StatusBar style="light" />
           <View className="pt-12 pb-3 px-6 bg-emerald-950 flex-row justify-between items-center z-10 border-b border-emerald-900/50">
             <Text className="text-emerald-50 text-xl font-bold tracking-wide">
-              {activeTab === 'mosque' ? 'Mosques Map' : 'Halal Map'}
+              {activeTab === 'mosque' ? t('locator.mosquesMap') : t('locator.halalMap')}
             </Text>
             <TouchableOpacity onPress={() => setIsMapExpanded(false)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
               <Ionicons name="close" size={24} color="#6ee7b7" />
@@ -297,7 +300,7 @@ export default function LocatorScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#fbbf24" />
-          <Text className="text-emerald-300 mt-4 font-medium">Searching OpenStreetMap…</Text>
+          <Text className="text-emerald-300 mt-4 font-medium">{t('locator.loading')}</Text>
         </View>
       ) : locationError ? (
         <View className="flex-1 items-center justify-center px-8">
@@ -307,13 +310,13 @@ export default function LocatorScreen() {
       ) : places.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
           <Ionicons name="search-outline" size={64} color="#6ee7b7" style={{ marginBottom: 16 }} />
-          <Text className="text-emerald-100 text-center text-lg font-bold mb-2">No {activeTab === 'mosque' ? 'mosques' : 'halal restaurants'} found</Text>
-          <Text className="text-emerald-400 text-center text-sm">Try expanding your search radius.</Text>
+          <Text className="text-emerald-100 text-center text-lg font-bold mb-2">{activeTab === 'mosque' ? t('locator.noMosques') : t('locator.noHalal')}</Text>
+          <Text className="text-emerald-400 text-center text-sm">{t('locator.expandRadius')}</Text>
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
           <Text className="text-emerald-400/70 text-xs font-bold mb-3 uppercase tracking-widest">
-            {places.length} results · sorted by distance
+            {t('locator.results').replace('{{count}}', String(places.length))}
           </Text>
 
           {places.slice(0, 20).map((place, idx) => (

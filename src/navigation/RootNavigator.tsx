@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useAppStore } from '../store';
@@ -25,6 +26,7 @@ import ProofOfSalahScreen from '../screens/ProofOfSalahScreen';
 import CommunityHeatmapScreen from '../screens/CommunityHeatmapScreen';
 import NamesOfAllahScreen from '../screens/NamesOfAllahScreen';
 import KhatmahScreen from '../screens/KhatmahScreen';
+import AdhkarCategoryScreen from '../screens/AdhkarCategoryScreen';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Platform } from 'react-native';
 
@@ -32,6 +34,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
 function MainTabs() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
@@ -73,7 +76,7 @@ function MainTabs() {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: t('tabs.home'),
           tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />
         }}
       />
@@ -81,7 +84,7 @@ function MainTabs() {
         name="QuranTab"
         component={QuranScreen}
         options={{
-          tabBarLabel: 'Quran',
+          tabBarLabel: t('tabs.quran'),
           tabBarIcon: ({ color }) => <Ionicons name="book" size={24} color={color} />
         }}
       />
@@ -89,7 +92,7 @@ function MainTabs() {
         name="AzkarTab"
         component={AzkarScreen}
         options={{
-          tabBarLabel: 'Azkar',
+          tabBarLabel: t('tabs.azkar'),
           tabBarIcon: ({ color }) => <Ionicons name="moon" size={24} color={color} />
         }}
       />
@@ -97,7 +100,7 @@ function MainTabs() {
         name="QiblaTab"
         component={QiblaScreen}
         options={{
-          tabBarLabel: 'Qibla',
+          tabBarLabel: t('tabs.qibla'),
           tabBarIcon: ({ color }) => <Ionicons name="compass" size={24} color={color} />
         }}
       />
@@ -105,7 +108,7 @@ function MainTabs() {
         name="SquadsTab"
         component={SquadsScreen}
         options={{
-          tabBarLabel: 'Ummah',
+          tabBarLabel: t('tabs.ummah'),
           tabBarIcon: ({ color }) => <Ionicons name="people" size={24} color={color} />
         }}
       />
@@ -140,6 +143,7 @@ export default function RootNavigator() {
           <Stack.Screen name="CommunityHeatmap" component={CommunityHeatmapScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="NamesOfAllah" component={NamesOfAllahScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="Khatmah" component={KhatmahScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="AdhkarCategory" component={AdhkarCategoryScreen} options={{ presentation: 'modal' }} />
         </Stack.Group>
       )}
     </Stack.Navigator>

@@ -5,6 +5,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 interface CalendarDay {
   gregorian: string;
@@ -45,6 +47,7 @@ const PAGES = Array.from({ length: TOTAL_PAGES }, (_, i) => i);
 
 export default function HijriCalendarScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const pagerRef = useRef<PagerView>(null);
   
   const [currentIndex, setCurrentIndex] = useState(INITIAL_PAGE);
@@ -165,7 +168,7 @@ export default function HijriCalendarScreen() {
       return (
         <View key={index} className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#fbbf24" />
-          <Text className="text-emerald-300 mt-4 font-medium">Loading calendar…</Text>
+          <Text className="text-emerald-300 mt-4 font-medium">{t('calendar.loading')}</Text>
         </View>
       );
     }
@@ -183,7 +186,7 @@ export default function HijriCalendarScreen() {
           <View className="items-center mb-8 mt-4">
             <View className="flex-row items-center justify-between w-full px-8">
               <TouchableOpacity onPress={goToPrevMonth} className="p-2">
-                <Ionicons name="chevron-back" size={28} color="#6ee7b7" />
+                <Ionicons name={flipIcon('chevron-back') as any} size={28} color="#6ee7b7" />
               </TouchableOpacity>
 
               <View className="items-center">
@@ -200,7 +203,7 @@ export default function HijriCalendarScreen() {
               </View>
 
               <TouchableOpacity onPress={goToNextMonth} className="p-2">
-                <Ionicons name="chevron-forward" size={28} color="#6ee7b7" />
+                <Ionicons name={flipIcon('chevron-forward') as any} size={28} color="#6ee7b7" />
               </TouchableOpacity>
             </View>
           </View>
@@ -256,7 +259,7 @@ export default function HijriCalendarScreen() {
             <>
               <View className="flex-row items-center mb-6">
                 <Ionicons name="star" size={20} color="#fbbf24" style={{ marginRight: 8 }} />
-                <Text className="text-white text-xl font-bold tracking-wide">This Month's Events</Text>
+                <Text className="text-white text-xl font-bold tracking-wide">{t('calendar.events')}</Text>
               </View>
 
               <View className="space-y-4">
@@ -284,7 +287,7 @@ export default function HijriCalendarScreen() {
           )}
 
           <View className="mt-6 items-center">
-            <Text className="text-emerald-500/40 text-xs font-medium">Source: Aladhan API • Umm al-Qura</Text>
+            <Text className="text-emerald-500/40 text-xs font-medium">{t('calendar.source')}</Text>
           </View>
         </ScrollView>
       </View>
@@ -301,9 +304,9 @@ export default function HijriCalendarScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Hijri Calendar</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('calendar.title')}</Text>
         <View className="w-10" />
       </View>
 

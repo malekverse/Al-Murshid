@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, LayoutAnimation, UIManager, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, LayoutAnimation, UIManager, Platform, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -23,6 +24,7 @@ interface SleepHabit {
 
 export default function SunnahSleepScreen() {
   const navigation = useNavigation<any>();
+  const { t, i18n } = useTranslation();
   
   // Sleep Logger State
   const [hoursSlept, setHoursSlept] = useState(6.5);
@@ -112,6 +114,133 @@ export default function SunnahSleepScreen() {
     setTimerActive(!timerActive);
   };
 
+  // Check if running inside Expo Go (native modules not available)
+  const isExpoGo = (() => {
+    try {
+      const Constants = require('expo-constants').default;
+      return Constants?.executionEnvironment === 'storeClient' || !!Constants?.expoGoConfig;
+    } catch {
+      return false;
+    }
+  })();
+
+  const syncSleepData = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    // Detect Expo Go and show a helpful message
+    if (isExpoGo) {
+      Alert.alert(
+        "Custom Build Required",
+        "Health app sync requires a native build.\n\n" +
+        "To enable this feature:\n" +
+        "1. Run: npx expo prebuild --clean\n" +
+        "2. Run: npx expo run:android (or run:ios on Mac)\n\n" +
+        "This feature cannot work inside Expo Go.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    
+    if (Platform.OS === 'ios') {
+      try {
+        const AppleHealthKit = require('react-native-health').default;
+        const permissions = {
+          permissions: {
+            read: [AppleHealthKit.Constants.Permissions.SleepAnalysis],
+            write: [],
+          },
+        };
+        
+        AppleHealthKit.initHealthKit(permissions, (error: string) => {
+          if (error) {
+            Alert.alert("Permission Denied", "Please enable Health access in Settings > Privacy > Health > Al-Murshid.");
+            return;
+          }
+          
+          const yesterday = new Date();
+          yesterday.setHours(yesterday.getHours() - 24);
+          
+          const options = {
+            startDate: yesterday.toISOString(),
+            endDate: new Date().toISOString(),
+          };
+          
+          AppleHealthKit.getSleepSamples(options, (err: Object, results: any[]) => {
+            if (err) {
+              Alert.alert("Error", "Could not fetch sleep data from Apple Health.");
+              return;
+            }
+            if (results && results.length > 0) {
+              let totalMinutes = 0;
+              results.forEach((sample: any) => {
+                 if (sample.value === 'ASLEEP') {
+                   const start = new Date(sample.startDate).getTime();
+                   const end = new Date(sample.endDate).getTime();
+                   totalMinutes += (end - start) / (1000 * 60);
+                 }
+              });
+              if (totalMinutes > 0) {
+                 setHoursSlept(totalMinutes / 60);
+                 Alert.alert("✅ Synced!", `Imported ${(totalMinutes / 60).toFixed(1)} hours of sleep from Apple Health.`);
+              } else {
+                 Alert.alert("No Data", "No sleep records found for last night. Make sure your Apple Watch or iPhone is tracking sleep.");
+              }
+            } else {
+              Alert.alert("No Data", "No sleep records found for last night. Make sure your Apple Watch or iPhone is tracking sleep.");
+            }
+          });
+        });
+      } catch (e) {
+        console.log(e);
+        Alert.alert(
+          "Native Build Required",
+          "Apple Health requires a custom native build.\n\nRun: npx expo run:ios"
+        );
+      }
+    } else if (Platform.OS === 'android') {
+      try {
+        const { initialize, requestPermission, readRecords } = require('react-native-health-connect');
+        const isInitialized = await initialize();
+        if (!isInitialized) {
+           Alert.alert("Health Connect Not Found", "Please install Google Health Connect from the Play Store and try again.");
+           return;
+        }
+        
+        await requestPermission([{ accessType: 'read', recordType: 'SleepSession' }]);
+        
+        const yesterday = new Date();
+        yesterday.setHours(yesterday.getHours() - 24);
+        
+        const result = await readRecords('SleepSession', {
+          timeRangeFilter: {
+            operator: 'between',
+            startTime: yesterday.toISOString(),
+            endTime: new Date().toISOString(),
+          }
+        });
+        
+        if (result.records && result.records.length > 0) {
+          let totalMinutes = 0;
+          result.records.forEach((record: any) => {
+             const start = new Date(record.startTime).getTime();
+             const end = new Date(record.endTime).getTime();
+             totalMinutes += (end - start) / (1000 * 60);
+          });
+          setHoursSlept(totalMinutes / 60);
+          Alert.alert("✅ Synced!", `Imported ${(totalMinutes / 60).toFixed(1)} hours of sleep from Health Connect.`);
+        } else {
+          Alert.alert("No Data", "No sleep records found for last night in Health Connect.");
+        }
+      } catch (e) {
+        console.log(e);
+        Alert.alert(
+          "Native Build Required",
+          "Health Connect requires a custom native build.\n\nRun: npx expo run:android"
+        );
+      }
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -144,9 +273,9 @@ export default function SunnahSleepScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Sunnah Sleep</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('sleep.title')}</Text>
         <TouchableOpacity className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
           <Ionicons name="moon" size={20} color="#fbbf24" />
         </TouchableOpacity>
@@ -164,7 +293,13 @@ export default function SunnahSleepScreen() {
           />
           <Ionicons name="moon" size={100} color="rgba(251, 191, 36, 0.05)" style={{ position: 'absolute', right: -20, top: -20 }} />
           
-          <Text className="text-white text-xl font-bold tracking-wide mb-4">Log Last Night's Sleep</Text>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-white text-xl font-bold tracking-wide">{t('sleep.log')}</Text>
+            <TouchableOpacity onPress={syncSleepData} className="bg-emerald-800/80 px-3 py-1.5 rounded-xl border border-emerald-600 flex-row items-center">
+              <Ionicons name="sync" size={14} color="#6ee7b7" style={{ marginRight: 4 }} />
+              <Text className="text-emerald-100 text-xs font-bold">{t('sleep.sync')}</Text>
+            </TouchableOpacity>
+          </View>
           
           <View className="flex-row items-center justify-between mb-6 bg-black/20 rounded-2xl p-2 border border-white/10">
             <TouchableOpacity onPress={() => changeSleep(-0.5)} className="w-12 h-12 rounded-xl bg-white/10 items-center justify-center">
@@ -173,7 +308,7 @@ export default function SunnahSleepScreen() {
             
             <View className="items-center">
               <Text className="text-amber-400 text-4xl font-extrabold">{hoursSlept.toFixed(1)}</Text>
-              <Text className="text-emerald-200/80 text-xs font-bold uppercase tracking-widest">Hours</Text>
+              <Text className="text-emerald-200/80 text-xs font-bold uppercase tracking-widest">{t('sleep.hours')}</Text>
             </View>
 
             <TouchableOpacity onPress={() => changeSleep(0.5)} className="w-12 h-12 rounded-xl bg-white/10 items-center justify-center">
@@ -185,23 +320,23 @@ export default function SunnahSleepScreen() {
             <View className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/30 mb-4">
               <View className="flex-row items-start mb-2">
                 <Ionicons name="alert-circle" size={18} color="#fbbf24" style={{ marginRight: 8, marginTop: 2 }} />
-                <Text className="text-amber-300 font-bold flex-1 text-base">Sleep Deficit Detected</Text>
+                <Text className="text-amber-300 font-bold flex-1 text-base">{t('sleep.deficit')}</Text>
               </View>
               <Text className="text-amber-100/80 text-sm leading-relaxed ml-7">
-                You slept less than 7 hours. The Prophet ﷺ practiced "Qailulah" (a midday nap) to regain strength for night worship.
+                {t('sleep.deficitDesc')}
               </Text>
             </View>
           ) : (
             <View className="bg-teal-500/10 p-4 rounded-2xl border border-teal-500/30 mb-4 flex-row items-center">
               <Ionicons name="checkmark-circle" size={24} color="#6ee7b7" style={{ marginRight: 12 }} />
-              <Text className="text-teal-200 font-medium flex-1">Alhamdulillah, you achieved a healthy amount of rest.</Text>
+              <Text className="text-teal-200 font-medium flex-1">{t('sleep.healthy')}</Text>
             </View>
           )}
 
           {/* Qailulah Timer */}
           {(isQailulahTime || isShortSleep) && (
             <View className="bg-black/30 rounded-2xl p-4 border border-emerald-500/20 items-center mt-2">
-              <Text className="text-emerald-300/80 text-xs font-bold uppercase tracking-widest mb-3">Sunnah Qailulah Timer</Text>
+              <Text className="text-emerald-300/80 text-xs font-bold uppercase tracking-widest mb-3">{t('sleep.timer')}</Text>
               
               <Text className="text-white text-5xl font-mono tracking-widest font-light mb-4">
                 {formatTime(timeLeft)}
@@ -213,7 +348,7 @@ export default function SunnahSleepScreen() {
               >
                 <Ionicons name={timerActive ? 'pause' : 'play'} size={20} color={timerActive ? '#fca5a5' : '#78350f'} style={{ marginRight: 8 }} />
                 <Text className={`font-bold text-base ${timerActive ? 'text-red-200' : 'text-amber-950'}`}>
-                  {timerActive ? 'Pause Nap' : timeLeft === 0 ? 'Restart Timer' : 'Start 20m Nap'}
+                  {timerActive ? t('sleep.pause') : timeLeft === 0 ? t('sleep.restart') : t('sleep.start')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -223,7 +358,7 @@ export default function SunnahSleepScreen() {
         {/* Evening Routine Checklist */}
         <View className="mb-6">
           <View className="flex-row justify-between items-end mb-4">
-            <Text className="text-emerald-50 text-xl font-bold tracking-wide">Bedtime Sunnahs</Text>
+            <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('sleep.sunnahs')}</Text>
             <View className="bg-emerald-900/60 px-3 py-1 rounded-full border border-emerald-800">
               <Text className="text-emerald-400 text-sm font-bold">{completedCount} / {habits.length}</Text>
             </View>

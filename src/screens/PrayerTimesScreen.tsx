@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { getPrayerTimes, detectCalcMethod, CALC_METHOD_LABELS } from '../utils/prayerTimes';
 import type { CalcMethodKey } from '../utils/prayerTimes';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 interface PrayerTime {
   name: string;
@@ -18,6 +20,7 @@ interface PrayerTime {
 
 export default function PrayerTimesScreen() {
   const navigation = useNavigation();
+  const { t, i18n } = useTranslation();
   const [prayers, setPrayers] = useState<PrayerTime[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -31,7 +34,7 @@ export default function PrayerTimesScreen() {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setLocationError('Location permission is required for accurate prayer times.');
+          setLocationError(t('prayerTimes.locationRequired'));
           setIsLoading(false);
           return;
         }
@@ -76,7 +79,7 @@ export default function PrayerTimesScreen() {
         else setCurrentPrayer('Isha');
 
       } catch (err) {
-        setLocationError('Unable to fetch location. Please try again.');
+        setLocationError(t('prayerTimes.locationError'));
       } finally {
         setIsLoading(false);
       }
@@ -91,11 +94,13 @@ export default function PrayerTimesScreen() {
         const json = await res.json();
         if (json.code === 200) {
           const h = json.data.hijri;
-          setHijriDate(`${h.day} ${h.month.en} ${h.year} AH`);
+          const monthName = i18n.language === 'ar' ? h.month.ar : h.month.en;
+          setHijriDate(`${h.day} ${monthName} ${h.year} ${i18n.language === 'ar' ? 'هـ' : 'AH'}`);
         }
       } catch {
         // Fallback to Intl if API fails
-        setHijriDate(new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+        const locale = i18n.language === 'ar' ? 'ar-u-ca-islamic-umalqura' : 'en-u-ca-islamic-umalqura';
+        setHijriDate(new Intl.DateTimeFormat(locale, {
           day: 'numeric', month: 'long', year: 'numeric'
         }).format(new Date()));
       }
@@ -107,7 +112,7 @@ export default function PrayerTimesScreen() {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
-  const gregorianDate = new Intl.DateTimeFormat('en-US', {
+  const gregorianDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -124,9 +129,9 @@ export default function PrayerTimesScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Prayer Times</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('prayerTimes.title')}</Text>
         <View className="w-10" />
       </View>
 
@@ -143,7 +148,7 @@ export default function PrayerTimesScreen() {
           <View className="p-6 items-center">
             <View className="flex-row items-center mb-2">
               <Ionicons name="location" size={14} color="#fbbf24" style={{ marginRight: 4 }} />
-              <Text className="text-amber-400 text-sm font-bold">{cityName || 'Loading...'}</Text>
+              <Text className="text-amber-400 text-sm font-bold">{cityName || t('loading')}</Text>
             </View>
             <Text className="text-emerald-50 text-lg font-bold mb-1">{hijriDate}</Text>
             <Text className="text-emerald-300/70 text-sm font-medium">{gregorianDate}</Text>
@@ -153,7 +158,7 @@ export default function PrayerTimesScreen() {
         {isLoading ? (
           <View className="items-center py-16">
             <ActivityIndicator size="large" color="#fbbf24" />
-            <Text className="text-emerald-300 mt-4 font-medium">Calculating prayer times...</Text>
+            <Text className="text-emerald-300 mt-4 font-medium">{t('prayerTimes.calculating')}</Text>
           </View>
         ) : locationError ? (
           <View className="items-center py-16 px-4">
@@ -194,19 +199,23 @@ export default function PrayerTimesScreen() {
                     </View>
                     <View className="flex-1">
                       <View className="flex-row items-center">
-                        <Text className={`font-bold text-lg ${isCurrent ? 'text-amber-400' : 'text-emerald-50'}`}>{prayer.name}</Text>
+                        <Text className={`font-bold text-lg ${isCurrent ? 'text-amber-400' : 'text-emerald-50'}`}>
+                          {i18n.language === 'ar' ? prayer.arabic : prayer.name}
+                        </Text>
                         {isCurrent && (
                           <View className="ml-2 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">
-                            <Text className="text-amber-400 text-[10px] font-bold uppercase">Current</Text>
+                            <Text className="text-amber-400 text-[10px] font-bold uppercase">{t('prayerTimes.current')}</Text>
                           </View>
                         )}
                         {isSunrise && (
                           <View className="ml-2 bg-emerald-800/60 px-2 py-0.5 rounded-full border border-emerald-700/50">
-                            <Text className="text-emerald-400 text-[10px] font-bold uppercase">No Prayer</Text>
+                            <Text className="text-emerald-400 text-[10px] font-bold uppercase">{t('prayerTimes.noPrayer')}</Text>
                           </View>
                         )}
                       </View>
-                      <Text className="text-emerald-400/60 text-xs font-medium mt-0.5">{prayer.arabic}</Text>
+                      {i18n.language !== 'ar' && (
+                        <Text className="text-emerald-400/60 text-xs font-medium mt-0.5">{prayer.arabic}</Text>
+                      )}
                     </View>
                     <Text className={`text-2xl font-extrabold tracking-tight ${isCurrent ? 'text-amber-400' : 'text-emerald-100'}`}>
                       {formatTime(prayer.time)}
@@ -218,7 +227,7 @@ export default function PrayerTimesScreen() {
 
             {/* Calculation Method */}
             <View className="mt-4 items-center">
-              <Text className="text-emerald-500/50 text-xs font-medium">Calculation: {CALC_METHOD_LABELS[calcMethod]}</Text>
+              <Text className="text-emerald-500/50 text-xs font-medium">{t('prayerTimes.calculation')}: {CALC_METHOD_LABELS[calcMethod]}</Text>
             </View>
           </View>
         )}

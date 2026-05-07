@@ -5,23 +5,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48 - 16) / 2; // 2 columns, 24px padding sides, 16px gap
 
-// Mock Data for a few names
-const namesData = [
-  { id: '1', arabic: 'الرَّحْمَنُ', transliteration: 'Ar-Rahman', meaning: 'The Beneficent', benefit: 'Reciting this 100 times after Fard prayers removes hard-heartedness.' },
-  { id: '2', arabic: 'الرَّحِيمُ', transliteration: 'Ar-Raheem', meaning: 'The Merciful', benefit: 'Reciting this 100 times protects from all worldly calamities.' },
-  { id: '3', arabic: 'الْمَلِكُ', transliteration: 'Al-Malik', meaning: 'The Eternal Lord', benefit: 'Reciting this frequently grants financial independence.' },
-  { id: '4', arabic: 'الْقُدُّوسُ', transliteration: 'Al-Quddus', meaning: 'The Most Sacred', benefit: 'Reciting this 100 times every day frees the heart from anxiety.' },
-  { id: '5', arabic: 'السَّلَامُ', transliteration: 'As-Salam', meaning: 'The Embodiment of Peace', benefit: 'Reciting this 160 times to a sick person helps them recover.' },
-  { id: '6', arabic: 'الْمُؤْمِنُ', transliteration: 'Al-Mu\'min', meaning: 'The Infuser of Faith', benefit: 'Reciting this 636 times grants protection from danger.' },
-  { id: '7', arabic: 'الْمُهَيْمِنُ', transliteration: 'Al-Muhaymin', meaning: 'The Preserver of Safety', benefit: 'Reciting this 115 times purifies the soul.' },
-  { id: '8', arabic: 'الْعَزِيزُ', transliteration: 'Al-Aziz', meaning: 'The Mighty One', benefit: 'Reciting this 41 times for 40 days grants independence of need from others.' },
-];
+const rawAsmaData = require('../data/asmaulhusna.json');
+const namesData = rawAsmaData.data.map((item: any) => ({
+  id: item.number.toString(),
+  arabic: item.name,
+  transliteration: item.transliteration,
+  meaningEn: item.en.meaning,
+  // we will map the rest dynamically in the component to support translation
+}));
 
-const FlipCard = ({ item }: { item: typeof namesData[0] }) => {
+const FlipCard = ({ item, t, currentLang }: { item: typeof namesData[0], t: any, currentLang: string }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const flipAnim = useRef(new Animated.Value(0)).current;
 
@@ -86,9 +85,20 @@ const FlipCard = ({ item }: { item: typeof namesData[0] }) => {
         >
           <LinearGradient colors={['#0f766e', '#042f2e']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
           <View className="flex-1 p-4 justify-center">
-            <Text className="text-amber-300 font-extrabold text-sm uppercase tracking-widest mb-1 text-center">{item.meaning}</Text>
+            {currentLang !== 'ar' && (
+              <Text className="text-amber-300 font-extrabold text-sm uppercase tracking-widest mb-1 text-center">{item.meaningEn}</Text>
+            )}
             <View className="w-8 h-px bg-emerald-700/50 my-2 self-center" />
-            <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">{item.benefit}</Text>
+            
+            {currentLang !== 'ar' ? (
+              <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">
+                {t('namesOfAllah.benefitPrefix')} <Text className="text-amber-400 font-bold">{item.transliteration}</Text> {t('namesOfAllah.benefitSuffix')} <Text className="font-bold">{item.meaningEn}</Text>.
+              </Text>
+            ) : (
+              <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">
+                {t('namesOfAllah.benefitPrefix')} <Text className="text-amber-400 font-bold">{item.arabic}</Text> {t('namesOfAllah.benefitSuffix')} <Text className="font-bold">{item.arabic}</Text>.
+              </Text>
+            )}
           </View>
         </Animated.View>
       </View>
@@ -98,6 +108,7 @@ const FlipCard = ({ item }: { item: typeof namesData[0] }) => {
 
 export default function NamesOfAllahScreen() {
   const navigation = useNavigation<any>();
+  const { t, i18n } = useTranslation();
 
   return (
     <View className="flex-1 bg-emerald-950">
@@ -109,11 +120,11 @@ export default function NamesOfAllahScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50 backdrop-blur-md"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <View className="items-center">
-          <Text className="text-emerald-50 text-lg font-bold tracking-wide">Asma-ul-Husna</Text>
-          <Text className="text-emerald-400 text-xs font-medium">The 99 Beautiful Names</Text>
+          <Text className="text-emerald-50 text-lg font-bold tracking-wide">{t('namesOfAllah.title')}</Text>
+          <Text className="text-emerald-400 text-xs font-medium">{t('namesOfAllah.subtitle')}</Text>
         </View>
         <View className="w-10" />
       </View>
@@ -125,14 +136,14 @@ export default function NamesOfAllahScreen() {
         contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => <FlipCard item={item} />}
+        renderItem={({ item }) => <FlipCard item={item} t={t} currentLang={i18n.language} />}
         ListHeaderComponent={() => (
           <View className="mb-8 items-center bg-emerald-900/40 p-6 rounded-3xl border border-emerald-800/50">
             <Ionicons name="information-circle-outline" size={24} color="#fbbf24" style={{ marginBottom: 8 }} />
             <Text className="text-emerald-100 text-center text-sm font-medium leading-relaxed mt-2">
-              "And to Allah belong the best names, so invoke Him by them." (Quran 7:180)
+              {t('namesOfAllah.quranVerse')}
             </Text>
-            <Text className="text-emerald-400/80 text-xs text-center mt-4 uppercase tracking-widest font-bold">Tap a card to flip</Text>
+            <Text className="text-emerald-400/80 text-xs text-center mt-4 uppercase tracking-widest font-bold">{t('namesOfAllah.tapToFlip')}</Text>
           </View>
         )}
       />

@@ -5,6 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
+
 interface Message {
   id: string;
   text: string;
@@ -12,23 +15,17 @@ interface Message {
   timestamp: Date;
 }
 
-const coachResponses = [
-  "My dear child, remember that the Prophet ﷺ said: \"The most beloved deeds to Allah are those done consistently, even if they are small.\" Start with what feels manageable today.",
-  "SubhanAllah, you are asking the right questions. The fact that you are reflecting shows your heart is alive. Allah says: \"Verily, in the remembrance of Allah do hearts find rest.\" (13:28)",
-  "I am proud of you for seeking guidance. The scholars say that the journey of a thousand miles begins with a single step. What small step can you take today toward your goal?",
-  "Remember, my child, that Allah does not burden a soul beyond what it can bear (2:286). Whatever you are facing, He has equipped you with the strength to overcome it.",
-  "The companions of the Prophet ﷺ went through immense trials, yet they never lost hope in Allah's mercy. Your struggle is a sign of your faith — the one who is tested is the one who is loved.",
-  "Let me share something beautiful with you: Umar ibn Al-Khattab (RA) said, \"Take account of yourselves before you are taken to account.\" This is the essence of Muhasabah — self-reflection.",
-];
-
 export default function AICoachScreen() {
   const navigation = useNavigation();
+  const { t, i18n } = useTranslation();
   const scrollViewRef = useRef<ScrollView>(null);
   const [inputText, setInputText] = useState('');
+  
+  // Use state with a function initializer to ensure t() is ready
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
-      text: "As-salamu alaykum, my dear child. I am your Murshid — your spiritual companion on this blessed journey. Tell me, what is on your heart today?",
+      text: t('aiCoach.welcomeMessage'),
       sender: 'coach',
       timestamp: new Date(),
     },
@@ -76,6 +73,7 @@ export default function AICoachScreen() {
     // Simulate AI response delay
     const delay = 1500 + Math.random() * 1500;
     setTimeout(() => {
+      const coachResponses = t('aiCoach.responses', { returnObjects: true }) as string[];
       const responseText = coachResponses[Math.floor(Math.random() * coachResponses.length)];
       const coachMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -98,7 +96,7 @@ export default function AICoachScreen() {
             <View className="w-6 h-6 rounded-full bg-amber-500/20 items-center justify-center mr-2 border border-amber-500/30">
               <Ionicons name="sparkles" size={12} color="#fbbf24" />
             </View>
-            <Text className="text-amber-400 text-xs font-bold tracking-wider">AL-MURSHID</Text>
+            <Text className="text-amber-400 text-xs font-bold tracking-wider">{t('aiCoach.botName')}</Text>
           </View>
         )}
         <View className={`max-w-[85%] rounded-3xl px-5 py-4 shadow-lg ${isCoach ? 'rounded-tl-md' : 'rounded-tr-md'}`}>
@@ -138,11 +136,11 @@ export default function AICoachScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <View className="items-center">
-          <Text className="text-emerald-50 text-lg font-bold tracking-wide">Al-Murshid</Text>
-          <Text className="text-emerald-400 text-xs font-medium">Your Spiritual Mentor</Text>
+          <Text className="text-emerald-50 text-lg font-bold tracking-wide">{t('aiCoach.title')}</Text>
+          <Text className="text-emerald-400 text-xs font-medium">{t('aiCoach.subtitle')}</Text>
         </View>
         <TouchableOpacity
           onPress={() => navigation.navigate('Muhasabah' as never)}
@@ -169,7 +167,7 @@ export default function AICoachScreen() {
               <View className="w-6 h-6 rounded-full bg-amber-500/20 items-center justify-center mr-2 border border-amber-500/30">
                 <Ionicons name="sparkles" size={12} color="#fbbf24" />
               </View>
-              <Text className="text-amber-400 text-xs font-bold tracking-wider">AL-MURSHID</Text>
+              <Text className="text-amber-400 text-xs font-bold tracking-wider">{t('aiCoach.botName')}</Text>
             </View>
             <View className="bg-emerald-900/60 rounded-3xl rounded-tl-md px-6 py-4 border border-emerald-800/50 flex-row items-center">
               {[typingDot1, typingDot2, typingDot3].map((dot, i) => (
@@ -194,11 +192,11 @@ export default function AICoachScreen() {
             <TextInput
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Share what's on your heart..."
+              placeholder={t('aiCoach.placeholder')}
               placeholderTextColor="rgba(110, 231, 183, 0.35)"
               multiline
               className="flex-1 text-emerald-50 text-base font-medium"
-              style={{ maxHeight: 100 }}
+              style={{ maxHeight: 100, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
               onSubmitEditing={sendMessage}
             />
           </View>
@@ -211,7 +209,7 @@ export default function AICoachScreen() {
               style={StyleSheet.absoluteFillObject}
             />
             <View className="w-12 h-12 items-center justify-center">
-              <Ionicons name="send" size={20} color="#022c22" />
+              <Ionicons name={flipIcon('send') as any} size={20} color="#022c22" style={{ transform: [{ scaleX: i18n.language === 'ar' ? -1 : 1 }] }} />
             </View>
           </TouchableOpacity>
         </View>

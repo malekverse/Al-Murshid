@@ -5,11 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 const { width } = Dimensions.get('window');
 
 export default function DigitalTasbihScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const [count, setCount] = useState(0);
   const [target, setTarget] = useState(33);
 
@@ -90,9 +93,9 @@ export default function DigitalTasbihScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
-        <Text className="text-emerald-50 text-xl font-bold tracking-wide">Digital Tasbih</Text>
+        <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('tasbih.title')}</Text>
         <View className="w-10" />
       </View>
 
@@ -105,7 +108,7 @@ export default function DigitalTasbihScreen() {
             className="bg-emerald-900/60 px-5 py-3 rounded-2xl border border-emerald-800/60 shadow-lg items-center flex-row"
           >
             <Ionicons name="refresh" size={18} color="#9ca3af" style={{ marginRight: 6 }} />
-            <Text className="text-gray-300 font-bold tracking-wider">Reset</Text>
+            <Text className="text-gray-300 font-bold tracking-wider">{t('tasbih.reset')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -113,7 +116,7 @@ export default function DigitalTasbihScreen() {
             className="bg-emerald-900/60 px-5 py-3 rounded-2xl border border-emerald-800/60 shadow-lg items-center flex-row"
           >
             <Ionicons name="flag" size={18} color="#fbbf24" style={{ marginRight: 6 }} />
-            <Text className="text-amber-400 font-bold tracking-wider">Target: {target}</Text>
+            <Text className="text-amber-400 font-bold tracking-wider">{t('tasbih.target')}: {target}</Text>
           </TouchableOpacity>
         </View>
 
@@ -123,7 +126,7 @@ export default function DigitalTasbihScreen() {
             {count}
           </Text>
           <Text className="text-emerald-300 text-lg font-medium mt-2">
-            SubhanAllah
+            {t('tasbih.subhanAllah')}
           </Text>
         </View>
 
@@ -162,7 +165,7 @@ export default function DigitalTasbihScreen() {
             <View className="absolute inset-0 rounded-full border border-emerald-400/30 m-1" />
 
             <Ionicons name="finger-print-outline" size={64} color="rgba(251, 191, 36, 0.4)" />
-            <Text className="absolute bottom-10 text-emerald-100/50 text-sm font-bold uppercase tracking-widest">Tap</Text>
+            <Text className="absolute bottom-10 text-emerald-100/50 text-sm font-bold uppercase tracking-widest">{t('tasbih.tap')}</Text>
           </Animated.View>
         </TouchableOpacity>
 

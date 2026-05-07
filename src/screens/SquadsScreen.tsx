@@ -4,15 +4,18 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 export default function SquadsScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   return (
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
       <View className="px-6 pt-16 pb-4">
-        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">The Sabiqoon</Text>
-        <Text className="text-emerald-200 text-sm mt-1 font-medium">Strive together in faith</Text>
+        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('ummah.title')}</Text>
+        <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('ummah.subtitle')}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
@@ -31,7 +34,7 @@ export default function SquadsScreen() {
                 <Text className="text-white text-xl font-bold tracking-wide">Fajr Knights</Text>
               </View>
               <View className="bg-amber-500/20 px-3 py-1.5 rounded-full border border-amber-500/50">
-                <Text className="text-amber-400 text-xs font-bold uppercase tracking-wider">x1.5 Barakah</Text>
+                <Text className="text-amber-400 text-xs font-bold uppercase tracking-wider">{t('ummah.barakah')}</Text>
               </View>
             </View>
             
@@ -51,12 +54,12 @@ export default function SquadsScreen() {
                     </View>
                     {index === 0 && (
                       <View className="bg-emerald-800/80 px-2 py-1 rounded-md border border-emerald-600/50">
-                        <Text className="text-emerald-200 text-xs font-semibold">Awake</Text>
+                        <Text className="text-emerald-200 text-xs font-semibold">{t('ummah.awake')}</Text>
                       </View>
                     )}
                     {index === 1 && (
                       <View className="bg-red-900/50 px-2 py-1 rounded-md border border-red-800/50">
-                        <Text className="text-red-200 text-xs font-semibold">Sleeping</Text>
+                        <Text className="text-red-200 text-xs font-semibold">{t('ummah.sleeping')}</Text>
                       </View>
                     )}
                   </View>
@@ -73,7 +76,7 @@ export default function SquadsScreen() {
               />
               <View className="py-3 items-center flex-row justify-center">
                 <Ionicons name="notifications" size={20} color="#022c22" style={{ marginRight: 8 }} />
-                <Text className="text-emerald-950 font-bold text-base tracking-wide">Nudge Sleeping Squad</Text>
+                <Text className="text-emerald-950 font-bold text-base tracking-wide">{t('ummah.nudgeSquad')}</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -88,8 +91,8 @@ export default function SquadsScreen() {
             <View className="w-12 h-12 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
               <Ionicons name="camera" size={24} color="#fbbf24" />
             </View>
-            <Text className="text-emerald-50 font-bold text-center">Proof of Salah</Text>
-            <Text className="text-emerald-300 text-xs text-center mt-1">Masjid Check-in</Text>
+            <Text className="text-emerald-50 font-bold text-center">{t('ummah.proofOfSalah')}</Text>
+            <Text className="text-emerald-300 text-xs text-center mt-1">{t('ummah.masjidCheckin')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -99,8 +102,8 @@ export default function SquadsScreen() {
             <View className="w-12 h-12 rounded-full bg-teal-500/20 items-center justify-center mb-3 border border-teal-500/30">
               <Ionicons name="map" size={24} color="#6ee7b7" />
             </View>
-            <Text className="text-teal-50 font-bold text-center">City Heatmap</Text>
-            <Text className="text-teal-300 text-xs text-center mt-1">Live Sabiqoon</Text>
+            <Text className="text-teal-50 font-bold text-center">{t('ummah.cityHeatmap')}</Text>
+            <Text className="text-teal-300 text-xs text-center mt-1">{t('ummah.liveSabiqoon')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -114,8 +117,8 @@ export default function SquadsScreen() {
           />
           <View className="p-6 flex-row justify-between items-center">
             <View className="flex-1 pr-6">
-              <Text className="text-teal-50 text-xl font-bold mb-2 tracking-wide">Knowledge Duel</Text>
-              <Text className="text-teal-200 text-sm leading-relaxed">Challenge friends to a 60-second Seerah quiz to earn Noor Points.</Text>
+              <Text className="text-teal-50 text-xl font-bold mb-2 tracking-wide">{t('ummah.knowledgeDuel')}</Text>
+              <Text className="text-teal-200 text-sm leading-relaxed">{t('ummah.knowledgeDuelDesc')}</Text>
             </View>
             <TouchableOpacity 
               onPress={() => navigation.navigate('KnowledgeDuel')}
@@ -143,13 +146,13 @@ export default function SquadsScreen() {
           <View className="p-6">
             <View className="flex-row items-center mb-6">
               <Ionicons name="podium" size={22} color="#fbbf24" style={{ marginRight: 8 }} />
-              <Text className="text-white text-xl font-bold tracking-wide">Community Ranks</Text>
+              <Text className="text-white text-xl font-bold tracking-wide">{t('ummah.communityRanks')}</Text>
             </View>
             
             <View className="flex-row justify-between items-center bg-emerald-800/60 p-4 rounded-2xl mb-3 border border-emerald-700/50 shadow-md">
               <View className="flex-row items-center">
                 <Text className="text-emerald-100 font-bold text-lg">1. Al-Muqeem</Text>
-                <Text className="text-emerald-300 text-sm ml-2 font-medium">(The Constant)</Text>
+                <Text className="text-emerald-300 text-sm ml-2 font-medium">{t('ummah.theConstant')}</Text>
               </View>
               <Ionicons name="trophy" size={24} color="#fbbf24" />
             </View>
@@ -157,7 +160,7 @@ export default function SquadsScreen() {
             <View className="flex-row justify-between items-center bg-emerald-800/30 p-4 rounded-2xl border border-emerald-800/50">
               <View className="flex-row items-center">
                 <Text className="text-emerald-200 text-base font-semibold">2. Al-Talib</Text>
-                <Text className="text-emerald-400 text-xs ml-2">(The Seeker) - You</Text>
+                <Text className="text-emerald-400 text-xs ml-2">{t('ummah.theSeeker')}</Text>
               </View>
               <Ionicons name="star" size={20} color="#6ee7b7" />
             </View>

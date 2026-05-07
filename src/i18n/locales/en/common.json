@@ -1,4 +1,318 @@
 {
-  "greeting": "Welcome to Al-Murshid",
-  "subtitle": "The Spiritual Compass"
+  "greeting": "As-salamu alaykum",
+  "appName": "Al-Murshid",
+  "subtitle": "The Spiritual Compass",
+  "chooseLanguage": "Choose Your Language",
+  "chooseLanguageSubtitle": "Select your preferred language to continue",
+  "continueBtn": "Continue",
+  "loading": "Loading...",
+  "locatingYou": "Locating you...",
+
+  "onboarding": {
+    "welcome": "Al-Murshid",
+    "welcomeSubtitle": "Your 1:1 spiritual mentor to guide you on the path of the Sabiqoon.",
+    "enterMithaq": "Enter the Mithaq",
+    "mentorQuestion": "\"Tell me, my child... what is your biggest struggle today?\"",
+    "struggle1": "Consistency in Prayer",
+    "struggle2": "Lack of Knowledge",
+    "struggle3": "Finding Focus & Peace",
+    "mentorEncouragement": "\"We all stumble. It is not the falling that matters, but the rising. Let us take the first step together.\"",
+    "beginJourney": "Begin Journey"
+  },
+
+  "tabs": {
+    "home": "Home",
+    "quran": "Quran",
+    "azkar": "Azkar",
+    "qibla": "Qibla",
+    "ummah": "Ummah"
+  },
+
+  "home": {
+    "spiritualEnergy": "Spiritual Energy",
+    "quickTools": "Quick Tools",
+    "zakat": "Zakat",
+    "zakatSubtitle": "Calculate easily",
+    "hijriCalendar": "Hijri Calendar",
+    "hijriCalendarSubtitle": "Islamic events",
+    "nearby": "Nearby",
+    "nearbySubtitle": "Mosques & Halal",
+    "sleepSunnah": "Sleep Sunnah",
+    "sleepSunnahSubtitle": "Rest & Qailulah",
+    "nextPrayer": "Next Prayer",
+    "verseOfTheHour": "Verse of the Hour",
+    "alMurshidSays": "Al-Murshid Says...",
+    "logCurrentPrayer": "Log Current Prayer",
+    "ishaTomorrow": "Isha (Tomorrow)",
+    "locationDenied": "Location permission denied. Tap to set manually.",
+    "locationError": "Unable to fetch location. Tap to retry.",
+    "verseAr": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    "verseEn": "\"Indeed, with hardship [will be] ease.\" (94:6)"
+  },
+
+  "azkar": {
+    "title": "Dua & Azkar",
+    "quote": "\"Remember Me, and I will remember you.\" (Quran 2:152)",
+    "digitalTasbih": "Digital Tasbih",
+    "smartCounter": "Smart Counter",
+    "tasbihDescription": "Keep track of your daily Dhikr with haptic feedback and target goals.",
+    "openTasbih": "Open Tasbih",
+    "asmaulHusna": "Asma-ul-Husna",
+    "asmaulHusnaSubtitle": "Explore the 99 Beautiful Names",
+    "categories": "Categories",
+    "morningAdhkar": "Morning Adhkar",
+    "eveningAdhkar": "Evening Adhkar",
+    "afterPrayer": "After Prayer",
+    "beforeSleep": "Before Sleep",
+    "contextualDuas": "Contextual Duas",
+    "afterFajr": "After Fajr",
+    "afterAsr": "After Asr",
+    "postFard": "Post-Fard",
+    "night": "Night",
+    "dailyLife": "Daily Life",
+    "duas": "Duas"
+  },
+
+  "adhkarCategory": {
+    "readCarefully": "Read carefully with presence of heart. Tap an Adhkar to decrease its counter.",
+    "noAdhkar": "No adhkars found for this category.",
+    "dhikr": "Dhikr",
+    "completed": "Completed",
+    "repeat": "Repeat"
+  },
+
+  "smartAdhkar": {
+    "title": "Smart Engine",
+    "contextualAdhkar": "Contextual Adhkar",
+    "description": "Al-Murshid detects your environment to suggest the exact words of the Prophet ﷺ for your current moment.",
+    "suggestedForYou": "Suggested for You",
+    "analyzing": "Analyzing environment...",
+    "detecting": "Detecting..."
+  },
+
+  "namesOfAllah": {
+    "title": "Asma-ul-Husna",
+    "subtitle": "The 99 Beautiful Names",
+    "quranVerse": "\"And to Allah belong the best names, so invoke Him by them.\" (Quran 7:180)",
+    "tapToFlip": "Tap a card to flip",
+    "benefitPrefix": "Reflecting upon the name",
+    "benefitSuffix": "draws the heart closer to Allah, acknowledging Him as"
+  },
+
+  "tasbih": {
+    "title": "Digital Tasbih",
+    "reset": "Reset",
+    "target": "Target",
+    "tap": "Tap",
+    "subhanAllah": "SubhanAllah"
+  },
+
+  "qibla": {
+    "title": "Qibla Compass",
+    "bearing": "Qibla bearing: {{degrees}}° from True North",
+    "aligned": "ALIGNED ✓",
+    "facingKaaba": "You are facing the Kaaba",
+    "rotateDevice": "Rotate your device until the\narrow points up",
+    "deviceHeading": "Device heading: {{degrees}}°",
+    "locationPermission": "Location permission is required for the Qibla compass.",
+    "sensorError": "Unable to access location or compass sensor."
+  },
+
+  "prayerTimes": {
+    "title": "Prayer Times",
+    "calculating": "Calculating prayer times...",
+    "locationRequired": "Location permission is required for accurate prayer times.",
+    "locationError": "Unable to fetch location. Please try again.",
+    "current": "Current",
+    "noPrayer": "No Prayer",
+    "calculation": "Calculation",
+    "names": {
+      "fajr": "Fajr",
+      "sunrise": "Sunrise",
+      "dhuhr": "Dhuhr",
+      "asr": "Asr",
+      "maghrib": "Maghrib",
+      "isha": "Isha"
+    }
+  },
+
+  "quran": {
+    "title": "The Noble Quran",
+    "subtitle": "114 Surahs • 6,236 Ayat",
+    "searchPlaceholder": "Search by name, number, or meaning…",
+    "loadingQuran": "Loading Quran data…",
+    "loadingSurah": "Loading Surah…",
+    "loadingPage": "Loading page…",
+    "mushaf": "Mushaf",
+    "mushafDesc": "Page-by-page\nlike the book",
+    "khatmah": "Khatmah",
+    "khatmahDesc": "Track reading\nprogress",
+    "sourceAttribution": "Arabic: Uthmani Mushaf (King Fahd Complex) • Translation: Saheeh International",
+    "page": "Page",
+    "of": "of",
+    "juz": "Juz",
+    "ayat": "ayat",
+    "bismillahTranslation": "In the name of Allah, the Entirely Merciful, the Especially Merciful",
+    "uthmaniSaheeh": "Uthmani • Saheeh Int'l"
+  },
+
+  "ummah": {
+    "title": "The Sabiqoon",
+    "subtitle": "Strive together in faith",
+    "barakah": "x1.5 Barakah",
+    "awake": "Awake",
+    "sleeping": "Sleeping",
+    "nudgeSquad": "Nudge Sleeping Squad",
+    "proofOfSalah": "Proof of Salah",
+    "masjidCheckin": "Masjid Check-in",
+    "cityHeatmap": "City Heatmap",
+    "liveSabiqoon": "Live Sabiqoon",
+    "knowledgeDuel": "Knowledge Duel",
+    "knowledgeDuelDesc": "Challenge friends to a 60-second Seerah quiz to earn Noor Points.",
+    "communityRanks": "Community Ranks",
+    "theConstant": "(The Constant)",
+    "theSeeker": "(The Seeker) - You"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "prayerSettings": "Prayer Settings",
+    "prayerTimeAlerts": "Prayer Time Alerts",
+    "prayerTimeAlertsSubtitle": "Get notified before each prayer",
+    "calculationMethod": "Calculation Method",
+    "calculationMethodSubtitle": "Muslim World League",
+    "appPreferences": "App Preferences",
+    "notifications": "Notifications",
+    "notificationsSubtitle": "AI insights & reminders",
+    "darkMode": "Dark Mode",
+    "darkModeSubtitle": "Currently active",
+    "hapticFeedback": "Haptic Feedback",
+    "hapticFeedbackSubtitle": "Vibrations on interactions",
+    "account": "Account",
+    "language": "Language",
+    "languageEnglish": "English",
+    "languageArabic": "العربية",
+    "privacyPolicy": "Privacy Policy",
+    "privacyPolicySubtitle": "Your data stays local",
+    "aboutAlMurshid": "About Al-Murshid",
+    "version": "Version 1.0.0",
+    "dangerZone": "Danger Zone",
+    "clearAllData": "Clear All Data",
+    "profileName": "Al-Talib",
+    "profileLevel": "Level 2 — The Seeker",
+    "activeStreak": "Active streak",
+    "madeWith": "Made with Taqwa ♥",
+    "restartRequired": "The app needs to restart to apply the new language.",
+    "restart": "Restart Now",
+    "cancel": "Cancel"
+  },
+
+  "aiCoach": {
+    "title": "Al-Murshid",
+    "subtitle": "Your Spiritual Mentor",
+    "botName": "AL-MURSHID",
+    "welcomeMessage": "As-salamu alaykum, my dear child. I am your Murshid — your spiritual companion on this blessed journey. Tell me, what is on your heart today?",
+    "placeholder": "Share what's on your heart...",
+    "responses": [
+      "My dear child, remember that the Prophet ﷺ said: \"The most beloved deeds to Allah are those done consistently, even if they are small.\" Start with what feels manageable today.",
+      "SubhanAllah, you are asking the right questions. The fact that you are reflecting shows your heart is alive. Allah says: \"Verily, in the remembrance of Allah do hearts find rest.\" (13:28)",
+      "I am proud of you for seeking guidance. The scholars say that the journey of a thousand miles begins with a single step. What small step can you take today toward your goal?",
+      "Remember, my child, that Allah does not burden a soul beyond what it can bear (2:286). Whatever you are facing, He has equipped you with the strength to overcome it.",
+      "The companions of the Prophet ﷺ went through immense trials, yet they never lost hope in Allah's mercy. Your struggle is a sign of your faith — the one who is tested is the one who is loved.",
+      "Let me share something beautiful with you: Umar ibn Al-Khattab (RA) said, \"Take account of yourselves before you are taken to account.\" This is the essence of Muhasabah — self-reflection."
+    ]
+  },
+
+  "zakat": {
+    "title": "Zakat Calculator",
+    "subtitle": "Purify Your Wealth",
+    "verse": "\"And establish prayer and give Zakat, and whatever good you put forward for yourselves - you will find it with Allah.\" (2:110)",
+    "assets": "Eligible Assets",
+    "cash": "Cash at Home & Bank",
+    "gold": "Value of Gold",
+    "silver": "Value of Silver",
+    "investments": "Investments & Shares",
+    "liabilities": "Liabilities & Debts",
+    "owe": "Money you owe",
+    "netAssets": "Total Net Assets",
+    "rate": "Zakat Rate",
+    "due": "Zakat Due",
+    "donate": "Donate Zakat"
+  },
+
+  "calendar": {
+    "title": "Hijri Calendar",
+    "loading": "Loading calendar…",
+    "events": "This Month's Events",
+    "source": "Source: Aladhan API • Umm al-Qura"
+  },
+
+  "locator": {
+    "title": "Nearby",
+    "radius": "Search radius",
+    "loading": "Searching OpenStreetMap…",
+    "permRequired": "Location permission is required.",
+    "error": "Unable to access location services.",
+    "noMosques": "No mosques found",
+    "noHalal": "No halal restaurants found",
+    "expandRadius": "Try expanding your search radius.",
+    "results": "{{count}} results · sorted by distance",
+    "mosques": "Mosques",
+    "halal": "Halal Food",
+    "mosquesMap": "Mosques Map",
+    "halalMap": "Halal Map",
+    "youAreHere": "You are here"
+  },
+
+  "sleep": {
+    "title": "Sunnah Sleep",
+    "log": "Log Last Night's Sleep",
+    "sync": "Sync",
+    "hours": "Hours",
+    "deficit": "Sleep Deficit Detected",
+    "deficitDesc": "You slept less than 7 hours. The Prophet ﷺ practiced \"Qailulah\" (a midday nap) to regain strength for night worship.",
+    "healthy": "Alhamdulillah, you achieved a healthy amount of rest.",
+    "timer": "Sunnah Qailulah Timer",
+    "pause": "Pause Nap",
+    "restart": "Restart Timer",
+    "start": "Start 20m Nap",
+    "sunnahs": "Bedtime Sunnahs"
+  },
+
+  "muhasabah": {
+    "title": "Muhasabah",
+    "subtitle": "Self-Reflection",
+    "quote": "Umar (RA) said: \"Take account of yourselves before you are taken to account.\" This is your private vault — only between you and Allah.",
+    "howAreYou": "How is your soul today?",
+    "shukr": "Shukr (Gratitude)",
+    "shukrQ": "What are 3 blessings you noticed today?",
+    "shukrPh": "Alhamdulillah for...",
+    "istighfar": "Istighfar (Repentance)",
+    "istighfarQ": "What did you struggle with? There is no judgment here.",
+    "istighfarPh": "I struggled with...",
+    "niyyah": "Niyyah (Intention)",
+    "niyyahQ": "Set one spiritual goal for tomorrow.",
+    "niyyahPh": "Tomorrow, I will...",
+    "saved": "Saved to Your Vault",
+    "save": "Save Reflection",
+    "moods": {
+      "grateful": "Grateful",
+      "peaceful": "Peaceful",
+      "struggling": "Struggling",
+      "hopeful": "Hopeful",
+      "anxious": "Anxious"
+    }
+  },
+
+  "khatmah": {
+    "title": "Khatmah Planner",
+    "goal": "30-Day Goal",
+    "completed": "Completed",
+    "pagesRead": "Pages Read",
+    "daysLeft": "Days Left",
+    "pagesNeeded": "Pages / Day Needed",
+    "advice": "Pacing Advice",
+    "adviceDesc": "You are slightly behind schedule. Try reading <1>4 pages</1> after every obligatory prayer to catch up and easily hit your {{pages}} page daily goal!",
+    "log": "Log +10 Pages"
+  }
 }
