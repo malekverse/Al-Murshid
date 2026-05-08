@@ -7,6 +7,8 @@ import { cssInterop } from 'nativewind';
 import { LinearGradient } from 'expo-linear-gradient';
 import { initLanguageFromStorage } from './src/i18n';
 import i18n from './src/i18n';
+import { initDatabase } from './src/store/database';
+import ErrorBoundary from './src/components/ErrorBoundary';
 
 cssInterop(LinearGradient, {
   className: 'style',
@@ -16,10 +18,9 @@ export default function App() {
   const [langKey, setLangKey] = useState(i18n.language);
 
   useEffect(() => {
-    // Initialize language from persisted storage on startup
     initLanguageFromStorage();
+    initDatabase().catch(console.error);
 
-    // Listen for language changes to force full re-render of the tree
     const onLanguageChanged = (lng: string) => {
       setLangKey(lng);
     };
@@ -30,8 +31,10 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer key={langKey}>
-      <RootNavigator />
-    </NavigationContainer>
+    <ErrorBoundary>
+      <NavigationContainer key={langKey}>
+        <RootNavigator />
+      </NavigationContainer>
+    </ErrorBoundary>
   );
 }

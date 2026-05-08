@@ -7,6 +7,7 @@
   "continueBtn": "متابعة",
   "loading": "جارٍ التحميل...",
   "locatingYou": "جارٍ تحديد موقعك...",
+  "close": "إغلاق",
 
   "onboarding": {
     "welcome": "المُرشِد",
@@ -42,7 +43,12 @@
     "nextPrayer": "الصلاة القادمة",
     "verseOfTheHour": "آية الساعة",
     "alMurshidSays": "المُرشِد يقول...",
-    "logCurrentPrayer": "سجّل الصلاة الحالية"
+    "logCurrentPrayer": "سجّل الصلاة الحالية",
+    "ishaTomorrow": "العشاء (غداً)",
+    "locationDenied": "تم رفض إذن الموقع. اضغط لتحديد يدوياً.",
+    "locationError": "تعذر تحديد الموقع. حاول مجدداً.",
+    "verseAr": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    "verseEn": "\"Indeed, with hardship [will be] ease.\" (94:6)"
   },
 
   "azkar": {
@@ -120,7 +126,15 @@
     "locationError": "تعذر تحديد الموقع. حاول مجدداً.",
     "current": "الحالية",
     "noPrayer": "لا صلاة",
-    "calculation": "الحساب"
+    "calculation": "الحساب",
+    "names": {
+      "fajr": "الفجر",
+      "sunrise": "الشروق",
+      "dhuhr": "الظهر",
+      "asr": "العصر",
+      "maghrib": "المغرب",
+      "isha": "العشاء"
+    }
   },
 
   "quran": {
@@ -188,7 +202,13 @@
     "profileName": "الطالب",
     "profileLevel": "المستوى 2 — الباحث",
     "activeStreak": "سلسلة نشطة",
-    "madeWith": "صُنع بتقوى ♥",
+    "aiSettings": "المُرشِد الذكي",
+  "apiKeyLabel": "مفتاح OpenRouter API",
+  "apiKeyStatusSet": "مُعيّن",
+  "apiKeyStatusNotSet": "غير مُعيّن",
+  "apiKeySave": "حفظ المفتاح",
+  "apiKeySaved": "تم حفظ مفتاح API بنجاح.",
+  "madeWith": "صُنع بتقوى ♥",
     "restartRequired": "يحتاج التطبيق إلى إعادة التشغيل لتطبيق اللغة الجديدة.",
     "restart": "أعد التشغيل الآن",
     "cancel": "إلغاء"
@@ -301,5 +321,46 @@
     "advice": "نصيحة للإيقاع",
     "adviceDesc": "أنت متأخر قليلاً عن الجدول. حاول قراءة <1>4 صفحات</1> بعد كل صلاة مكتوبة للحاق بالركب وتحقيق هدفك اليومي البالغ {{pages}} صفحة بسهولة!",
     "log": "سجل قراءة +10 صفحات"
+  },
+
+  "fajrAlarm": {
+    "title": "منبه الفجر الذكي",
+    "subtitle": "محسِّن الساعة البيولوجية. نحسب جدول النوم الأمثل لتستيقظ منتعشاً للفجر.",
+    "smartWakeup": "الاستيقاظ الذكي",
+    "targetFajr": "وقت الفجر المستهدف",
+    "windDownAlert": "تنبيه التهدئة",
+    "windDownDesc": "للحصول على 7 ساعات من الراحة، كن في الفراش بحلول الساعة 9:30 مساءً.",
+    "wuduCheck": "التحقق من الوضوء بالوجه",
+    "wuduDesc": "يتطلب مسحاً بالكاميرا لوجهك المبلل لإلغاء المنبه، لضمان عدم النوم عن الفجر.",
+    "testBiometric": "اختبر الماسح البيومتري",
+    "verifyingWudu": "جاري التحقق من الوضوء...",
+    "analyzing": "تحليل رطوبة البشرة...",
+    "cancelScan": "إلغاء المسح",
+    "wuduVerified": "تم التحقق من الوضوء! ما شاء الله.",
+    "cameraPermissionRequired": "إذن الكاميرا مطلوب للتحقق من الوضوء.",
+    "cameraAccessRequired": "الوصول إلى الكاميرا مطلوب للتحقق من وضوئك."
+  },
+
+  "proofOfSalah": {
+    "cameraPermissionTitle": "إذن الكاميرا مطلوب",
+    "cameraPermissionDesc": "يتطلب إثبات الصلاة استخدام الكاميرا للتحقق من وجودك في المسجد.",
+    "grantPermission": "منح الإذن",
+    "masjidName": "مسجد النور",
+    "verifying": "جاري التحقق من الجماعة...",
+    "analyzing": "تحليل الموقع والداخل",
+    "snapPhoto": "التقط صورة سريعة لداخل المسجد",
+    "jamaahVerified": "تم التحقق من الجماعة",
+    "masjidWithPrayer": "مسجد النور • الفجر",
+    "noorPointsEarned": "نقاط النور المكتسبة",
+    "fajrChainActive": "سلسلة الفجر نشطة (مضاعف ×2)",
+    "viewHeatmap": "عرض خريطة المدينة"
+  },
+
+  "community": {
+    "heatmapTitle": "الخريطة الحرارية الروحية",
+    "activeUsers": "السابقون مستيقظون للفجر",
+    "cityLabel": "المدينة: لندن",
+    "pingSquad": "نادي الفريق",
+    "leaderboard": "لوحة المتصدرين"
   }
 }

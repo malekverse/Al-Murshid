@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Switch, Animated, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,12 +14,18 @@ export default function SettingsScreen() {
   const resetOnboarding = useAppStore((state) => state.resetOnboarding);
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
+  const sunnahStreak = useAppStore((state) => state.sunnahStreak);
+  const userLevel = useAppStore((state) => state.userLevel);
+  const openRouterApiKey = useAppStore((state) => state.openRouterApiKey);
+  const setOpenRouterApiKey = useAppStore((state) => state.setOpenRouterApiKey);
   const { t, i18n } = useTranslation();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [hapticFeedback, setHapticFeedback] = useState(true);
   const [prayerAlerts, setPrayerAlerts] = useState(true);
+  const [apiKeyInput, setApiKeyInput] = useState(openRouterApiKey);
+  const [apiKeySaved, setApiKeySaved] = useState(false);
 
   // Animations
   const sectionOpacities = useRef([new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]).current;
@@ -41,6 +47,21 @@ export default function SettingsScreen() {
     setLanguage(targetLang);
     setAppLanguage(targetLang);
   };
+
+  const handleSaveApiKey = () => {
+    setOpenRouterApiKey(apiKeyInput);
+    setApiKeySaved(true);
+    setTimeout(() => setApiKeySaved(false), 3000);
+  };
+
+  const levelTitles = [
+    { title: 'Al-Mubtadi', subtitle: 'The Beginner' },
+    { title: 'Al-Talib', subtitle: 'The Seeker' },
+    { title: 'Al-Mujtahid', subtitle: 'The Striver' },
+    { title: 'Al-Muqarab', subtitle: 'The Near One' },
+    { title: 'Al-Sabiq', subtitle: 'The Foremost' },
+  ];
+  const currentLevel = levelTitles[Math.min(userLevel - 1, levelTitles.length - 1)];
 
   const currentLanguageLabel = i18n.language === 'ar' ? t('settings.languageArabic') : t('settings.languageEnglish');
 
@@ -101,11 +122,11 @@ export default function SettingsScreen() {
               <Ionicons name="person" size={32} color="#fbbf24" />
             </View>
             <View className="flex-1">
-              <Text className="text-white text-xl font-bold">{t('settings.profileName')}</Text>
-              <Text className="text-emerald-300 text-sm font-medium">{t('settings.profileLevel')}</Text>
+              <Text className="text-white text-xl font-bold">{currentLevel.title}</Text>
+              <Text className="text-emerald-300 text-sm font-medium">{t('settings.profileLevel')} {userLevel} — {currentLevel.subtitle}</Text>
               <View className="flex-row items-center mt-1">
                 <Ionicons name="flame" size={12} color="#fbbf24" style={{ marginRight: 4 }} />
-                <Text className="text-amber-400 text-xs font-bold">{t('settings.activeStreak')}</Text>
+                <Text className="text-amber-400 text-xs font-bold">{sunnahStreak} {t('settings.activeStreak')}</Text>
               </View>
             </View>
             <Ionicons name={flipIcon('chevron-forward') as any} size={20} color="#6ee7b7" />
@@ -152,10 +173,49 @@ export default function SettingsScreen() {
                     </Wrapper>
                   );
                 })}
+
               </View>
             </View>
           </Animated.View>
         ))}
+
+        {/* AI Coach Settings */}
+        <Animated.View style={{ opacity: sectionOpacities[2], transform: [{ translateY: sectionTranslates[2] }] }}>
+          <Text className="text-emerald-50 text-xl font-bold tracking-wide mb-4">{t('settings.aiSettings')}</Text>
+          <View className="rounded-3xl shadow-xl border border-emerald-800/40 overflow-hidden mb-8">
+            <LinearGradient
+              colors={['#064e3b', '#022c22']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+            <View className="p-4">
+              <Text className="text-emerald-300 text-xs font-medium mb-2">{t('settings.apiKeyLabel')}</Text>
+              <TextInput
+                value={apiKeyInput}
+                onChangeText={setApiKeyInput}
+                placeholder="sk-or-..."
+                placeholderTextColor="#6ee7b740"
+                secureTextEntry
+                className="bg-emerald-900/60 border border-emerald-700/50 rounded-xl px-4 py-3 text-emerald-50 text-base mb-3"
+              />
+              <View className="flex-row items-center justify-between">
+                <Text className="text-emerald-400/60 text-xs">
+                  {openRouterApiKey ? t('settings.apiKeyStatusSet') : t('settings.apiKeyStatusNotSet')}
+                </Text>
+                <TouchableOpacity
+                  onPress={handleSaveApiKey}
+                  className="bg-amber-500 px-6 py-2 rounded-full active:opacity-80"
+                >
+                  <Text className="text-emerald-950 font-bold text-sm">{t('settings.apiKeySave')}</Text>
+                </TouchableOpacity>
+              </View>
+              {apiKeySaved && (
+                <Text className="text-emerald-400 text-xs mt-2">{t('settings.apiKeySaved')}</Text>
+              )}
+            </View>
+          </View>
+        </Animated.View>
 
         {/* Danger Zone */}
         <Animated.View style={{ opacity: sectionOpacities[2], transform: [{ translateY: sectionTranslates[2] }] }}>

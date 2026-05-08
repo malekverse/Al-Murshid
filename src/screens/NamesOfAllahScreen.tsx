@@ -90,15 +90,9 @@ const FlipCard = ({ item, t, currentLang }: { item: typeof namesData[0], t: any,
             )}
             <View className="w-8 h-px bg-emerald-700/50 my-2 self-center" />
             
-            {currentLang !== 'ar' ? (
-              <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">
-                {t('namesOfAllah.benefitPrefix')} <Text className="text-amber-400 font-bold">{item.transliteration}</Text> {t('namesOfAllah.benefitSuffix')} <Text className="font-bold">{item.meaningEn}</Text>.
-              </Text>
-            ) : (
-              <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">
-                {t('namesOfAllah.benefitPrefix')} <Text className="text-amber-400 font-bold">{item.arabic}</Text> {t('namesOfAllah.benefitSuffix')} <Text className="font-bold">{item.arabic}</Text>.
-              </Text>
-            )}
+            <Text className="text-teal-50 text-xs text-center leading-relaxed font-medium">
+              {t('namesOfAllah.benefitPrefix')} <Text className="text-amber-400 font-bold">{currentLang !== 'ar' ? item.transliteration : item.arabic}</Text> {t('namesOfAllah.benefitSuffix')} <Text className="font-bold">{currentLang !== 'ar' ? item.meaningEn : item.arabic}</Text>.
+            </Text>
           </View>
         </Animated.View>
       </View>

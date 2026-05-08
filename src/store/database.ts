@@ -14,6 +14,12 @@ export const initDatabase = async () => {
       encryptedPayload TEXT NOT NULL,
       aiGuidance TEXT
     );
+    CREATE TABLE IF NOT EXISTS prayer_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      prayerName TEXT NOT NULL,
+      date TEXT NOT NULL,
+      timestamp INTEGER NOT NULL
+    );
   `);
 };
 

@@ -50,7 +50,10 @@ export default function AzkarScreen() {
       <View className="px-6 pt-16 pb-4">
         <View className="flex-row justify-between items-center mb-2">
           <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('azkar.title')}</Text>
-          <TouchableOpacity className="bg-emerald-900/80 p-2 rounded-full border border-emerald-700/50">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SmartAdhkar')}
+            className="bg-emerald-900/80 p-2 rounded-full border border-emerald-700/50"
+          >
             <Ionicons name="search" size={20} color="#6ee7b7" />
           </TouchableOpacity>
         </View>

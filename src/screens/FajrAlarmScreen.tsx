@@ -4,8 +4,13 @@ import { StatusBar } from 'expo-status-bar';
 import { Camera, CameraView } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { flipIcon } from '../utils/rtl';
 
 export default function FajrAlarmScreen() {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
   const [isSmartAlarmEnabled, setIsSmartAlarmEnabled] = useState(true);
   const [wuduVerification, setWuduVerification] = useState(true);
   
@@ -43,23 +48,31 @@ export default function FajrAlarmScreen() {
           clearInterval(interval);
           setTimeout(() => {
             setIsCameraActive(false);
-            showToast("Wudu Verified! MashaAllah.");
+            showToast(t('fajrAlarm.wuduVerified'));
           }, 500);
         }
       }, 300);
     } else {
-      showToast("Camera permission is required for Wudu check.");
+      showToast(t('fajrAlarm.cameraPermissionRequired'));
     }
   };
 
-  return (
+    return (
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
-      <View className="px-6 pt-16 pb-6">
-        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">Smart Fajr Alarm</Text>
-        <Text className="text-emerald-200 text-sm mt-2 leading-relaxed font-medium">
-          Circadian Deen Optimizer. We calculate the optimal sleep schedule to wake you refreshed for Fajr.
-        </Text>
+      <View className="px-6 pt-16 pb-6 flex-row items-center">
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50 mr-4"
+        >
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
+        </TouchableOpacity>
+        <View className="flex-1">
+          <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('fajrAlarm.title')}</Text>
+          <Text className="text-emerald-200 text-sm mt-2 leading-relaxed font-medium">
+            {t('fajrAlarm.subtitle')}
+          </Text>
+        </View>
       </View>
 
       <View className="px-6 flex-1">
@@ -74,7 +87,7 @@ export default function FajrAlarmScreen() {
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center">
                 <Ionicons name="alarm" size={24} color="#fbbf24" style={{ marginRight: 8 }} />
-                <Text className="text-emerald-50 text-xl font-bold tracking-wide">Smart Wakeup</Text>
+                <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('fajrAlarm.smartWakeup')}</Text>
               </View>
               <Switch 
                 value={isSmartAlarmEnabled} 
@@ -86,7 +99,7 @@ export default function FajrAlarmScreen() {
 
             <View className="border-t border-emerald-700/50 pt-6 mb-4 flex-row justify-between items-end">
               <View>
-                <Text className="text-emerald-300 text-xs font-bold uppercase tracking-widest mb-1">Target Fajr Time</Text>
+                <Text className="text-emerald-300 text-xs font-bold uppercase tracking-widest mb-1">{t('fajrAlarm.targetFajr')}</Text>
                 <Text className="text-white text-4xl font-extrabold tracking-tighter">04:45 <Text className="text-xl text-emerald-300">AM</Text></Text>
               </View>
               <TouchableOpacity className="bg-emerald-800/80 p-3 rounded-full border border-emerald-700/50">
@@ -97,8 +110,8 @@ export default function FajrAlarmScreen() {
             <View className="bg-emerald-800/40 rounded-2xl p-4 border border-emerald-700/30 flex-row items-start">
               <Ionicons name="moon" size={18} color="#93c5fd" style={{ marginRight: 8, marginTop: 2 }} />
               <View className="flex-1">
-                <Text className="text-blue-200 font-bold mb-1">Wind Down Alert</Text>
-                <Text className="text-emerald-100/80 text-sm leading-relaxed">To get 7 hours of rest, be in bed by 9:30 PM.</Text>
+                <Text className="text-blue-200 font-bold mb-1">{t('fajrAlarm.windDownAlert')}</Text>
+                <Text className="text-emerald-100/80 text-sm leading-relaxed">{t('fajrAlarm.windDownDesc')}</Text>
               </View>
             </View>
           </View>
@@ -117,7 +130,7 @@ export default function FajrAlarmScreen() {
               <View className="flex-1 pr-4">
                 <View className="flex-row items-center mb-1">
                   <Ionicons name="scan-circle" size={24} color="#6ee7b7" style={{ marginRight: 8 }} />
-                  <Text className="text-teal-50 text-lg font-bold tracking-wide">Face-ID Wudu Check</Text>
+                  <Text className="text-teal-50 text-lg font-bold tracking-wide">{t('fajrAlarm.wuduCheck')}</Text>
                 </View>
               </View>
               <Switch 
@@ -128,7 +141,7 @@ export default function FajrAlarmScreen() {
               />
             </View>
             <Text className="text-teal-100/80 text-sm leading-relaxed mb-6 font-medium">
-              Require a camera scan of your damp face to dismiss the alarm, ensuring you don't sleep through Fajr.
+              {t('fajrAlarm.wuduDesc')}
             </Text>
             {wuduVerification && (
               <TouchableOpacity 
@@ -143,7 +156,7 @@ export default function FajrAlarmScreen() {
                 />
                 <View className="py-4 items-center flex-row justify-center">
                   <Ionicons name="camera" size={20} color="#022c22" style={{ marginRight: 8 }} />
-                  <Text className="text-emerald-950 font-extrabold text-base tracking-wide">Test Biometric Scanner</Text>
+                  <Text className="text-emerald-950 font-extrabold text-base tracking-wide">{t('fajrAlarm.testBiometric')}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -179,7 +192,7 @@ export default function FajrAlarmScreen() {
                 />
                 <View className="flex-1 items-center justify-center p-6">
                   <Text className="text-amber-400 text-3xl font-extrabold mb-12 tracking-wide text-center">
-                    Verifying Wudu...
+                    {t('fajrAlarm.verifyingWudu')}
                   </Text>
                   
                   {/* Face Scanning Frame Outline */}
@@ -203,7 +216,7 @@ export default function FajrAlarmScreen() {
                       />
                     </View>
                   </View>
-                  <Text className="text-emerald-100 font-semibold tracking-wide pointer-events-none">{scanProgress}% - Analyzing skin dampness...</Text>
+                  <Text className="text-emerald-100 font-semibold tracking-wide pointer-events-none">{t('fajrAlarm.analyzing')} {scanProgress}%</Text>
 
                   <TouchableOpacity 
                     onPress={() => setIsCameraActive(false)}
@@ -217,7 +230,7 @@ export default function FajrAlarmScreen() {
                     />
                     <View className="py-4 items-center flex-row justify-center">
                       <Ionicons name="close" size={20} color="#fca5a5" style={{ marginRight: 8 }} />
-                      <Text className="text-red-100 font-bold tracking-wide">Cancel Scan</Text>
+                      <Text className="text-red-100 font-bold tracking-wide">{t('fajrAlarm.cancelScan')}</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -226,14 +239,14 @@ export default function FajrAlarmScreen() {
           ) : (
             <View className="flex-1 items-center justify-center p-8">
               <Ionicons name="camera-reverse" size={64} color="#6ee7b7" style={{ marginBottom: 24 }} />
-              <Text className="text-white text-center text-lg mb-8 font-medium">Camera access is required to verify your Wudu.</Text>
+              <Text className="text-white text-center text-lg mb-8 font-medium">{t('fajrAlarm.cameraAccessRequired')}</Text>
               <TouchableOpacity onPress={() => setIsCameraActive(false)} className="w-full active:opacity-80 rounded-full overflow-hidden border border-emerald-600/50">
                 <LinearGradient
                   colors={['#065f46', '#047857']}
                   style={StyleSheet.absoluteFillObject}
                 />
                 <View className="py-4 items-center">
-                  <Text className="text-emerald-50 font-bold tracking-wide">Close</Text>
+                  <Text className="text-emerald-50 font-bold tracking-wide">{t('close')}</Text>
                 </View>
               </TouchableOpacity>
             </View>

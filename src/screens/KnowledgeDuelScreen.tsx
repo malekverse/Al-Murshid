@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
+import { useAppStore } from '../store';
 
 interface Question {
   id: string;
@@ -24,6 +26,8 @@ const quizData: Question[] = [
 
 export default function KnowledgeDuelScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+  const addNoorPoints = useAppStore((s) => s.addNoorPoints);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -66,6 +70,7 @@ export default function KnowledgeDuelScreen() {
 
   const handleGameOver = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    addNoorPoints(score);
     setIsGameOver(true);
     setIsPlaying(false);
   };

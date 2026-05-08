@@ -19,6 +19,12 @@ export default function ZakatCalculatorScreen() {
   const [liabilities, setLiabilities] = useState('');
 
   // Calculation Logic
+  const currencySymbol = i18n.language === 'ar' ? 'د.ع' : '$';
+  const formatCurrency = (val: number) => {
+    const locale = i18n.language === 'ar' ? 'ar-IQ' : 'en-US';
+    return val.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const parseAmount = (val: string) => parseFloat(val.replace(/,/g, '')) || 0;
   
   const totalAssets = parseAmount(cash) + parseAmount(goldValue) + parseAmount(silverValue) + parseAmount(investments);
@@ -32,7 +38,7 @@ export default function ZakatCalculatorScreen() {
         <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">{title}</Text>
       </View>
       <View className="bg-emerald-900/40 rounded-2xl border border-emerald-800/60 flex-row items-center px-4 py-1 shadow-inner">
-        <Text className="text-emerald-500 font-bold text-lg mr-2">$</Text>
+        <Text className="text-emerald-500 font-bold text-lg mr-2">{currencySymbol}</Text>
         <TextInput
           value={value}
           onChangeText={setValue}
@@ -109,7 +115,7 @@ export default function ZakatCalculatorScreen() {
           <View className="flex-row justify-between items-center mb-6">
             <View>
               <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest mb-1">{t('zakat.netAssets')}</Text>
-              <Text className="text-teal-50 text-xl font-semibold">${netAssets.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+              <Text className="text-teal-50 text-xl font-semibold">{currencySymbol}{formatCurrency(netAssets)}</Text>
             </View>
             <View className="h-10 w-px bg-teal-700/50 mx-4" />
             <View className="items-end">
@@ -124,7 +130,7 @@ export default function ZakatCalculatorScreen() {
               <Text className="text-white text-lg font-bold">{t('zakat.due')}</Text>
             </View>
             <Text className="text-amber-400 text-3xl font-extrabold tracking-tighter">
-              ${zakatDue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {currencySymbol}{formatCurrency(zakatDue)}
             </Text>
           </View>
 

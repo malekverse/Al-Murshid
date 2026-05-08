@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { useAppStore } from '../store';
 import { flipIcon } from '../utils/rtl';
 
 const { width } = Dimensions.get('window');
@@ -13,6 +14,8 @@ const { width } = Dimensions.get('window');
 export default function DigitalTasbihScreen() {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const incrementDhikr = useAppStore((s) => s.incrementDhikr);
+  const addNoorPoints = useAppStore((s) => s.addNoorPoints);
   const [count, setCount] = useState(0);
   const [target, setTarget] = useState(33);
 
@@ -40,6 +43,7 @@ export default function DigitalTasbihScreen() {
 
     const newCount = count + 1;
     setCount(newCount);
+    incrementDhikr();
 
     // Update Progress Bar
     Animated.timing(progressAnim, {
@@ -51,6 +55,7 @@ export default function DigitalTasbihScreen() {
     // Target Reached Effect
     if (newCount === target) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      addNoorPoints(target === 1000 ? 100 : target);
     }
   };
 

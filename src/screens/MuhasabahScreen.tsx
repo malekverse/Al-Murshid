@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { saveReflection } from '../store/database';
 
 interface ReflectionEntry {
   id: string;
@@ -27,18 +28,37 @@ const moodOptions = [
 
 export default function MuhasabahScreen() {
   const navigation = useNavigation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [gratitude, setGratitude] = useState('');
   const [struggle, setStruggle] = useState('');
   const [intention, setIntention] = useState('');
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (selectedMood === null) return;
-    // In production, this would persist to AsyncStorage
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const payload = JSON.stringify({
+        mood: moodOptions[selectedMood],
+        gratitude,
+        struggle,
+        intention,
+      });
+      await saveReflection(
+        Date.now().toString(),
+        new Date().toISOString().split('T')[0],
+        btoa(payload),
+        ''
+      );
+      setSaved(true);
+      setGratitude('');
+      setStruggle('');
+      setIntention('');
+      setSelectedMood(null);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to save reflection.');
+    }
   };
 
   return (
@@ -118,11 +138,10 @@ export default function MuhasabahScreen() {
               onChangeText={setGratitude}
               placeholder={t('muhasabah.shukrPh')}
               placeholderTextColor="rgba(110, 231, 183, 0.3)"
-              textAlign={i18n.language === 'ar' ? 'right' : 'left'}
               multiline
               numberOfLines={3}
               className="bg-teal-900/40 rounded-2xl border border-teal-700/50 px-4 py-3 text-teal-50 text-base font-medium"
-              style={{ textAlignVertical: 'top', minHeight: 80 }}
+              style={{ textAlignVertical: 'top', minHeight: 80, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
             />
           </View>
         </View>
@@ -146,11 +165,10 @@ export default function MuhasabahScreen() {
               onChangeText={setStruggle}
               placeholder={t('muhasabah.istighfarPh')}
               placeholderTextColor="rgba(110, 231, 183, 0.3)"
-              textAlign={i18n.language === 'ar' ? 'right' : 'left'}
               multiline
               numberOfLines={3}
               className="bg-emerald-900/40 rounded-2xl border border-emerald-700/50 px-4 py-3 text-emerald-50 text-base font-medium"
-              style={{ textAlignVertical: 'top', minHeight: 80 }}
+              style={{ textAlignVertical: 'top', minHeight: 80, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
             />
           </View>
         </View>
@@ -174,11 +192,10 @@ export default function MuhasabahScreen() {
               onChangeText={setIntention}
               placeholder={t('muhasabah.niyyahPh')}
               placeholderTextColor="rgba(110, 231, 183, 0.3)"
-              textAlign={i18n.language === 'ar' ? 'right' : 'left'}
               multiline
               numberOfLines={2}
               className="bg-emerald-900/40 rounded-2xl border border-emerald-700/50 px-4 py-3 text-emerald-50 text-base font-medium"
-              style={{ textAlignVertical: 'top', minHeight: 60 }}
+              style={{ textAlignVertical: 'top', minHeight: 60, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
             />
           </View>
         </View>

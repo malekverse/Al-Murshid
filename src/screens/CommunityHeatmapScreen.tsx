@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
+import { flipIcon } from '../utils/rtl';
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,6 +22,7 @@ const mockNodes = Array.from({ length: 25 }).map((_, i) => ({
 
 export default function CommunityHeatmapScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [activeCount, setActiveCount] = useState(1);
   const pulseAnim = useRef(new Animated.Value(0)).current;
 
@@ -116,10 +119,10 @@ export default function CommunityHeatmapScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-950/80 items-center justify-center border border-emerald-700/50 backdrop-blur-md"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <View className="bg-emerald-950/80 px-4 py-2 rounded-full border border-emerald-700/50 backdrop-blur-md">
-          <Text className="text-emerald-50 text-sm font-bold tracking-wide">City: London</Text>
+          <Text className="text-emerald-50 text-sm font-bold tracking-wide">{t('community.cityLabel')}</Text>
         </View>
         <View className="w-10" />
       </View>
@@ -129,18 +132,18 @@ export default function CommunityHeatmapScreen() {
         <View className="bg-emerald-900/80 p-6 rounded-3xl border border-emerald-700/50 backdrop-blur-lg shadow-2xl">
           <View className="flex-row items-center mb-2">
             <Ionicons name="flame" size={20} color="#fbbf24" style={{ marginRight: 8 }} />
-            <Text className="text-amber-400 text-sm font-bold uppercase tracking-widest">Spiritual Heatmap</Text>
+            <Text className="text-amber-400 text-sm font-bold uppercase tracking-widest">{t('community.heatmapTitle')}</Text>
           </View>
           
           <Text className="text-emerald-50 text-3xl font-extrabold mb-1">{activeCount * 12}</Text>
-          <Text className="text-emerald-300 text-sm font-medium mb-6">Sabiqoon awake for Fajr</Text>
+          <Text className="text-emerald-300 text-sm font-medium mb-6">{t('community.activeUsers')}</Text>
           
           <View className="flex-row space-x-3">
             <TouchableOpacity className="flex-1 bg-emerald-800/80 py-3 rounded-xl border border-emerald-600/50 items-center">
-              <Text className="text-emerald-50 font-bold text-sm">Ping Squad</Text>
+              <Text className="text-emerald-50 font-bold text-sm">{t('community.pingSquad')}</Text>
             </TouchableOpacity>
             <TouchableOpacity className="flex-1 bg-emerald-800/80 py-3 rounded-xl border border-emerald-600/50 items-center flex-row justify-center">
-              <Text className="text-emerald-50 font-bold text-sm mr-2">Leaderboard</Text>
+              <Text className="text-emerald-50 font-bold text-sm mr-2">{t('community.leaderboard')}</Text>
               <Ionicons name="podium" size={14} color="#6ee7b7" />
             </TouchableOpacity>
           </View>

@@ -7,6 +7,7 @@
   "continueBtn": "Continue",
   "loading": "Loading...",
   "locatingYou": "Locating you...",
+  "close": "Close",
 
   "onboarding": {
     "welcome": "Al-Murshid",
@@ -201,7 +202,13 @@
     "profileName": "Al-Talib",
     "profileLevel": "Level 2 — The Seeker",
     "activeStreak": "Active streak",
-    "madeWith": "Made with Taqwa ♥",
+    "aiSettings": "AI Coach",
+  "apiKeyLabel": "OpenRouter API Key",
+  "apiKeyStatusSet": "Set",
+  "apiKeyStatusNotSet": "Not set",
+  "apiKeySave": "Save Key",
+  "apiKeySaved": "API key saved successfully.",
+  "madeWith": "Made with Taqwa ♥",
     "restartRequired": "The app needs to restart to apply the new language.",
     "restart": "Restart Now",
     "cancel": "Cancel"
@@ -314,5 +321,46 @@
     "advice": "Pacing Advice",
     "adviceDesc": "You are slightly behind schedule. Try reading <1>4 pages</1> after every obligatory prayer to catch up and easily hit your {{pages}} page daily goal!",
     "log": "Log +10 Pages"
+  },
+
+  "fajrAlarm": {
+    "title": "Smart Fajr Alarm",
+    "subtitle": "Circadian Deen Optimizer. We calculate the optimal sleep schedule to wake you refreshed for Fajr.",
+    "smartWakeup": "Smart Wakeup",
+    "targetFajr": "Target Fajr Time",
+    "windDownAlert": "Wind Down Alert",
+    "windDownDesc": "To get 7 hours of rest, be in bed by 9:30 PM.",
+    "wuduCheck": "Face-ID Wudu Check",
+    "wuduDesc": "Require a camera scan of your damp face to dismiss the alarm, ensuring you don't sleep through Fajr.",
+    "testBiometric": "Test Biometric Scanner",
+    "verifyingWudu": "Verifying Wudu...",
+    "analyzing": "Analyzing skin dampness...",
+    "cancelScan": "Cancel Scan",
+    "wuduVerified": "Wudu Verified! MashaAllah.",
+    "cameraPermissionRequired": "Camera permission is required for Wudu check.",
+    "cameraAccessRequired": "Camera access is required to verify your Wudu."
+  },
+
+  "proofOfSalah": {
+    "cameraPermissionTitle": "Camera Permission Needed",
+    "cameraPermissionDesc": "Proof of Salah requires the camera to verify your presence at the Masjid.",
+    "grantPermission": "Grant Permission",
+    "masjidName": "Masjid Al-Noor",
+    "verifying": "Verifying Jama'ah...",
+    "analyzing": "Analyzing location & interior",
+    "snapPhoto": "Snap a 1-second photo of the Masjid interior",
+    "jamaahVerified": "Jama'ah Verified",
+    "masjidWithPrayer": "Masjid Al-Noor • Fajr",
+    "noorPointsEarned": "Noor Points Earned",
+    "fajrChainActive": "Fajr-Chain Active (x2 Multiplier)",
+    "viewHeatmap": "View City Heatmap"
+  },
+
+  "community": {
+    "heatmapTitle": "Spiritual Heatmap",
+    "activeUsers": "Sabiqoon awake for Fajr",
+    "cityLabel": "City: London",
+    "pingSquad": "Ping Squad",
+    "leaderboard": "Leaderboard"
   }
 }

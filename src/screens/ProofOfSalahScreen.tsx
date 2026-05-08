@@ -5,10 +5,14 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
+import { useAppStore } from '../store';
 
 export default function ProofOfSalahScreen() {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
+  const addNoorPoints = useAppStore((s) => s.addNoorPoints);
   const [permission, requestPermission] = useCameraPermissions();
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -30,6 +34,7 @@ export default function ProofOfSalahScreen() {
       // Simulate network/ML verification delay
       setTimeout(() => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        addNoorPoints(50);
         setIsVerifying(false);
         setIsVerified(true);
         Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
@@ -54,15 +59,15 @@ export default function ProofOfSalahScreen() {
     return (
       <View className="flex-1 bg-emerald-950 items-center justify-center p-8">
         <Ionicons name="camera-outline" size={64} color="#6ee7b7" style={{ marginBottom: 24 }} />
-        <Text className="text-emerald-50 text-xl font-bold text-center mb-4 tracking-wide">Camera Permission Needed</Text>
+        <Text className="text-emerald-50 text-xl font-bold text-center mb-4 tracking-wide">{t('proofOfSalah.cameraPermissionTitle')}</Text>
         <Text className="text-emerald-200/80 text-center mb-8 font-medium">
-          Proof of Salah requires the camera to verify your presence at the Masjid.
+          {t('proofOfSalah.cameraPermissionDesc')}
         </Text>
         <TouchableOpacity 
           onPress={requestPermission}
           className="bg-amber-500 w-full py-4 rounded-full items-center shadow-lg"
         >
-          <Text className="text-emerald-950 font-bold text-lg">Grant Permission</Text>
+          <Text className="text-emerald-950 font-bold text-lg">{t('proofOfSalah.grantPermission')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -86,7 +91,7 @@ export default function ProofOfSalahScreen() {
               </TouchableOpacity>
               <View className="bg-black/40 px-4 py-2 rounded-full border border-white/20 backdrop-blur-md flex-row items-center pointer-events-none">
                 <Ionicons name="location" size={14} color="#6ee7b7" style={{ marginRight: 6 }} />
-                <Text className="text-white font-bold text-xs tracking-widest uppercase">Masjid Al-Noor</Text>
+                <Text className="text-white font-bold text-xs tracking-widest uppercase">{t('proofOfSalah.masjidName')}</Text>
               </View>
             </View>
 
@@ -117,8 +122,8 @@ export default function ProofOfSalahScreen() {
               {isVerifying && (
                 <View className="mt-12 items-center bg-black/60 px-6 py-4 rounded-2xl border border-white/10 backdrop-blur-md pointer-events-none">
                   <ActivityIndicator size="large" color="#fbbf24" style={{ marginBottom: 12 }} />
-                  <Text className="text-amber-400 font-bold text-lg">Verifying Jama'ah...</Text>
-                  <Text className="text-emerald-200/80 text-xs mt-1">Analyzing location & interior</Text>
+                  <Text className="text-amber-400 font-bold text-lg">{t('proofOfSalah.verifying')}</Text>
+                  <Text className="text-emerald-200/80 text-xs mt-1">{t('proofOfSalah.analyzing')}</Text>
                 </View>
               )}
             </View>
@@ -127,7 +132,7 @@ export default function ProofOfSalahScreen() {
             {!isVerifying && (
               <View className="absolute bottom-12 w-full items-center pointer-events-box-none">
                 <Text className="text-white font-medium text-sm mb-6 drop-shadow-lg pointer-events-none">
-                  Snap a 1-second photo of the Masjid interior
+                  {t('proofOfSalah.snapPhoto')}
                 </Text>
                 <TouchableOpacity 
                   onPress={handleCapture}
@@ -152,19 +157,19 @@ export default function ProofOfSalahScreen() {
           </View>
           
           <Text className="text-emerald-50 text-3xl font-extrabold text-center mb-2 tracking-wide">
-            Jama'ah Verified
+            {t('proofOfSalah.jamaahVerified')}
           </Text>
           <Text className="text-emerald-300 text-lg font-medium text-center mb-12">
-            Masjid Al-Noor • Fajr
+            {t('proofOfSalah.masjidWithPrayer')}
           </Text>
           
           <View className="bg-emerald-900/60 w-full p-6 rounded-3xl border border-emerald-700/50 mb-12 shadow-xl items-center">
             <Text className="text-amber-400 text-5xl font-extrabold mb-2">+50</Text>
-            <Text className="text-emerald-100 text-sm font-bold uppercase tracking-widest">Noor Points Earned</Text>
+            <Text className="text-emerald-100 text-sm font-bold uppercase tracking-widest">{t('proofOfSalah.noorPointsEarned')}</Text>
             <View className="h-px w-full bg-emerald-800 my-4" />
             <View className="flex-row items-center">
               <Ionicons name="flame" size={16} color="#fbbf24" style={{ marginRight: 6 }} />
-              <Text className="text-amber-300 font-bold text-sm">Fajr-Chain Active (x2 Multiplier)</Text>
+              <Text className="text-amber-300 font-bold text-sm">{t('proofOfSalah.fajrChainActive')}</Text>
             </View>
           </View>
           
@@ -180,7 +185,7 @@ export default function ProofOfSalahScreen() {
             />
             <View className="py-4 flex-row items-center justify-center">
               <Ionicons name="map" size={20} color="#022c22" style={{ marginRight: 8 }} />
-              <Text className="text-emerald-950 font-bold text-lg tracking-wide">View City Heatmap</Text>
+              <Text className="text-emerald-950 font-bold text-lg tracking-wide">{t('proofOfSalah.viewHeatmap')}</Text>
             </View>
           </TouchableOpacity>
 

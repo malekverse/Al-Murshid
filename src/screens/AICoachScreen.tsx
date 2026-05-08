@@ -1,36 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
 import { useTranslation } from 'react-i18next';
+import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
+import { useAppStore } from '../store';
+import { sendMessage, resetConversation } from '../services/aiCoachService';
 import { flipIcon } from '../utils/rtl';
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'coach';
-  timestamp: Date;
+  isError?: boolean;
 }
 
 export default function AICoachScreen() {
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
+  const { insight } = useFatherlyCoach();
+  const sunnahStreak = useAppStore((s) => s.sunnahStreak);
+  const userLevel = useAppStore((s) => s.userLevel);
   const scrollViewRef = useRef<ScrollView>(null);
+  const lastSentRef = useRef('');
   const [inputText, setInputText] = useState('');
-  
-  // Use state with a function initializer to ensure t() is ready
+
+  const welcomeText = `${t('aiCoach.welcomeMessage')}\n\n${insight}`;
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0',
-      text: t('aiCoach.welcomeMessage'),
-      sender: 'coach',
-      timestamp: new Date(),
-    },
+    { id: '0', text: welcomeText, sender: 'coach' },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const typingDot1 = useRef(new Animated.Value(0)).current;
   const typingDot2 = useRef(new Animated.Value(0)).current;
   const typingDot3 = useRef(new Animated.Value(0)).current;
@@ -53,38 +56,59 @@ export default function AICoachScreen() {
     }
   }, [isTyping]);
 
-  const sendMessage = () => {
-    if (!inputText.trim()) return;
+  const sendUserMessage = async (text: string) => {
+    if (!text.trim() || isTyping) return;
+    setErrorMsg(null);
+    lastSentRef.current = text.trim();
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      text: inputText.trim(),
-      sender: 'user',
-      timestamp: new Date(),
-    };
+    const userMsg: Message = { id: Date.now().toString(), text: text.trim(), sender: 'user' };
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
     setIsTyping(true);
+    scrollToEnd();
 
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-
-    // Simulate AI response delay
-    const delay = 1500 + Math.random() * 1500;
-    setTimeout(() => {
-      const coachResponses = t('aiCoach.responses', { returnObjects: true }) as string[];
-      const responseText = coachResponses[Math.floor(Math.random() * coachResponses.length)];
-      const coachMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        text: responseText,
-        sender: 'coach',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, coachMsg]);
+    try {
+      const reply = await sendMessage(
+        text.trim(),
+        i18n.language,
+        sunnahStreak,
+        userLevel
+      );
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), text: reply, sender: 'coach' }]);
+    } catch (err: any) {
+      const errorText = err.message || 'Failed to get response';
+      setErrorMsg(errorText);
+      setMessages(prev => [
+        ...prev,
+        { id: (Date.now() + 1).toString(), text: errorText, sender: 'coach', isError: true },
+      ]);
+    } finally {
       setIsTyping(false);
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-    }, delay);
+      scrollToEnd();
+    }
+  };
+
+  const scrollToEnd = () => {
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+  };
+
+  const handleReset = () => {
+    Alert.alert(
+      t('settings.restartRequired'),
+      'Clear conversation history?',
+      [
+        { text: t('settings.cancel'), style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => {
+            resetConversation();
+            setMessages([{ id: '0', text: welcomeText, sender: 'coach' }]);
+            setErrorMsg(null);
+          },
+        },
+      ]
+    );
   };
 
   const renderMessage = (msg: Message) => {
@@ -103,13 +127,25 @@ export default function AICoachScreen() {
           {isCoach ? (
             <View className="rounded-3xl rounded-tl-md overflow-hidden">
               <LinearGradient
-                colors={['#064e3b', '#022c22']}
+                colors={msg.isError ? ['#7f1d1d', '#450a0a'] : ['#064e3b', '#022c22']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFillObject, { borderRadius: 24 }]}
               />
               <View className="px-5 py-4">
-                <Text className="text-emerald-50 text-base leading-relaxed font-medium">{msg.text}</Text>
+                <Text className={`text-base leading-relaxed font-medium ${msg.isError ? 'text-red-300' : 'text-emerald-50'}`}>{msg.text}</Text>
+                {msg.isError && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setMessages(prev => prev.filter(m => m.id !== msg.id));
+                      setErrorMsg(null);
+                      sendUserMessage(lastSentRef.current);
+                    }}
+                    className="mt-3 bg-amber-500/20 rounded-full px-4 py-2 self-start border border-amber-500/30"
+                  >
+                    <Text className="text-amber-400 text-xs font-bold">Retry</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           ) : (
@@ -143,10 +179,10 @@ export default function AICoachScreen() {
           <Text className="text-emerald-400 text-xs font-medium">{t('aiCoach.subtitle')}</Text>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Muhasabah' as never)}
+          onPress={handleReset}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="journal" size={20} color="#fbbf24" />
+          <Ionicons name="refresh" size={20} color="#fbbf24" />
         </TouchableOpacity>
       </View>
 
@@ -156,11 +192,10 @@ export default function AICoachScreen() {
         className="flex-1 px-4"
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+        onContentSizeChange={scrollToEnd}
       >
         {messages.map(renderMessage)}
 
-        {/* Typing Indicator */}
         {isTyping && (
           <View className="items-start mb-4">
             <View className="flex-row items-center mb-1.5 ml-1">
@@ -197,11 +232,11 @@ export default function AICoachScreen() {
               multiline
               className="flex-1 text-emerald-50 text-base font-medium"
               style={{ maxHeight: 100, textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
-              onSubmitEditing={sendMessage}
+              onSubmitEditing={() => sendUserMessage(inputText)}
             />
           </View>
           <TouchableOpacity
-            onPress={sendMessage}
+            onPress={() => sendUserMessage(inputText)}
             className="w-12 h-12 rounded-full overflow-hidden shadow-lg active:opacity-80"
           >
             <LinearGradient

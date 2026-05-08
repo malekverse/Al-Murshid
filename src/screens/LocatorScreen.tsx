@@ -158,7 +158,7 @@ export default function LocatorScreen() {
   const [showMap, setShowMap] = useState(true);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
 
-  const listAnims = useRef(Array.from({ length: 20 }, () => new Animated.Value(0))).current;
+  const listAnims = useRef<Animated.Value[]>([]).current;
 
   const fetchData = async (lat: number, lon: number, radius: number) => {
     setIsLoading(true);
@@ -169,6 +169,13 @@ export default function LocatorScreen() {
       ]);
       setMosques(m);
       setHalalPlaces(h);
+      const count = (activeTab === 'mosque' ? m : h).length;
+      while (listAnims.length < count) {
+        listAnims.push(new Animated.Value(0));
+      }
+      Animated.stagger(50, listAnims.slice(0, count).map(a =>
+        Animated.timing(a, { toValue: 1, duration: 400, useNativeDriver: true })
+      )).start();
     } finally {
       setIsLoading(false);
     }

@@ -72,7 +72,7 @@ export default function PrayerTimesScreen() {
         // Determine current prayer
         if (now < times.fajr) setCurrentPrayer('');
         else if (now < times.sunrise) setCurrentPrayer('Fajr');
-        else if (now < times.dhuhr) setCurrentPrayer('Sunrise');
+        else if (now < times.dhuhr) setCurrentPrayer('');
         else if (now < times.asr) setCurrentPrayer('Dhuhr');
         else if (now < times.maghrib) setCurrentPrayer('Asr');
         else if (now < times.isha) setCurrentPrayer('Maghrib');
@@ -109,7 +109,8 @@ export default function PrayerTimesScreen() {
 
   const formatTime = (date: Date | null) => {
     if (!date) return '--:--';
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const locale = i18n.language === 'ar' ? 'ar-SA' : 'en-US';
+    return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   const gregorianDate = new Intl.DateTimeFormat(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {

@@ -4,8 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import * as Location from 'expo-location';
 import { useAppStore } from '../store';
-import { getNextPrayer, detectCalcMethod } from '../utils/prayerTimes';
+import { getNextPrayer, getPrayerTimes, detectCalcMethod } from '../utils/prayerTimes';
 import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
+import { schedulePrayerNotifications } from '../services/notificationService';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { flipIcon } from '../utils/rtl';
@@ -13,10 +14,11 @@ import { flipIcon } from '../utils/rtl';
 export default function HomeScreen({ navigation }: any) {
   const { t, i18n } = useTranslation();
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
-  const incrementStreak = useAppStore((state) => state.incrementStreak);
+  const logPrayer = useAppStore((state) => state.logPrayer);
   const { insight } = useFatherlyCoach();
 
   const [nextPrayer, setNextPrayer] = useState<string>('Loading...');
+  const [nextPrayerName, setNextPrayerName] = useState<string>('');
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [hijriDate, setHijriDate] = useState('');
@@ -72,8 +74,15 @@ export default function HomeScreen({ navigation }: any) {
         } catch {}
 
         const currentNext = getNextPrayer(latitude, longitude, new Date(), method);
+        setNextPrayerName(currentNext === 'none' || currentNext === 'sunrise' ? '' : currentNext);
         setNextPrayer(currentNext === 'none' ? 'Isha (Tomorrow)' : currentNext);
         setLocationError(null);
+
+        // Schedule notifications for all prayer times
+        const allTimes = getPrayerTimes(latitude, longitude, new Date(), method);
+        if (allTimes) {
+          schedulePrayerNotifications(allTimes).catch(() => {});
+        }
       } catch (err) {
         console.error("Location error:", err);
         setLocationError('Unable to fetch location. Tap to retry.');
@@ -325,7 +334,7 @@ export default function HomeScreen({ navigation }: any) {
         {/* Action Button */}
         <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
           <TouchableOpacity
-            onPress={incrementStreak}
+            onPress={() => nextPrayerName && logPrayer(nextPrayerName)}
             className="shadow-2xl active:opacity-80 rounded-full overflow-hidden"
           >
             <LinearGradient

@@ -5,13 +5,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAppStore } from '../store';
+import { flipIcon } from '../utils/rtl';
 
 export default function ProgressTrackerScreen() {
   const navigation = useNavigation();
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
   const userLevel = useAppStore((state) => state.userLevel);
+  const noorPoints = useAppStore((state) => state.noorPoints);
+  const prayerLog = useAppStore((state) => state.prayerLog);
+  const totalDhikrCount = useAppStore((state) => state.totalDhikrCount);
 
-  // Mock progression data based on level
   const levels = [
     { id: 1, title: 'Al-Mubtadi', subtitle: 'The Beginner', req: 0 },
     { id: 2, title: 'Al-Talib', subtitle: 'The Seeker', req: 50 },
@@ -20,17 +23,24 @@ export default function ProgressTrackerScreen() {
     { id: 5, title: 'Al-Sabiq', subtitle: 'The Foremost', req: 1000 },
   ];
 
-  const currentNoor = 65; // Mock data
+  const currentNoor = noorPoints;
   const nextLevel = levels.find(l => l.id === userLevel + 1) || levels[levels.length - 1];
   const currentLevelData = levels.find(l => l.id === userLevel) || levels[0];
 
   const progressPercent = Math.min(100, Math.max(0, ((currentNoor - currentLevelData.req) / (nextLevel.req - currentLevelData.req)) * 100));
 
+  const prayersLoggedThisWeek = prayerLog.filter(p => {
+    const d = new Date(p.timestamp);
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    return d >= weekAgo;
+  }).length;
+
   const stats = [
-    { label: 'Prayers Logged', value: '42', icon: 'time', color: '#6ee7b7' },
-    { label: 'Quran Read', value: '15j', icon: 'book', color: '#fbbf24' },
-    { label: 'Dhikr Count', value: '1.2k', icon: 'sync', color: '#93c5fd' },
-    { label: 'Sadaqah', value: '$50', icon: 'heart', color: '#fca5a5' },
+    { label: 'Prayers Logged', value: `${prayerLog.length}`, icon: 'time', color: '#6ee7b7' },
+    { label: 'This Week', value: `${prayersLoggedThisWeek}`, icon: 'calendar', color: '#fbbf24' },
+    { label: 'Dhikr Count', value: `${totalDhikrCount}`, icon: 'sync', color: '#93c5fd' },
+    { label: 'Day Streak', value: `${sunnahStreak}`, icon: 'flame', color: '#fca5a5' },
   ];
 
   return (
@@ -43,7 +53,7 @@ export default function ProgressTrackerScreen() {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
         >
-          <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+          <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">Spiritual Journey</Text>
         <View className="w-10" />
@@ -135,25 +145,25 @@ export default function ProgressTrackerScreen() {
 
           <View className="w-0.5 h-6 bg-teal-500 ml-4 -mt-4 mb-2 opacity-50" />
 
-          <View className="flex-row items-center mb-4 opacity-100">
-            <View className="w-8 h-8 rounded-full bg-amber-500 items-center justify-center mr-3 shadow-lg border-2 border-amber-300">
-              <Ionicons name="flame" size={14} color="#022c22" />
+          <View className={`flex-row items-center mb-4 ${userLevel >= 1 ? 'opacity-100' : 'opacity-40'}`}>
+            <View className={`w-8 h-8 rounded-full ${userLevel >= 1 ? 'bg-amber-500 border-2 border-amber-300' : 'bg-emerald-900 border border-emerald-700'} items-center justify-center mr-3 shadow-lg`}>
+              <Ionicons name={userLevel >= 1 ? 'flame' : 'lock-closed'} size={14} color={userLevel >= 1 ? '#022c22' : '#6ee7b7'} />
             </View>
             <View className="flex-1">
-              <Text className="text-amber-400 font-bold text-base">Salah (Prayer)</Text>
-              <Text className="text-emerald-400 text-xs">In Progress • Level 2</Text>
+              <Text className={`font-bold text-base ${userLevel >= 1 ? 'text-amber-400' : 'text-emerald-500'}`}>Salah (Prayer)</Text>
+              <Text className="text-emerald-400 text-xs">{userLevel >= 1 ? `Prayers Logged: ${prayerLog.length}` : 'Unlocks at Level 1'}</Text>
             </View>
           </View>
 
           <View className="w-0.5 h-6 bg-emerald-800 ml-4 -mt-4 mb-2" />
 
-          <View className="flex-row items-center opacity-40">
-            <View className="w-8 h-8 rounded-full bg-emerald-900 items-center justify-center mr-3 border border-emerald-700">
-              <Ionicons name="lock-closed" size={12} color="#6ee7b7" />
+          <View className={`flex-row items-center ${userLevel >= 3 ? 'opacity-100' : 'opacity-40'}`}>
+            <View className={`w-8 h-8 rounded-full ${userLevel >= 3 ? 'bg-amber-500 border-2 border-amber-300' : 'bg-emerald-900 border border-emerald-700'} items-center justify-center mr-3`}>
+              <Ionicons name={userLevel >= 3 ? 'flame' : 'lock-closed'} size={14} color={userLevel >= 3 ? '#022c22' : '#6ee7b7'} />
             </View>
             <View className="flex-1">
-              <Text className="text-emerald-500 font-bold text-base">Akhlaq (Character)</Text>
-              <Text className="text-emerald-600 text-xs">Unlocks at Level 3</Text>
+              <Text className={`font-bold text-base ${userLevel >= 3 ? 'text-amber-400' : 'text-emerald-500'}`}>Akhlaq (Character)</Text>
+              <Text className="text-emerald-600 text-xs">{userLevel >= 3 ? 'Branch Active' : 'Unlocks at Level 3'}</Text>
             </View>
           </View>
 
