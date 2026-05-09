@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { flipIcon } from '../utils/rtl';
+import { logSleep } from '../services/data/sleepService';
 
 // Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -273,11 +274,12 @@ export default function SunnahSleepScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('sleep.title')}</Text>
-        <TouchableOpacity className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+        <TouchableOpacity className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50" accessibilityLabel="Sleep tracker">
           <Ionicons name="moon" size={20} color="#fbbf24" />
         </TouchableOpacity>
       </View>
@@ -316,6 +318,13 @@ export default function SunnahSleepScreen() {
               <Ionicons name="add" size={24} color="#fbbf24" />
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            onPress={() => logSleep(hoursSlept)}
+            className="bg-amber-500/20 border border-amber-500/30 px-4 py-2 rounded-full items-center mb-4"
+          >
+            <Text className="text-amber-400 text-xs font-bold">{t('sleep.saveSleep', { points: Math.round(hoursSlept) })}</Text>
+          </TouchableOpacity>
 
           {isShortSleep ? (
             <View className="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/30 mb-4">

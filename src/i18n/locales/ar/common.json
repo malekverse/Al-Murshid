@@ -26,7 +26,8 @@
     "quran": "القرآن",
     "azkar": "الأذكار",
     "qibla": "القبلة",
-    "ummah": "الأمة"
+    "ummah": "الأمة",
+    "ramadan": "رمضان"
   },
 
   "home": {
@@ -40,7 +41,12 @@
     "nearbySubtitle": "مساجد وحلال",
     "sleepSunnah": "سُنة النوم",
     "sleepSunnahSubtitle": "الراحة والقيلولة",
+    "ramadanSubtitle": "الصيام والمتابعة",
+    "sadaqahSubtitle": "متتبع الصدقة",
     "nextPrayer": "الصلاة القادمة",
+    "prayerTimes": "أوقات الصلاة",
+    "now": "الآن",
+    "dailyHadith": "حديث اليوم",
     "verseOfTheHour": "آية الساعة",
     "alMurshidSays": "المُرشِد يقول...",
     "logCurrentPrayer": "سجّل الصلاة الحالية",
@@ -154,7 +160,12 @@
     "juz": "جزء",
     "ayat": "آية",
     "bismillahTranslation": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
-    "uthmaniSaheeh": "عثماني • الصحيح الدولية"
+    "uthmaniSaheeh": "عثماني • الصحيح الدولية",
+    "tafsirTitle": "التفسير",
+    "tafsirNotFound": "التفسير غير متوفر لهذه الآية.",
+    "bookmarks": "العلامات",
+    "noBookmarks": "لا توجد علامات بعد. اضغط على أيقونة العلامة على أي آية لحفظها.",
+    "removeBookmark": "حذف العلامة"
   },
 
   "ummah": {
@@ -180,6 +191,12 @@
     "prayerSettings": "إعدادات الصلاة",
     "prayerTimeAlerts": "تنبيهات أوقات الصلاة",
     "prayerTimeAlertsSubtitle": "إشعار قبل كل صلاة",
+    "smartReminders": "التذكيرات الذكية",
+    "smartRemindersSubtitle": "تذكير بالصلوات التي تفوتك",
+    "muhasabahReminder": "تذكير المحاسبة",
+    "muhasabahReminderSubtitle": "إشعار المساء للتفكر (8 مساءً)",
+    "quranReminder": "تذكير القرآن",
+    "quranReminderSubtitle": "إشعار القراءة اليومية (9 صباحاً)",
     "calculationMethod": "طريقة الحساب",
     "calculationMethodSubtitle": "رابطة العالم الإسلامي",
     "appPreferences": "تفضيلات التطبيق",
@@ -209,6 +226,20 @@
   "apiKeySave": "حفظ المفتاح",
   "apiKeySaved": "تم حفظ مفتاح API بنجاح.",
   "madeWith": "صُنع بتقوى ♥",
+    "viewAnalytics": "عرض الإحصائيات الكاملة",
+    "dataExport": "البيانات والتصدير",
+    "exportButton": "تصدير جميع البيانات بصيغة JSON",
+    "exportTitle": "تصدير البيانات",
+    "exportStats": "{{total}} سجل عبر {{count}} جدول. JSON: ~{{size}} كيلوبايت",
+    "exportShare": "مشاركة",
+    "exportFailed": "فشل التصدير",
+    "importButton": "استيراد البيانات من JSON",
+    "importTitle": "استيراد البيانات",
+    "importConfirm": "سيؤدي ذلك إلى استبدال البيانات الموجودة. هل أنت متأكد؟",
+    "importProceed": "استيراد",
+    "importSuccess": "تم الاستيراد بنجاح",
+    "importFailed": "فشل الاستيراد",
+    "appVersion": "المُرشِد v1.0.0",
     "restartRequired": "يحتاج التطبيق إلى إعادة التشغيل لتطبيق اللغة الجديدة.",
     "restart": "أعد التشغيل الآن",
     "cancel": "إلغاء"
@@ -220,6 +251,9 @@
     "botName": "المُرشِد",
     "welcomeMessage": "السلام عليكم يا بُنيّ. أنا مُرشِدك - رفيقك الروحي في هذه الرحلة المباركة. أخبرني، ما الذي يشغل قلبك اليوم؟",
     "placeholder": "شارك ما في قلبك...",
+    "clearConversation": "مسح سجل المحادثة؟",
+    "clearAction": "مسح",
+    "retry": "إعادة المحاولة",
     "responses": [
       "يا بُنيّ، تذكر قول النبي ﷺ: \"أحب الأعمال إلى الله أدومها وإن قلّت\". ابدأ بما تستطيع تحمله اليوم.",
       "سبحان الله، أنت تسأل الأسئلة الصحيحة. حقيقة أنك تتفكر تدل على أن قلبك حي. يقول الله تعالى: \"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ\" (الرعد: 28).",
@@ -274,6 +308,7 @@
   "sleep": {
     "title": "سُنة النوم",
     "log": "سجل نوم الليلة الماضية",
+    "saveSleep": "احفظ واكسب {{points}} نقطة نور",
     "sync": "مزامنة",
     "hours": "ساعات",
     "deficit": "اكتُشف نقص في النوم",
@@ -302,6 +337,10 @@
     "niyyahPh": "غداً، سوف أُنجز...",
     "saved": "تم الحفظ في خزانتك",
     "save": "احفظ تأملك",
+    "history": "سجل التأملات",
+    "noReflections": "لا توجد تأملات بعد",
+    "noReflectionsDesc": "تأملاتك الذاتية ستظهر هنا",
+    "emptyReflection": "اكتب على الأقل حقلاً واحداً قبل الحفظ.",
     "moods": {
       "grateful": "ممتن",
       "peaceful": "مطمئن",
@@ -313,14 +352,20 @@
 
   "khatmah": {
     "title": "مخطط الختمة",
-    "goal": "هدف 30 يوماً",
+    "goal": "الهدف",
     "completed": "مكتمل",
     "pagesRead": "صفحات مقروءة",
     "daysLeft": "أيام متبقية",
     "pagesNeeded": "صفحة / يوم مطلوبة",
     "advice": "نصيحة للإيقاع",
     "adviceDesc": "أنت متأخر قليلاً عن الجدول. حاول قراءة <1>4 صفحات</1> بعد كل صلاة مكتوبة للحاق بالركب وتحقيق هدفك اليومي البالغ {{pages}} صفحة بسهولة!",
-    "log": "سجل قراءة +10 صفحات"
+    "log": "سجل قراءة +10 صفحات",
+    "welcomeTitle": "ابدأ رحلة الختمة",
+    "welcomeDesc": "حدد هدفاً لإتمام القرآن وتتبع تقدم قراءتك اليومية. اختر وتيرة تناسب جدولك.",
+    "howToStart": "كيف تعمل:",
+    "step1": "اختر مدة الهدف أعلاه (30 أو 60 أو 90 يوماً).",
+    "step2": "كلما قرأت، اضغط على \"سجل قراءة +10 صفحات\" لتسجيل تقدمك.",
+    "step3": "شاهد نسبة إنجازك تنمو وأنت تعمل نحو إتمام القرآن كاملاً!"
   },
 
   "fajrAlarm": {
@@ -362,5 +407,162 @@
     "cityLabel": "المدينة: لندن",
     "pingSquad": "نادي الفريق",
     "leaderboard": "لوحة المتصدرين"
+  },
+
+  "auth": {
+    "welcomeBack": "مرحباً بعودتك",
+    "loginSubtitle": "سجّل الدخول لمزامنة رحلتك الروحية عبر الأجهزة",
+    "createAccount": "إنشاء حساب",
+    "registerSubtitle": "ابدأ بتتبع رحلتك الروحية بحساب آمن",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "displayName": "الاسم الظاهر",
+    "displayNamePlaceholder": "اسمك",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "orContinueWith": "أو متابعة بواسطة",
+    "noAccount": "ليس لديك حساب؟",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "fillAllFields": "يرجى ملء جميع الحقول",
+    "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+    "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+    "loginError": "فشل تسجيل الدخول. تحقق من بياناتك.",
+    "registerError": "فشل التسجيل. حاول مرة أخرى.",
+    "signOut": "تسجيل الخروج",
+    "sessionExpired": "انتهت الجلسة",
+    "sessionExpiredDesc": "انتهت جلستك. يرجى تسجيل الدخول مرة أخرى لمتابعة مزامنة رحلتك الروحية.",
+    "continueToLogin": "متابعة إلى تسجيل الدخول"
+  },
+
+  "profile": {
+    "user": "مستخدم",
+    "emailAccount": "بريد إلكتروني",
+    "level": "المستوى",
+    "levelNumber": "المستوى {{level}}",
+    "streak": "السلسلة",
+    "days": "يوم",
+    "noorPoints": "نور",
+    "points": "نقطة",
+    "syncTitle": "المزامنة السحابية",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "syncNow": "مزامنة الآن",
+    "lastSync": "آخر مزامنة",
+    "tamperWarning": "تنبيه سلامة البيانات: تم العبث ببعض البيانات المحلية وتم استعادتها من الخادم.",
+    "signOut": "تسجيل الخروج",
+    "manageAccount": "إدارة الحساب",
+    "syncStatus": "حالة المزامنة"
+  },
+
+  "analytics": {
+    "title": "الإحصائيات",
+    "levelProgress": "تقدم المستوى",
+    "nextLevelAt": "المستوى التالي عند {{points}} نقطة",
+    "prayerAnalytics": "إحصائيات الصلاة",
+    "thisWeek": "هذا الأسبوع",
+    "total": "الإجمالي",
+    "sleepAnalytics": "إحصائيات النوم",
+    "avgHours": "متوسط الساعات",
+    "nightsLogged": "ليالي مسجلة",
+    "aboveTarget": "تحقق هدف السنة في النوم (7+ ساعات)",
+    "belowTarget": "أقل من 7 ساعات الموصى بها",
+    "noSleepData": "لا توجد بيانات نوم بعد. سجّل نومك في سنة النوم.",
+    "streak": "المواظبة",
+    "noor": "نور",
+    "level": "المستوى",
+    "behavioralProfile": "الملف السلوكي",
+    "imanScore": "درجة الإيمان العامة",
+    "bestPrayer": "أفضل صلاة",
+    "needsWork": "يحتاج تحسين",
+    "avgSleep": "متوسط النوم",
+    "wakeUp": "الاستيقاظ",
+    "reflections": "التأملات (4 أسابيع)"
+  },
+
+  "community": {
+    "heatmapTitle": "خريطة الفجر",
+    "fajrAlarmsLogged": "منبهات الفجر المسجلة (30 يوم)",
+    "completed": "مكتمل",
+    "dismissed": "تم الإغلاق",
+    "you": "أنت",
+    "refreshData": "تحديث",
+    "preview": "معاينة",
+    "demoLeaderboard": "لوحة تجريبية — تعرض بيانات عينة حالياً"
+  },
+
+  "duel": {
+    "title": "مبارزة العلم",
+    "description": "اختبر معرفتك بالسيرة والقرآن. لديك 60 ثانية للإجابة على أكبر عدد ممكن من الأسئلة.",
+    "startDuel": "ابدأ المبارزة",
+    "duelComplete": "انتهت المبارزة!",
+    "correctAnswers": "الإجابات الصحيحة",
+    "accuracy": "الدقة",
+    "bestEver": "الأفضل على الإطلاق",
+    "back": "رجوع",
+    "question": "سؤال {{current}} من {{total}}",
+    "timesUp": "انتهى الوقت!",
+    "gameOver": "انتهت اللعبة",
+    "score": "النقاط",
+    "bestScore": "أفضل نتيجة",
+    "correct": "إجابة صحيحة!",
+    "wrong": "إجابة خاطئة!",
+    "playAgain": "لعب مرة أخرى"
+  },
+
+  "khatmah": {
+    "days30": "30 يوماً",
+    "days60": "60 يوماً",
+    "days90": "90 يوماً"
+  },
+
+  "ramadan": {
+    "title": "متابعة رمضان",
+    "fastingDays": "أيام الصيام",
+    "qiyamNights": "ليالي القيام",
+    "pagesRead": "صفحات مقروءة",
+    "sadaqahGiven": "الصدقات",
+    "goalProgress": "تقدم الأهداف",
+    "quranGoal": "هدف صفحات القرآن",
+    "sadaqahGoal": "هدف الصدقة",
+    "setGoals": "حدد أهداف رمضان",
+    "saveGoals": "حفظ الأهداف",
+    "todayLog": "تسجيل اليوم",
+    "fasting": "الصيام",
+    "suhoor": "وقت السحور",
+    "iftar": "وقت الإفطار",
+    "qiyam": "القيام / التراويح",
+    "sadaqah": "الصدقة ($)",
+    "duaNotes": "الدعاء والتأملات",
+    "duaNotesPlaceholder": "أدعيتك وأفكارك الشخصية...",
+    "save": "حفظ تسجيل اليوم"
+  },
+
+  "sadaqah": {
+    "title": "متتبع الصدقة",
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "thisYear": "هذه السنة",
+    "allTime": "المجموع الكلي",
+    "byCategory": "حسب الفئة",
+    "addLog": "إضافة صدقة",
+    "amountPlaceholder": "المبلغ ($)",
+    "notesPlaceholder": "ملاحظات (اختياري)",
+    "save": "حفظ",
+    "invalidAmount": "الرجاء إدخال مبلغ صحيح",
+    "recentLogs": "آخر الإدخالات"
+  },
+
+  "misc": {
+    "offlineBanner": "أنت غير متصل. بعض الميزات قد تكون محدودة.",
+    "loadingData": "جارٍ تحميل البيانات...",
+    "noData": "لا توجد بيانات بعد",
+    "startFirst": "ابدأ باستكشاف التطبيق",
+    "errorOccurred": "حدث خطأ ما",
+    "tapRetry": "اضغط لإعادة المحاولة",
+    "comingSoon": "قريباً",
+    "comingSoonDesc": "هذه الميزة تتطلب بنية تحتية إضافية وستكون متاحة في تحديث مستقبلي."
   }
 }

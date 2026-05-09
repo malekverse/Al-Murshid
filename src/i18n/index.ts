@@ -48,7 +48,7 @@ export function setAppLanguage(lang: 'en' | 'ar') {
   i18n.changeLanguage(lang);
 
   // 2. Persist the choice for next app launch
-  AsyncStorage.setItem('app-language', lang).catch(() => {});
+  AsyncStorage.setItem('app-language', lang).catch((e) => console.warn('persist language failed:', e));
 
   // 3. Set native RTL direction (takes effect on next cold start)
   const isArabic = lang === 'ar';

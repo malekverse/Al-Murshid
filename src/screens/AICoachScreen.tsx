@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Animated, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
 import { useAppStore } from '../store';
 import { sendMessage, resetConversation } from '../services/aiCoachService';
+import { persistConversationMessage, loadRecentConversation, trimConversationHistory } from '../services/data/conversationService';
+import { getReflections } from '../store/database';
 import { flipIcon } from '../utils/rtl';
+import LoadingState from '../components/LoadingState';
 
 interface Message {
   id: string;
@@ -33,6 +36,21 @@ export default function AICoachScreen() {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  useEffect(() => {
+    loadRecentConversation().then((rows) => {
+      const history = (rows as any[]).reverse().map((r) => ({
+        id: `hist_${r.id}`,
+        text: r.content,
+        sender: r.role as 'user' | 'coach',
+      }));
+      if (history.length > 0) {
+        setMessages(prev => [...prev, ...history]);
+      }
+    }).catch((e) => console.warn('loadConversationHistory failed:', e))
+    .finally(() => setLoadingHistory(false));
+  }, []);
 
   const typingDot1 = useRef(new Animated.Value(0)).current;
   const typingDot2 = useRef(new Animated.Value(0)).current;
@@ -56,25 +74,47 @@ export default function AICoachScreen() {
     }
   }, [isTyping]);
 
+  const getReflectionsContext = async (): Promise<string | undefined> => {
+    try {
+      const rows = await getReflections();
+      const recent = (rows as any[]).slice(0, 7);
+      if (recent.length === 0) return undefined;
+      const summaries = recent.map((r: any) => {
+        try {
+          const data = JSON.parse(atob(r.encryptedPayload));
+          return `[${r.date}] Mood: ${data.mood || '?'} | Gratitude: ${data.gratitude || '-'} | Struggle: ${data.struggle || '-'} | Intention: ${data.intention || '-'}`;
+        } catch { return null; }
+      }).filter(Boolean);
+      return summaries.length > 0 ? summaries.join('\n') : undefined;
+    } catch { return undefined; }
+  };
+
   const sendUserMessage = async (text: string) => {
     if (!text.trim() || isTyping) return;
     setErrorMsg(null);
     lastSentRef.current = text.trim();
 
-    const userMsg: Message = { id: Date.now().toString(), text: text.trim(), sender: 'user' };
+    const trimmed = text.trim();
+    const userMsg: Message = { id: Date.now().toString(), text: trimmed, sender: 'user' };
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
     setIsTyping(true);
     scrollToEnd();
 
+      persistConversationMessage('user', trimmed).catch((e) => console.warn('persist user msg failed:', e));
+
     try {
+      const reflectionsContext = await getReflectionsContext();
       const reply = await sendMessage(
-        text.trim(),
+        trimmed,
         i18n.language,
         sunnahStreak,
-        userLevel
+        userLevel,
+        reflectionsContext
       );
       setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), text: reply, sender: 'coach' }]);
+      persistConversationMessage('assistant', reply).catch((e) => console.warn('persist assistant msg failed:', e));
+      trimConversationHistory().catch((e) => console.warn('trim history failed:', e));
     } catch (err: any) {
       const errorText = err.message || 'Failed to get response';
       setErrorMsg(errorText);
@@ -94,12 +134,12 @@ export default function AICoachScreen() {
 
   const handleReset = () => {
     Alert.alert(
-      t('settings.restartRequired'),
-      'Clear conversation history?',
+      t('aiCoach.title'),
+      t('aiCoach.clearConversation'),
       [
         { text: t('settings.cancel'), style: 'cancel' },
         {
-          text: 'Clear',
+          text: t('aiCoach.clearAction'),
           style: 'destructive',
           onPress: () => {
             resetConversation();
@@ -136,14 +176,14 @@ export default function AICoachScreen() {
                 <Text className={`text-base leading-relaxed font-medium ${msg.isError ? 'text-red-300' : 'text-emerald-50'}`}>{msg.text}</Text>
                 {msg.isError && (
                   <TouchableOpacity
-                    onPress={() => {
+                      onPress={() => {
                       setMessages(prev => prev.filter(m => m.id !== msg.id));
                       setErrorMsg(null);
                       sendUserMessage(lastSentRef.current);
                     }}
                     className="mt-3 bg-amber-500/20 rounded-full px-4 py-2 self-start border border-amber-500/30"
                   >
-                    <Text className="text-amber-400 text-xs font-bold">Retry</Text>
+                    <Text className="text-amber-400 text-xs font-bold">{t('aiCoach.retry')}</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -158,12 +198,18 @@ export default function AICoachScreen() {
     );
   };
 
+  if (loadingHistory) {
+    return <LoadingState message={t('misc.loadingData')} />;
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-emerald-950"
       keyboardVerticalOffset={0}
     >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="flex-1">
       <StatusBar style="light" />
 
       {/* Header */}
@@ -171,6 +217,7 @@ export default function AICoachScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
@@ -181,6 +228,7 @@ export default function AICoachScreen() {
         <TouchableOpacity
           onPress={handleReset}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Refresh conversation"
         >
           <Ionicons name="refresh" size={20} color="#fbbf24" />
         </TouchableOpacity>
@@ -193,6 +241,7 @@ export default function AICoachScreen() {
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
         onContentSizeChange={scrollToEnd}
+        keyboardShouldPersistTaps="handled"
       >
         {messages.map(renderMessage)}
 
@@ -238,6 +287,7 @@ export default function AICoachScreen() {
           <TouchableOpacity
             onPress={() => sendUserMessage(inputText)}
             className="w-12 h-12 rounded-full overflow-hidden shadow-lg active:opacity-80"
+            accessibilityLabel="Send message"
           >
             <LinearGradient
               colors={['#f59e0b', '#d97706']}
@@ -249,6 +299,8 @@ export default function AICoachScreen() {
           </TouchableOpacity>
         </View>
       </View>
+        </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }

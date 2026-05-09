@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Switch, Modal, ActivityIndicator, Animated, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Camera, CameraView } from 'expo-camera';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { saveAlarmLog } from '../store/database';
 
 export default function FajrAlarmScreen() {
   const navigation = useNavigation();
@@ -18,6 +19,18 @@ export default function FajrAlarmScreen() {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
+  const cameraRef = React.useRef<any>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        if (isCameraActive) {
+          setIsCameraActive(false);
+          setScanProgress(0);
+        }
+      };
+    }, [isCameraActive])
+  );
 
   // Custom Toast State
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -49,6 +62,7 @@ export default function FajrAlarmScreen() {
           setTimeout(() => {
             setIsCameraActive(false);
             showToast(t('fajrAlarm.wuduVerified'));
+            saveAlarmLog(new Date().toISOString().split('T')[0], 'fajr_wudu', 1, Date.now()).catch((e) => console.warn('saveAlarmLog failed:', e));
           }, 500);
         }
       }, 300);
@@ -64,6 +78,7 @@ export default function FajrAlarmScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50 mr-4"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
@@ -102,7 +117,7 @@ export default function FajrAlarmScreen() {
                 <Text className="text-emerald-300 text-xs font-bold uppercase tracking-widest mb-1">{t('fajrAlarm.targetFajr')}</Text>
                 <Text className="text-white text-4xl font-extrabold tracking-tighter">04:45 <Text className="text-xl text-emerald-300">AM</Text></Text>
               </View>
-              <TouchableOpacity className="bg-emerald-800/80 p-3 rounded-full border border-emerald-700/50">
+              <TouchableOpacity className="bg-emerald-800/80 p-3 rounded-full border border-emerald-700/50" accessibilityLabel="Edit alarm time">
                 <Ionicons name="create-outline" size={20} color="#6ee7b7" />
               </TouchableOpacity>
             </View>

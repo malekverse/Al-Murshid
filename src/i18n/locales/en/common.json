@@ -26,7 +26,8 @@
     "quran": "Quran",
     "azkar": "Azkar",
     "qibla": "Qibla",
-    "ummah": "Ummah"
+    "ummah": "Ummah",
+    "ramadan": "Ramadan"
   },
 
   "home": {
@@ -40,7 +41,12 @@
     "nearbySubtitle": "Mosques & Halal",
     "sleepSunnah": "Sleep Sunnah",
     "sleepSunnahSubtitle": "Rest & Qailulah",
+    "ramadanSubtitle": "Fasting & Tracker",
+    "sadaqahSubtitle": "Charity Tracker",
     "nextPrayer": "Next Prayer",
+    "prayerTimes": "Prayer Times",
+    "now": "Now",
+    "dailyHadith": "Daily Hadith",
     "verseOfTheHour": "Verse of the Hour",
     "alMurshidSays": "Al-Murshid Says...",
     "logCurrentPrayer": "Log Current Prayer",
@@ -154,7 +160,12 @@
     "juz": "Juz",
     "ayat": "ayat",
     "bismillahTranslation": "In the name of Allah, the Entirely Merciful, the Especially Merciful",
-    "uthmaniSaheeh": "Uthmani • Saheeh Int'l"
+    "uthmaniSaheeh": "Uthmani • Saheeh Int'l",
+    "tafsirTitle": "Tafsir",
+    "tafsirNotFound": "Tafsir not available for this ayah.",
+    "bookmarks": "Bookmarks",
+    "noBookmarks": "No bookmarks yet. Tap the bookmark icon on any ayah to save it.",
+    "removeBookmark": "Remove Bookmark"
   },
 
   "ummah": {
@@ -180,6 +191,12 @@
     "prayerSettings": "Prayer Settings",
     "prayerTimeAlerts": "Prayer Time Alerts",
     "prayerTimeAlertsSubtitle": "Get notified before each prayer",
+    "smartReminders": "Smart Reminders",
+    "smartRemindersSubtitle": "Nudge for prayers you tend to miss",
+    "muhasabahReminder": "Muhasabah Reminder",
+    "muhasabahReminderSubtitle": "Evening reflection notification (8 PM)",
+    "quranReminder": "Quran Reminder",
+    "quranReminderSubtitle": "Daily reading notification (9 AM)",
     "calculationMethod": "Calculation Method",
     "calculationMethodSubtitle": "Muslim World League",
     "appPreferences": "App Preferences",
@@ -209,6 +226,20 @@
   "apiKeySave": "Save Key",
   "apiKeySaved": "API key saved successfully.",
   "madeWith": "Made with Taqwa ♥",
+    "viewAnalytics": "View Full Analytics",
+    "dataExport": "Data & Export",
+    "exportButton": "Export All Data as JSON",
+    "exportTitle": "Data Export",
+    "exportStats": "{{total}} records across {{count}} tables. JSON: ~{{size}} KB",
+    "exportShare": "Share",
+    "exportFailed": "Export Failed",
+    "importButton": "Import Data from JSON",
+    "importTitle": "Data Import",
+    "importConfirm": "This will overwrite existing data. Are you sure?",
+    "importProceed": "Import",
+    "importSuccess": "Import Successful",
+    "importFailed": "Import Failed",
+    "appVersion": "Al-Murshid v1.0.0",
     "restartRequired": "The app needs to restart to apply the new language.",
     "restart": "Restart Now",
     "cancel": "Cancel"
@@ -220,6 +251,9 @@
     "botName": "AL-MURSHID",
     "welcomeMessage": "As-salamu alaykum, my dear child. I am your Murshid — your spiritual companion on this blessed journey. Tell me, what is on your heart today?",
     "placeholder": "Share what's on your heart...",
+    "clearConversation": "Clear conversation history?",
+    "clearAction": "Clear",
+    "retry": "Retry",
     "responses": [
       "My dear child, remember that the Prophet ﷺ said: \"The most beloved deeds to Allah are those done consistently, even if they are small.\" Start with what feels manageable today.",
       "SubhanAllah, you are asking the right questions. The fact that you are reflecting shows your heart is alive. Allah says: \"Verily, in the remembrance of Allah do hearts find rest.\" (13:28)",
@@ -274,6 +308,7 @@
   "sleep": {
     "title": "Sunnah Sleep",
     "log": "Log Last Night's Sleep",
+    "saveSleep": "Save & Earn {{points}} Noor Points",
     "sync": "Sync",
     "hours": "Hours",
     "deficit": "Sleep Deficit Detected",
@@ -302,6 +337,10 @@
     "niyyahPh": "Tomorrow, I will...",
     "saved": "Saved to Your Vault",
     "save": "Save Reflection",
+    "history": "Reflection History",
+    "noReflections": "No reflections yet",
+    "noReflectionsDesc": "Your self-reflections will appear here",
+    "emptyReflection": "Write at least one reflection field before saving.",
     "moods": {
       "grateful": "Grateful",
       "peaceful": "Peaceful",
@@ -313,14 +352,20 @@
 
   "khatmah": {
     "title": "Khatmah Planner",
-    "goal": "30-Day Goal",
+    "goal": "Goal",
     "completed": "Completed",
     "pagesRead": "Pages Read",
     "daysLeft": "Days Left",
     "pagesNeeded": "Pages / Day Needed",
     "advice": "Pacing Advice",
     "adviceDesc": "You are slightly behind schedule. Try reading <1>4 pages</1> after every obligatory prayer to catch up and easily hit your {{pages}} page daily goal!",
-    "log": "Log +10 Pages"
+    "log": "Log +10 Pages",
+    "welcomeTitle": "Start Your Khatmah Journey",
+    "welcomeDesc": "Set a goal to complete the Qur'an and track your daily reading progress. Choose a pace that fits your schedule.",
+    "howToStart": "How it works:",
+    "step1": "Select your goal duration above (30, 60, or 90 days).",
+    "step2": "Every time you read, tap \"Log +10 Pages\" to record your progress.",
+    "step3": "Watch your percentage grow as you work towards completing the entire Qur'an!"
   },
 
   "fajrAlarm": {
@@ -362,5 +407,162 @@
     "cityLabel": "City: London",
     "pingSquad": "Ping Squad",
     "leaderboard": "Leaderboard"
+  },
+
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "loginSubtitle": "Sign in to sync your spiritual journey across devices",
+    "createAccount": "Create Account",
+    "registerSubtitle": "Begin tracking your spiritual journey with a secure account",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Your name",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "orContinueWith": "or continue with",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "fillAllFields": "Please fill all fields",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidEmail": "Please enter a valid email address",
+    "loginError": "Sign in failed. Check your credentials.",
+    "registerError": "Registration failed. Try again.",
+    "signOut": "Sign Out",
+    "sessionExpired": "Session Expired",
+    "sessionExpiredDesc": "Your session has ended. Please sign in again to continue syncing your spiritual journey.",
+    "continueToLogin": "Continue to Sign In"
+  },
+
+  "profile": {
+    "user": "User",
+    "emailAccount": "Email",
+    "level": "Level",
+    "levelNumber": "Level {{level}}",
+    "streak": "Streak",
+    "days": "days",
+    "noorPoints": "Noor",
+    "points": "pts",
+    "syncTitle": "Cloud Sync",
+    "online": "Online",
+    "offline": "Offline",
+    "syncNow": "Sync Now",
+    "lastSync": "Last sync",
+    "tamperWarning": "Data integrity alert: Some local data was tampered with and has been restored from the server.",
+    "signOut": "Sign Out",
+    "manageAccount": "Manage Account",
+    "syncStatus": "Sync Status"
+  },
+
+  "analytics": {
+    "title": "Analytics",
+    "levelProgress": "Level Progress",
+    "nextLevelAt": "Next level at {{points}} pts",
+    "prayerAnalytics": "Prayer Analytics",
+    "thisWeek": "This Week",
+    "total": "total",
+    "sleepAnalytics": "Sleep Analytics",
+    "avgHours": "Avg Hours",
+    "nightsLogged": "Nights Logged",
+    "aboveTarget": "Meeting Sunnah sleep target (7+ hrs)",
+    "belowTarget": "Below recommended 7 hours",
+    "noSleepData": "No sleep data yet. Log your sleep in Sunnah Sleep.",
+    "streak": "Streak",
+    "noor": "Noor",
+    "level": "Level",
+    "behavioralProfile": "Behavioral Profile",
+    "imanScore": "Overall Iman Score",
+    "bestPrayer": "Best Prayer",
+    "needsWork": "Needs Work",
+    "avgSleep": "Avg Sleep",
+    "wakeUp": "Wake Up",
+    "reflections": "Reflections (4 weeks)"
+  },
+
+  "community": {
+    "heatmapTitle": "Fajr Heatmap",
+    "fajrAlarmsLogged": "Fajr alarms logged (30 days)",
+    "completed": "Completed",
+    "dismissed": "Dismissed",
+    "you": "You",
+    "refreshData": "Refresh Data",
+    "preview": "Preview",
+    "demoLeaderboard": "Demo Leaderboard — Currently showing sample data"
+  },
+
+  "duel": {
+    "title": "Knowledge Duel",
+    "description": "Test your knowledge of the Seerah and Quran. You have 60 seconds to answer as many questions as you can.",
+    "startDuel": "Start Duel",
+    "duelComplete": "Duel Complete!",
+    "correctAnswers": "Correct Answers",
+    "accuracy": "Accuracy",
+    "bestEver": "Best Ever",
+    "back": "Back",
+    "question": "Question {{current}} of {{total}}",
+    "timesUp": "Time's up!",
+    "gameOver": "Game Over",
+    "score": "Score",
+    "bestScore": "Best Score",
+    "correct": "Correct!",
+    "wrong": "Wrong!",
+    "playAgain": "Play Again"
+  },
+
+  "khatmah": {
+    "days30": "30 Days",
+    "days60": "60 Days",
+    "days90": "90 Days"
+  },
+
+  "ramadan": {
+    "title": "Ramadan Tracker",
+    "fastingDays": "Fasting Days",
+    "qiyamNights": "Qiyam Nights",
+    "pagesRead": "Pages Read",
+    "sadaqahGiven": "Sadaqah Given",
+    "goalProgress": "Goal Progress",
+    "quranGoal": "Qur'an Pages Goal",
+    "sadaqahGoal": "Sadaqah Goal",
+    "setGoals": "Set Your Ramadan Goals",
+    "saveGoals": "Save Goals",
+    "todayLog": "Today's Log",
+    "fasting": "Fasting",
+    "suhoor": "Suhoor Time",
+    "iftar": "Iftar Time",
+    "qiyam": "Qiyam / Taraweeh",
+    "sadaqah": "Sadaqah ($)",
+    "duaNotes": "Du'a & Reflections",
+    "duaNotesPlaceholder": "Your personal duas and thoughts...",
+    "save": "Save Today's Log"
+  },
+
+  "sadaqah": {
+    "title": "Sadaqah Tracker",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "thisYear": "This Year",
+    "allTime": "All Time Total",
+    "byCategory": "By Category",
+    "addLog": "Add Sadaqah",
+    "amountPlaceholder": "Amount ($)",
+    "notesPlaceholder": "Notes (optional)",
+    "save": "Save",
+    "invalidAmount": "Please enter a valid amount",
+    "recentLogs": "Recent Entries"
+  },
+
+  "misc": {
+    "offlineBanner": "You are offline. Some features may be limited.",
+    "loadingData": "Loading data...",
+    "noData": "No data yet",
+    "startFirst": "Start by exploring the app",
+    "errorOccurred": "Something went wrong",
+    "tapRetry": "Tap to retry",
+    "comingSoon": "Coming Soon",
+    "comingSoonDesc": "This feature requires additional infrastructure and will be available in a future update."
   }
 }

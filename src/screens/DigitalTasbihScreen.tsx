@@ -7,6 +7,7 @@ import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store';
+import { recordDhikr } from '../services/data/dhikrService';
 import { flipIcon } from '../utils/rtl';
 
 const { width } = Dimensions.get('window');
@@ -18,14 +19,19 @@ export default function DigitalTasbihScreen() {
   const addNoorPoints = useAppStore((s) => s.addNoorPoints);
   const [count, setCount] = useState(0);
   const [target, setTarget] = useState(33);
+  const lastHaptic = useRef(0);
 
   // Animations
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   const handleTap = () => {
-    // Haptics
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Haptics (debounced — skip if <100ms since last)
+    const now = Date.now();
+    if (now - lastHaptic.current > 100) {
+      lastHaptic.current = now;
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
 
     // Animation
     Animated.sequence([
@@ -43,7 +49,7 @@ export default function DigitalTasbihScreen() {
 
     const newCount = count + 1;
     setCount(newCount);
-    incrementDhikr();
+    recordDhikr();
 
     // Update Progress Bar
     Animated.timing(progressAnim, {
@@ -97,6 +103,7 @@ export default function DigitalTasbihScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>

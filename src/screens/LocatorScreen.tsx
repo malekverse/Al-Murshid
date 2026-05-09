@@ -8,6 +8,7 @@ import * as Location from 'expo-location';
 import { WebView } from 'react-native-webview';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -47,7 +48,7 @@ function estimateDriveTime(m: number): string {
 
 async function fetchNearbyMosques(lat: number, lon: number, radius: number): Promise<NearbyPlace[]> {
   const query = `[out:json][timeout:15];(node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lon});way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lon}););out center body;`;
-  const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+  const res = await fetchWithTimeout(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('API error');
   const json = await res.json();
   return json.elements
@@ -70,7 +71,7 @@ async function fetchNearbyMosques(lat: number, lon: number, radius: number): Pro
 
 async function fetchNearbyHalal(lat: number, lon: number, radius: number): Promise<NearbyPlace[]> {
   const query = `[out:json][timeout:15];(node["cuisine"~"halal|kebab|turkish|arabic|middle_eastern|pakistani|indian"](around:${radius},${lat},${lon});node["diet:halal"="yes"](around:${radius},${lat},${lon}););out body;`;
-  const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+  const res = await fetchWithTimeout(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
   if (!res.ok) throw new Error('API error');
   const json = await res.json();
   const seen = new Set<string>();
@@ -230,11 +231,11 @@ export default function LocatorScreen() {
 
       {/* Header */}
       <View className="px-6 pt-16 pb-3 flex-row justify-between items-center z-10">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50" accessibilityLabel="Go back">
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('locator.title')}</Text>
-        <TouchableOpacity onPress={() => setShowMap(!showMap)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+        <TouchableOpacity onPress={() => setShowMap(!showMap)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50" accessibilityLabel={showMap ? "Show list view" : "Show map view"}>
           <Ionicons name={showMap ? 'list' : 'map'} size={20} color="#fbbf24" />
         </TouchableOpacity>
       </View>
@@ -275,6 +276,7 @@ export default function LocatorScreen() {
           <TouchableOpacity 
             className="absolute top-2 right-2 bg-emerald-900/80 p-2 rounded-full border border-emerald-700/50"
             onPress={() => setIsMapExpanded(true)}
+            accessibilityLabel="Expand map"
           >
             <Ionicons name="expand" size={18} color="#fbbf24" />
           </TouchableOpacity>
@@ -289,7 +291,7 @@ export default function LocatorScreen() {
             <Text className="text-emerald-50 text-xl font-bold tracking-wide">
               {activeTab === 'mosque' ? t('locator.mosquesMap') : t('locator.halalMap')}
             </Text>
-            <TouchableOpacity onPress={() => setIsMapExpanded(false)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+            <TouchableOpacity onPress={() => setIsMapExpanded(false)} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50" accessibilityLabel="Close">
               <Ionicons name="close" size={24} color="#6ee7b7" />
             </TouchableOpacity>
           </View>

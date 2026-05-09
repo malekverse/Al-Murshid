@@ -53,6 +53,7 @@ export default function AzkarScreen() {
           <TouchableOpacity
             onPress={() => navigation.navigate('SmartAdhkar')}
             className="bg-emerald-900/80 p-2 rounded-full border border-emerald-700/50"
+            accessibilityLabel="Smart Adhkar"
           >
             <Ionicons name="search" size={20} color="#6ee7b7" />
           </TouchableOpacity>

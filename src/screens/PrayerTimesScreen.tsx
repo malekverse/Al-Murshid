@@ -9,6 +9,7 @@ import { getPrayerTimes, detectCalcMethod, CALC_METHOD_LABELS } from '../utils/p
 import type { CalcMethodKey } from '../utils/prayerTimes';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 interface PrayerTime {
   name: string;
@@ -90,7 +91,7 @@ export default function PrayerTimesScreen() {
       try {
         const now = new Date();
         const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
-        const res = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`);
+        const res = await fetchWithTimeout(`https://api.aladhan.com/v1/gToH/${dateStr}`);
         const json = await res.json();
         if (json.code === 200) {
           const h = json.data.hijri;
@@ -129,6 +130,7 @@ export default function PrayerTimesScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>

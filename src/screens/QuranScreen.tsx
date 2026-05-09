@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, FlatList, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, FlatList, Dimensions, ScrollView, Alert, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { Audio } from 'expo-av';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { fetchSurahList, fetchSurahDetail, fetchMushafPage, TOTAL_MUSHAF_PAGES } from '../services/quranService';
-import type { SurahMeta, Ayah, MushafPageAyah, MushafPageData } from '../services/quranService';
+import { fetchSurahList, fetchSurahDetail, fetchMushafPage, fetchTafsir, TOTAL_MUSHAF_PAGES } from '../services/quranService';
+import type { SurahMeta, Ayah, MushafPageAyah, MushafPageData, TafsirEntry } from '../services/quranService';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { loadSetting, persistSetting } from '../services/data/settingsService';
+import { addBookmark, removeBookmark, isBookmarked } from '../services/data/quranBookmarkService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -53,6 +55,14 @@ export default function QuranScreen() {
   const currentAudioQueue = useRef<MushafPageAyah[]>([]);
   const currentAudioIndex = useRef<number>(0);
 
+  // Bookmarks
+  const [bookmarkedAyahs, setBookmarkedAyahs] = useState<Set<string>>(new Set());
+  // Tafsir modal
+  const [tafsirAyah, setTafsirAyah] = useState<{ surah: number; ayah: number } | null>(null);
+  const [tafsirText, setTafsirText] = useState<string | null>(null);
+  const [tafsirLoading, setTafsirLoading] = useState(false);
+  const [showTafsir, setShowTafsir] = useState(false);
+
   // Load all 114 Surahs on mount
   useEffect(() => {
     (async () => {
@@ -67,6 +77,16 @@ export default function QuranScreen() {
     })();
   }, []);
 
+  useEffect(() => {
+    loadSetting('quranFontSize').then((val) => {
+      if (val) setMushafFontSize(parseInt(val, 10));
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    persistSetting('quranFontSize', String(mushafFontSize)).catch(() => {});
+  }, [mushafFontSize]);
+
   const openSurah = async (surah: SurahMeta) => {
     setSelectedSurah(surah);
     setViewMode('detail');
@@ -75,11 +95,52 @@ export default function QuranScreen() {
       const detail = await fetchSurahDetail(surah.number);
       setArabicAyahs(detail.arabic);
       setTranslationAyahs(detail.translation);
+      // Check which ayahs are bookmarked
+      const bm = new Set<string>();
+      for (const ayah of detail.arabic) {
+        if (await isBookmarked(surah.number, ayah.numberInSurah)) {
+          bm.add(`${surah.number}:${ayah.numberInSurah}`);
+        }
+      }
+      setBookmarkedAyahs(bm);
     } catch (e) {
       console.error('Failed to load surah detail:', e);
     } finally {
       setDetailLoading(false);
     }
+  };
+
+  const toggleBookmark = async (surahNumber: number, ayahNumber: number, surahName: string) => {
+    const key = `${surahNumber}:${ayahNumber}`;
+    if (bookmarkedAyahs.has(key)) {
+      await removeBookmark(surahNumber, ayahNumber);
+      bookmarkedAyahs.delete(key);
+      setBookmarkedAyahs(new Set(bookmarkedAyahs));
+    } else {
+      await addBookmark({
+        surah_number: surahNumber,
+        ayah_number: ayahNumber,
+        surah_name: surahName,
+        date: new Date().toISOString().split('T')[0],
+        timestamp: Date.now(),
+      });
+      bookmarkedAyahs.add(key);
+      setBookmarkedAyahs(new Set(bookmarkedAyahs));
+    }
+  };
+
+  const openTafsir = async (surahNumber: number, ayahNumber: number) => {
+    setTafsirAyah({ surah: surahNumber, ayah: ayahNumber });
+    setShowTafsir(true);
+    setTafsirLoading(true);
+    setTafsirText(null);
+    try {
+      const tafsir = await fetchTafsir(surahNumber, ayahNumber, i18n.language as 'en' | 'ar');
+      setTafsirText(tafsir?.text || t('quran.tafsirNotFound'));
+    } catch {
+      setTafsirText(t('quran.tafsirNotFound'));
+    }
+    setTafsirLoading(false);
   };
 
   // Fetch a page (with cache)
@@ -135,7 +196,7 @@ export default function QuranScreen() {
   // Persist last-read page
   useEffect(() => {
     if (viewMode === 'mushaf' && currentPage > 0) {
-      AsyncStorage.setItem('mushaf_last_page', String(currentPage)).catch(() => { });
+      AsyncStorage.setItem('mushaf_last_page', String(currentPage)).catch((e) => console.warn('persist mushaf page failed:', e));
     }
   }, [currentPage, viewMode]);
 
@@ -267,7 +328,7 @@ export default function QuranScreen() {
 
         {/* Top Bar */}
         <View style={mStyles.topBar}>
-          <TouchableOpacity onPress={goBack} style={mStyles.topBtn}>
+          <TouchableOpacity onPress={goBack} style={mStyles.topBtn} accessibilityLabel="Go back">
             <Ionicons name={flipIcon('arrow-back') as any} size={18} color="#065f46" />
           </TouchableOpacity>
 
@@ -283,12 +344,12 @@ export default function QuranScreen() {
                 onSubmitEditing={handleGoToPage}
                 style={mStyles.goToInput}
               />
-              <TouchableOpacity onPress={handleGoToPage} style={[mStyles.topBtn, { marginLeft: 6 }]}>
-                <Ionicons name={flipIcon('arrow-forward') as any} size={16} color="#065f46" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setShowGoTo(false); setGoToPageText(''); }} style={[mStyles.topBtn, { marginLeft: 4 }]}>
-                <Ionicons name="close" size={16} color="#065f46" />
-              </TouchableOpacity>
+<TouchableOpacity onPress={handleGoToPage} style={[mStyles.topBtn, { marginLeft: 6 }]} accessibilityLabel="Go to page">
+                  <Ionicons name={flipIcon('arrow-forward') as any} size={16} color="#065f46" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { setShowGoTo(false); setGoToPageText(''); }} style={[mStyles.topBtn, { marginLeft: 4 }]} accessibilityLabel="Close">
+                  <Ionicons name="close" size={16} color="#065f46" />
+                </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity onPress={() => setShowGoTo(true)} style={{ flex: 1, alignItems: 'center', marginHorizontal: 8 }}>
@@ -299,10 +360,10 @@ export default function QuranScreen() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity onPress={() => setHifzMode(!hifzMode)} style={[mStyles.topBtn, { marginRight: 4, backgroundColor: hifzMode ? '#059669' : '#bbf7d0' }]}>
+          <TouchableOpacity onPress={() => setHifzMode(!hifzMode)} style={[mStyles.topBtn, { marginRight: 4, backgroundColor: hifzMode ? '#059669' : '#bbf7d0' }]} accessibilityLabel="Toggle Hifz mode">
             <Ionicons name="eye-off" size={14} color={hifzMode ? '#ffffff' : '#065f46'} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={togglePlayPage} style={[mStyles.topBtn, { marginRight: 8, backgroundColor: isPlaying ? '#059669' : '#bbf7d0' }]}>
+          <TouchableOpacity onPress={togglePlayPage} style={[mStyles.topBtn, { marginRight: 8, backgroundColor: isPlaying ? '#059669' : '#bbf7d0' }]} accessibilityLabel={isPlaying ? 'Stop audio' : 'Play audio'}>
             <Ionicons name={isPlaying ? "stop" : "play"} size={14} color={isPlaying ? '#ffffff' : '#065f46'} />
           </TouchableOpacity>
 
@@ -424,6 +485,7 @@ export default function QuranScreen() {
                 onPress={() => navigateToPage(currentPage - 1)}
                 disabled={currentPage <= 1}
                 style={[mStyles.navBtn, currentPage <= 1 && { opacity: 0.25 }]}
+                accessibilityLabel="Previous page"
               >
                 <Ionicons name={flipIcon('chevron-back') as any} size={18} color="#065f46" />
               </TouchableOpacity>
@@ -435,6 +497,7 @@ export default function QuranScreen() {
                 onPress={() => navigateToPage(currentPage + 1)}
                 disabled={currentPage >= TOTAL_MUSHAF_PAGES}
                 style={[mStyles.navBtn, currentPage >= TOTAL_MUSHAF_PAGES && { opacity: 0.25 }]}
+                accessibilityLabel="Next page"
               >
                 <Ionicons name={flipIcon('chevron-forward') as any} size={18} color="#065f46" />
               </TouchableOpacity>
@@ -455,12 +518,13 @@ export default function QuranScreen() {
 
         {/* Detail Header */}
         <View className="px-6 pt-16 pb-4 flex-row justify-between items-center z-10">
-          <TouchableOpacity
-            onPress={goBack}
-            className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
-          >
-            <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
-          </TouchableOpacity>
+<TouchableOpacity
+              onPress={goBack}
+              className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+              accessibilityLabel="Go back"
+            >
+              <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
+            </TouchableOpacity>
           <View className="items-center flex-1 mx-4">
             <Text className="text-emerald-50 text-lg font-bold tracking-wide" numberOfLines={1}>
               {i18n.language === 'ar' ? selectedSurah.name : selectedSurah.englishName}
@@ -513,19 +577,35 @@ export default function QuranScreen() {
             )}
             renderItem={({ item, index }) => {
               const translation = translationAyahs[index];
+              const bmKey = selectedSurah ? `${selectedSurah.number}:${item.numberInSurah}` : '';
+              const isBm = bookmarkedAyahs.has(bmKey);
               return (
                 <View className="mb-4 rounded-2xl shadow-lg border border-emerald-800/30 overflow-hidden">
                   <LinearGradient colors={['#0f766e', '#042f2e']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFillObject} />
                   <View className="p-5">
                     <View className="flex-row justify-between items-center mb-3">
-                      <View className="w-8 h-8 rounded-full bg-teal-800/80 items-center justify-center border border-teal-600/50">
-                        <Text className="text-teal-200 text-xs font-bold">{item.numberInSurah}</Text>
-                      </View>
-                      {item.sajda && (
-                        <View className="bg-amber-500/20 px-2.5 py-1 rounded-full border border-amber-500/30">
-                          <Text className="text-amber-400 text-[10px] font-bold">۩ SAJDA</Text>
+                      <View className="flex-row items-center">
+                        <View className="w-8 h-8 rounded-full bg-teal-800/80 items-center justify-center border border-teal-600/50">
+                          <Text className="text-teal-200 text-xs font-bold">{item.numberInSurah}</Text>
                         </View>
-                      )}
+                      </View>
+                      <View className="flex-row items-center">
+                        {selectedSurah && (
+                          <TouchableOpacity onPress={() => toggleBookmark(selectedSurah.number, item.numberInSurah, selectedSurah.englishName)} className="mr-2">
+                            <Ionicons name={isBm ? 'bookmark' : 'bookmark-outline'} size={20} color={isBm ? '#fbbf24' : '#6ee7b7'} />
+                          </TouchableOpacity>
+                        )}
+                        {selectedSurah && (
+                          <TouchableOpacity onPress={() => openTafsir(selectedSurah.number, item.numberInSurah)} className="bg-teal-800/60 px-2.5 py-1 rounded-full border border-teal-600/50 mr-2">
+                            <Text className="text-teal-300 text-[10px] font-bold">Tafsir</Text>
+                          </TouchableOpacity>
+                        )}
+                        {item.sajda && (
+                          <View className="bg-amber-500/20 px-2.5 py-1 rounded-full border border-amber-500/30">
+                            <Text className="text-amber-400 text-[10px] font-bold">۩ SAJDA</Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
                     <Text className="text-amber-300 text-right leading-loose mb-4" style={{ fontFamily: 'sans-serif', fontSize: 22, lineHeight: 44 }}>
                       {item.text}
@@ -539,6 +619,32 @@ export default function QuranScreen() {
             }}
           />
         )}
+
+        {/* Tafsir Modal */}
+        <Modal visible={showTafsir} transparent animationType="fade" onRequestClose={() => setShowTafsir(false)}>
+          <TouchableOpacity className="flex-1 bg-black/60 justify-center px-6" activeOpacity={1} onPress={() => setShowTafsir(false)}>
+            <TouchableOpacity activeOpacity={1} onPress={() => {}} className="bg-emerald-900 rounded-3xl border border-emerald-700/50 overflow-hidden max-h-[70%]">
+              <LinearGradient colors={['#064e3b', '#022c22']} style={StyleSheet.absoluteFillObject} />
+              <View className="p-6">
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-emerald-50 text-lg font-bold">
+                    {t('quran.tafsirTitle')} {tafsirAyah?.ayah ? `(${tafsirAyah.surah}:${tafsirAyah.ayah})` : ''}
+                  </Text>
+                  <TouchableOpacity onPress={() => setShowTafsir(false)}>
+                    <Ionicons name="close" size={24} color="#6ee7b7" />
+                  </TouchableOpacity>
+                </View>
+                {tafsirLoading ? (
+                  <ActivityIndicator size="small" color="#fbbf24" />
+                ) : (
+                  <ScrollView>
+                    <Text className="text-emerald-100 text-sm leading-relaxed font-medium">{tafsirText}</Text>
+                  </ScrollView>
+                )}
+              </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </Modal>
       </View>
     );
   }
@@ -550,8 +656,18 @@ export default function QuranScreen() {
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
       <View className="px-6 pt-16 pb-4">
-        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('quran.title')}</Text>
-        <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('quran.subtitle')}</Text>
+        <View className="flex-row justify-between items-center">
+          <View>
+            <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('quran.title')}</Text>
+            <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('quran.subtitle')}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('QuranBookmarks')}
+            className="w-10 h-10 rounded-full bg-emerald-800/80 items-center justify-center border border-emerald-700/50"
+          >
+            <Ionicons name="bookmark" size={20} color="#fbbf24" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search */}
@@ -567,7 +683,7 @@ export default function QuranScreen() {
             style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search">
               <Ionicons name="close-circle" size={18} color="#6ee7b7" />
             </TouchableOpacity>
           )}

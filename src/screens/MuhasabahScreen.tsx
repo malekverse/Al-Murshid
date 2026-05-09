@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, KeyboardAvoidingView, Platform, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
-import { saveReflection } from '../store/database';
+import { saveReflectionEntry } from '../services/data/reflectionService';
+import { useAppStore } from '../store';
+import { getReflections } from '../store/database';
+import { sendMessage } from '../services/aiCoachService';
 
 interface ReflectionEntry {
   id: string;
@@ -29,27 +32,26 @@ const moodOptions = [
 export default function MuhasabahScreen() {
   const navigation = useNavigation();
   const { t, i18n } = useTranslation();
+  const sunnahStreak = useAppStore((s) => s.sunnahStreak);
+  const userLevel = useAppStore((s) => s.userLevel);
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [gratitude, setGratitude] = useState('');
   const [struggle, setStruggle] = useState('');
   const [intention, setIntention] = useState('');
   const [saved, setSaved] = useState(false);
+  const [digestLoading, setDigestLoading] = useState(false);
+  const [digestText, setDigestText] = useState<string | null>(null);
 
   const handleSave = async () => {
     if (selectedMood === null) return;
+    if (!gratitude.trim() && !struggle.trim() && !intention.trim()) {
+      Alert.alert(t('muhasabah.title'), t('muhasabah.emptyReflection'));
+      return;
+    }
     try {
-      const payload = JSON.stringify({
-        mood: moodOptions[selectedMood],
-        gratitude,
-        struggle,
-        intention,
-      });
-      await saveReflection(
-        Date.now().toString(),
-        new Date().toISOString().split('T')[0],
-        btoa(payload),
-        ''
-      );
+      const date = new Date().toISOString().split('T')[0];
+      const moodLabel = moodOptions[selectedMood].label;
+      await saveReflectionEntry(Date.now().toString(), date, moodLabel, gratitude, struggle, intention);
       setSaved(true);
       setGratitude('');
       setStruggle('');
@@ -66,6 +68,8 @@ export default function MuhasabahScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-emerald-950"
     >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="flex-1">
       <StatusBar style="light" />
 
       {/* Header */}
@@ -73,16 +77,21 @@ export default function MuhasabahScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('muhasabah.title')}</Text>
-        <TouchableOpacity className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+        <TouchableOpacity
+          onPress={() => (navigation as any).navigate('ReflectionHistory')}
+          className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Reflection history"
+        >
           <Ionicons name="time" size={20} color="#6ee7b7" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
 
         {/* Intro */}
         <View className="mb-8 mt-2">
@@ -219,7 +228,69 @@ export default function MuhasabahScreen() {
           </View>
         </TouchableOpacity>
 
+        {/* Weekly Digest */}
+        <TouchableOpacity
+          onPress={async () => {
+            if (digestLoading) return;
+            setDigestLoading(true);
+            setDigestText(null);
+            try {
+              const rows: any[] = await getReflections();
+              const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+              const recent = rows.filter(r => r.date >= weekAgo).slice(0, 14);
+              if (recent.length === 0) {
+                Alert.alert('No Data', 'No reflections from the past week. Write a few reflections first!');
+                setDigestLoading(false);
+                return;
+              }
+              const summaries = recent.map((r: any) => {
+                try {
+                  const data = JSON.parse(atob(r.encryptedPayload));
+                  return `Date: ${r.date} | Mood: ${data.mood || '?'} | Gratitude: ${data.gratitude || '-'} | Struggle: ${data.struggle || '-'} | Intention: ${data.intention || '-'}`;
+                } catch { return null; }
+              }).filter(Boolean).join('\n');
+
+              const prompt = `Based on these reflections from the past week, provide a brief spiritual summary and gentle advice:\n\n${summaries}`;
+              const reply = await sendMessage(prompt, i18n.language, sunnahStreak, userLevel);
+              setDigestText(reply);
+            } catch (err: any) {
+              Alert.alert('Error', err.message || 'Failed to generate digest');
+            } finally {
+              setDigestLoading(false);
+            }
+          }}
+          className="shadow-2xl active:opacity-80 rounded-full overflow-hidden mb-4"
+        >
+          <LinearGradient
+            colors={digestLoading ? ['#065f46', '#047857'] : ['#0f766e', '#042f2e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+          <View className="py-4 items-center flex-row justify-center">
+            <Ionicons name={digestLoading ? 'hourglass' : 'document-text'} size={22} color="#6ee7b7" style={{ marginRight: 8 }} />
+            <Text className="text-emerald-200 font-extrabold text-lg tracking-wide">
+              {digestLoading ? 'Generating...' : 'Weekly Reflection Digest'}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        {digestText && (
+          <View className="rounded-3xl border border-teal-700/40 overflow-hidden mb-8">
+            <LinearGradient colors={['#0f766e', '#042f2e']} style={StyleSheet.absoluteFillObject} />
+            <View className="p-5">
+              <View className="flex-row items-center mb-3">
+                <Ionicons name="sparkles" size={16} color="#fbbf24" style={{ marginRight: 8 }} />
+                <Text className="text-amber-400 text-sm font-bold uppercase tracking-widest">Your Weekly Insight</Text>
+              </View>
+              <Text className="text-emerald-50 text-base leading-relaxed">{digestText}</Text>
+            </View>
+          </View>
+        )}
+
       </ScrollView>
+        </View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 }

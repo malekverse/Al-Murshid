@@ -13,8 +13,14 @@ interface ChatMessage {
 
 let conversationHistory: ChatMessage[] = [];
 
-function getSystemPrompt(language: string, streak: number, level: number): string {
+function getSystemPrompt(language: string, streak: number, level: number, reflectionsContext?: string): string {
   const isArabic = language === 'ar';
+
+  const reflectionBlock = reflectionsContext
+    ? (isArabic
+      ? `\n\nالتأملات الأخيرة للمستخدم (آخر 7 أيام):\n${reflectionsContext}\nاستخدم هذه المعلومات لتقديم إرشاد شخصي.`
+      : `\n\nUser's recent reflections (last 7 days):\n${reflectionsContext}\nUse this information to provide personalized spiritual guidance.`)
+    : '';
 
   if (isArabic) {
     return `أنت "المُرشِد"، مرشد روحي إسلامي حكيم ولطيف. أنت تجسد صفات الأب الحنون والحكيم.
@@ -22,7 +28,7 @@ function getSystemPrompt(language: string, streak: number, level: number): strin
 استخدم لغة عربية فصيحة ولكن بسيطة ومحببة. استشهد بالقرآن والحديث عند الحاجة.
 المستخدم حالياً في المستوى ${level} من رحلته الإيمانية، وعدد أيام متابعته: ${streak}.
 لا تخرج عن دورك كمرشد روحي. إذا سأل المستخدم عن مواضيع خارج نطاق الإرشاد الروحي، أعد توجيهه بلطف.
-حافظ على الردود موجزة (لا تتجاوز 3-4 جمل) ما لم يطلب المستخدم شرحاً أعمق.`;
+حافظ على الردود موجزة (لا تتجاوز 3-4 جمل) ما لم يطلب المستخدم شرحاً أعمق.${reflectionBlock}`;
   }
 
   return `You are "Al-Murshid" (The Guide), a wise and gentle Islamic spiritual mentor. You embody the qualities of a caring father figure.
@@ -30,7 +36,7 @@ Your role is to guide the user on their spiritual journey through Islam. Be warm
 Use gentle encouragement and reference Quranic verses or hadith when appropriate.
 The user is currently at Level ${level} of their faith journey, with a ${streak}-day consistency streak.
 Stay in character as a spiritual mentor. If asked about non-spiritual topics, gently redirect.
-Keep responses concise (3-4 sentences) unless the user asks for deeper explanation.`;
+Keep responses concise (3-4 sentences) unless the user asks for deeper explanation.${reflectionBlock}`;
 }
 
 export function resetConversation() {
@@ -41,9 +47,10 @@ export function sendMessage(
   userMessage: string,
   language: string,
   streak: number,
-  level: number
+  level: number,
+  reflectionsContext?: string
 ): Promise<string> {
-  const systemPrompt = getSystemPrompt(language, streak, level);
+  const systemPrompt = getSystemPrompt(language, streak, level, reflectionsContext);
 
   const messages: ChatMessage[] = [
     { role: 'system', content: systemPrompt },

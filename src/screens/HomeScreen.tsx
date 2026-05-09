@@ -7,14 +7,27 @@ import { useAppStore } from '../store';
 import { getNextPrayer, getPrayerTimes, detectCalcMethod } from '../utils/prayerTimes';
 import { useFatherlyCoach } from '../hooks/useFatherlyCoach';
 import { schedulePrayerNotifications } from '../services/notificationService';
+import { scheduleSmartReminders } from '../services/smartReminderService';
+import { logPrayer as logPrayerService } from '../services/data/prayerService';
 import { Ionicons } from '@expo/vector-icons';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 import { LinearGradient } from 'expo-linear-gradient';
 import { flipIcon } from '../utils/rtl';
+import dailyHadith from '../data/dailyHadith.json';
+
+const DAILY_HADITH_COUNT = dailyHadith.length;
+
+function getDailyHadith() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 0);
+  const diff = now.getTime() - startOfYear.getTime();
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return dailyHadith[dayOfYear % DAILY_HADITH_COUNT];
+}
 
 export default function HomeScreen({ navigation }: any) {
   const { t, i18n } = useTranslation();
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
-  const logPrayer = useAppStore((state) => state.logPrayer);
   const { insight } = useFatherlyCoach();
 
   const [nextPrayer, setNextPrayer] = useState<string>('Loading...');
@@ -22,6 +35,10 @@ export default function HomeScreen({ navigation }: any) {
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
   const [hijriDate, setHijriDate] = useState('');
+  const [countdown, setCountdown] = useState('');
+  const [prayerTimesList, setPrayerTimesList] = useState<Record<string, string>>({});
+  const [currentTime, setCurrentTime] = useState('');
+  const [coord, setCoord] = useState<{ lat: number; lng: number; method: any } | null>(null);
 
   // Animation Refs
   const fadeAnim1 = useRef(new Animated.Value(0)).current;
@@ -81,8 +98,20 @@ export default function HomeScreen({ navigation }: any) {
         // Schedule notifications for all prayer times
         const allTimes = getPrayerTimes(latitude, longitude, new Date(), method);
         if (allTimes) {
-          schedulePrayerNotifications(allTimes).catch(() => {});
+          schedulePrayerNotifications(allTimes).catch((e) => console.warn('schedulePrayerNotifications failed:', e));
+          scheduleSmartReminders(allTimes).catch((e) => console.warn('scheduleSmartReminders failed:', e));
+          // Store formatted prayer times for the widget
+          const formatted: Record<string, string> = {};
+          const labels = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+          for (const key of labels) {
+            const d = allTimes[key as keyof typeof allTimes];
+            if (d) {
+              formatted[key] = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+          }
+          setPrayerTimesList(formatted);
         }
+        setCoord({ lat: latitude, lng: longitude, method });
       } catch (err) {
         console.error("Location error:", err);
         setLocationError('Unable to fetch location. Tap to retry.');
@@ -96,7 +125,7 @@ export default function HomeScreen({ navigation }: any) {
       try {
         const now = new Date();
         const dateStr = `${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()}`;
-        const res = await fetch(`https://api.aladhan.com/v1/gToH/${dateStr}`);
+        const res = await fetchWithTimeout(`https://api.aladhan.com/v1/gToH/${dateStr}`);
         const json = await res.json();
         if (json.code === 200) {
           const h = json.data.hijri;
@@ -114,6 +143,39 @@ export default function HomeScreen({ navigation }: any) {
     })();
   }, []);
 
+  // Countdown timer + current time, updates every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      if (coord) {
+        const next = getNextPrayer(coord.lat, coord.lng, now, coord.method);
+        if (next !== 'none' && next !== 'sunrise') {
+          const times = getPrayerTimes(coord.lat, coord.lng, now, coord.method);
+          if (times) {
+            const nextTime = times[next as keyof typeof times];
+            if (nextTime instanceof Date) {
+              const diff = nextTime.getTime() - now.getTime();
+              if (diff > 0) {
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                setCountdown(
+                  hours > 0
+                    ? `${hours}h ${minutes}m ${seconds}s`
+                    : `${minutes}m ${seconds}s`
+                );
+              } else {
+                setCountdown(t('home.now'));
+              }
+            }
+          }
+        }
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [coord]);
+
   return (
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
@@ -129,6 +191,7 @@ export default function HomeScreen({ navigation }: any) {
             <TouchableOpacity
               onPress={() => navigation.navigate('Settings')}
               className="bg-emerald-900/80 w-12 h-12 rounded-full border border-emerald-800 mr-3 items-center justify-center shadow-lg"
+              accessibilityLabel="Settings"
             >
               <Ionicons name="settings-outline" size={24} color="#fbbf24" />
             </TouchableOpacity>
@@ -251,6 +314,44 @@ export default function HomeScreen({ navigation }: any) {
                 <Text className="text-indigo-300/80 text-xs font-medium">{t('home.sleepSunnahSubtitle')}</Text>
               </View>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Ramadan')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-amber-500/30"
+            >
+              <LinearGradient
+                colors={['#78350f', '#451a03']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
+                  <Ionicons name="star" size={20} color="#fbbf24" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('tabs.ramadan')}</Text>
+                <Text className="text-amber-300/80 text-xs font-medium">{t('home.ramadanSubtitle')}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Sadaqah')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-green-700/40"
+            >
+              <LinearGradient
+                colors={['#065f46', '#064e3b']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-emerald-500/20 items-center justify-center mb-3 border border-emerald-500/30">
+                  <Ionicons name="gift" size={20} color="#34d399" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('sadaqah.title')}</Text>
+                <Text className="text-emerald-300/80 text-xs font-medium">{t('home.sadaqahSubtitle')}</Text>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </Animated.View>
 
@@ -262,29 +363,87 @@ export default function HomeScreen({ navigation }: any) {
             end={{ x: 1, y: 1 }}
             style={StyleSheet.absoluteFillObject}
           />
-          <View className="p-6 flex-row justify-between items-center">
-            <View className="flex-1">
-              <View className="flex-row items-center mb-2">
+          <View className="p-5">
+            {/* Header with next prayer + countdown */}
+            <View className="flex-row justify-between items-center mb-4">
+              <View className="flex-row items-center">
                 <Ionicons name="time-outline" size={18} color="#6ee7b7" style={{ marginRight: 6 }} />
                 <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">{t('home.nextPrayer')}</Text>
               </View>
-
-              {isLoadingLocation ? (
-                <ActivityIndicator size="small" color="#fbbf24" style={{ alignSelf: 'flex-start', marginTop: 8 }} />
-              ) : locationError ? (
-                <TouchableOpacity className="mt-1 bg-red-900/30 p-2 rounded-lg border border-red-800/50">
-                  <Text className="text-red-300 text-xs font-medium">{locationError}</Text>
-                </TouchableOpacity>
-              ) : (
-                <Text className="text-amber-400 text-4xl font-extrabold capitalize tracking-tight">{nextPrayer}</Text>
-              )}
+              <Text className="text-emerald-400/60 text-xs font-mono">{currentTime}</Text>
             </View>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('PrayerTimes')}
-              className="bg-emerald-800/80 w-12 h-12 items-center justify-center rounded-full border border-emerald-700/50"
-            >
-              <Ionicons name={flipIcon('chevron-forward') as any} size={24} color="#6ee7b7" />
-            </TouchableOpacity>
+
+            {isLoadingLocation ? (
+              <ActivityIndicator size="small" color="#fbbf24" style={{ alignSelf: 'center', marginVertical: 12 }} />
+            ) : locationError ? (
+              <TouchableOpacity className="bg-red-900/30 p-3 rounded-lg border border-red-800/50 mb-3">
+                <Text className="text-red-300 text-xs font-medium text-center">{locationError}</Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <View className="flex-row items-center justify-between mb-4">
+                  <View>
+                    <Text className="text-amber-400 text-3xl font-extrabold capitalize tracking-tight">{nextPrayer}</Text>
+                    <Text className="text-emerald-300 text-lg font-bold font-mono mt-1">{countdown}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('PrayerTimes')}
+                    className="bg-emerald-800/80 w-12 h-12 items-center justify-center rounded-full border border-emerald-700/50"
+                    accessibilityLabel="View prayer times"
+                  >
+                    <Ionicons name={flipIcon('chevron-forward') as any} size={24} color="#6ee7b7" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* All prayer times */}
+                {Object.keys(prayerTimesList).length > 0 && (
+                  <View className="rounded-xl bg-emerald-900/40 border border-emerald-800/40 p-3">
+                    <Text className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">{t('home.prayerTimes')}</Text>
+                    {['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((key) => {
+                      const time = prayerTimesList[key];
+                      if (!time) return null;
+                      const isNext = key === nextPrayer;
+                      return (
+                        <View key={key} className={`flex-row justify-between items-center py-1.5 ${isNext ? '' : ''}`}>
+                          <View className="flex-row items-center">
+                            {isNext && <View className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2" />}
+                            <Text className={`text-sm capitalize ${isNext ? 'text-amber-300 font-bold' : 'text-emerald-200/70'}`}>
+                              {key}
+                            </Text>
+                          </View>
+                          <Text className={`text-sm font-mono ${isNext ? 'text-amber-300 font-bold' : 'text-emerald-200/70'}`}>
+                            {time}
+                          </Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                )}
+              </>
+            )}
+          </View>
+        </Animated.View>
+
+        {/* Daily Hadith */}
+        <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }} className="rounded-3xl mb-6 shadow-2xl border border-amber-700/30 relative overflow-hidden">
+          <LinearGradient
+            colors={['#78350f', '#451a03']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+          <View className="p-6">
+            <View className="flex-row items-center mb-4">
+              <Ionicons name="sunny" size={16} color="#fbbf24" style={{ marginRight: 8 }} />
+              <Text className="text-amber-300 text-sm font-bold uppercase tracking-widest">{t('home.dailyHadith')}</Text>
+            </View>
+            <Text className="text-amber-100 text-right leading-relaxed mb-3" style={{ fontFamily: 'sans-serif', fontSize: 16, lineHeight: 30 }}>
+              {getDailyHadith().ar}
+            </Text>
+            <Text className="text-amber-100/80 text-sm italic leading-relaxed mb-3">
+              {getDailyHadith().en}
+            </Text>
+            <Text className="text-amber-400/60 text-xs font-medium">— {getDailyHadith().source}</Text>
           </View>
         </Animated.View>
 
@@ -334,7 +493,7 @@ export default function HomeScreen({ navigation }: any) {
         {/* Action Button */}
         <Animated.View style={{ opacity: fadeAnim3, transform: [{ translateY: slideAnim3 }] }}>
           <TouchableOpacity
-            onPress={() => nextPrayerName && logPrayer(nextPrayerName)}
+            onPress={() => nextPrayerName && logPrayerService(nextPrayerName)}
             className="shadow-2xl active:opacity-80 rounded-full overflow-hidden"
           >
             <LinearGradient

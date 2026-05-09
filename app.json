@@ -12,8 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#022c22"
     },
+    "scheme": "almurshid",
     "ios": {
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "infoPlist": {
         "NSHealthShareUsageDescription": "Al-Murshid needs access to your sleep data to automatically track your Sunnah sleep habits.",
         "NSHealthUpdateUsageDescription": "Al-Murshid needs access to update your sleep data for accurate Sunnah sleep tracking."
@@ -39,7 +41,6 @@
     },
     "plugins": [
       "expo-sqlite",
-      "expo-audio",
       "expo-health-connect",
       [
         "expo-build-properties",

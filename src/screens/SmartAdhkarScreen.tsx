@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as Location from 'expo-location';
 import { flipIcon } from '../utils/rtl';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 const azkarData = require('../data/azkar.json');
 
@@ -69,7 +70,7 @@ export default function SmartAdhkarScreen() {
 
             // Accurate Weather via Open-Meteo (No API Key Required)
             try {
-              const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.coords.latitude}&longitude=${loc.coords.longitude}&current_weather=true`);
+              const weatherRes = await fetchWithTimeout(`https://api.open-meteo.com/v1/forecast?latitude=${loc.coords.latitude}&longitude=${loc.coords.longitude}&current_weather=true`);
               const weatherData = await weatherRes.json();
               if (weatherData && weatherData.current_weather && isMounted) {
                 setWeatherCode(weatherData.current_weather.weathercode);
@@ -195,6 +196,7 @@ export default function SmartAdhkarScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>

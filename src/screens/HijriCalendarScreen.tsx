@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 interface CalendarDay {
   gregorian: string;
@@ -77,7 +78,7 @@ export default function HijriCalendarScreen() {
       const now = new Date();
       const isCurrentMonth = month === (now.getMonth() + 1) && year === now.getFullYear();
 
-      const calRes = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${month}/${year}`);
+      const calRes = await fetchWithTimeout(`https://api.aladhan.com/v1/gToHCalendar/${month}/${year}`);
       const calJson = await calRes.json();
 
       if (calJson.code === 200 && calJson.data) {
@@ -185,7 +186,7 @@ export default function HijriCalendarScreen() {
           {/* Month & Year Header with Navigation */}
           <View className="items-center mb-8 mt-4">
             <View className="flex-row items-center justify-between w-full px-8">
-              <TouchableOpacity onPress={goToPrevMonth} className="p-2">
+              <TouchableOpacity onPress={goToPrevMonth} className="p-2" accessibilityLabel="Previous month">
                 <Ionicons name={flipIcon('chevron-back') as any} size={28} color="#6ee7b7" />
               </TouchableOpacity>
 
@@ -202,7 +203,7 @@ export default function HijriCalendarScreen() {
                 </Text>
               </View>
 
-              <TouchableOpacity onPress={goToNextMonth} className="p-2">
+              <TouchableOpacity onPress={goToNextMonth} className="p-2" accessibilityLabel="Next month">
                 <Ionicons name={flipIcon('chevron-forward') as any} size={28} color="#6ee7b7" />
               </TouchableOpacity>
             </View>
@@ -303,6 +304,7 @@ export default function HijriCalendarScreen() {
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
+          accessibilityLabel="Go back"
         >
           <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
         </TouchableOpacity>

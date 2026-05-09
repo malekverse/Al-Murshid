@@ -5,6 +5,7 @@ import * as Haptics from 'expo-haptics';
 import { Coordinates, Qibla } from 'adhan';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { StatusBar } from 'expo-status-bar';
 
 export default function QiblaScreen() {
   const { t } = useTranslation();
@@ -131,6 +132,7 @@ export default function QiblaScreen() {
 
   return (
     <LinearGradient colors={['#022c22', '#064e3b', '#022c22']} style={styles.container}>
+      <StatusBar style="light" />
       <Text style={styles.title}>{t('qibla.title')}</Text>
 
       {qiblaDirection !== null && (

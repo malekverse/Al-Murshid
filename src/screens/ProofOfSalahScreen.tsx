@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useAppStore } from '../store';
+import { saveCheckIn } from '../store/database';
 
 export default function ProofOfSalahScreen() {
   const navigation = useNavigation<any>();
@@ -35,6 +36,7 @@ export default function ProofOfSalahScreen() {
       setTimeout(() => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         addNoorPoints(50);
+        saveCheckIn(new Date().toISOString().split('T')[0], 'Masjid Al-Noor', 'Fajr', Date.now()).catch((e) => console.warn('saveCheckIn failed:', e));
         setIsVerifying(false);
         setIsVerified(true);
         Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }).start();
@@ -86,6 +88,7 @@ export default function ProofOfSalahScreen() {
               <TouchableOpacity 
                 onPress={() => navigation.goBack()}
                 className="w-10 h-10 rounded-full bg-black/40 items-center justify-center border border-white/20 backdrop-blur-md pointer-events-auto"
+                accessibilityLabel="Close"
               >
                 <Ionicons name="close" size={24} color="#fff" />
               </TouchableOpacity>

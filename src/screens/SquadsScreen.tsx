@@ -1,21 +1,33 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import { useAppStore } from '../store';
+import { getLevel, getLevelTitle } from '../types';
 
 export default function SquadsScreen() {
   const navigation = useNavigation<any>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const user = useAppStore((s) => s.user);
+  const noorPoints = useAppStore((s) => s.noorPoints);
+  const displayName = user?.displayName || 'You';
+  const userLevel = getLevel(noorPoints);
+  const userTitle = getLevelTitle(userLevel, i18n.language as 'en' | 'ar');
   return (
     <View className="flex-1 bg-emerald-950">
       <StatusBar style="light" />
-      <View className="px-6 pt-16 pb-4">
-        <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('ummah.title')}</Text>
-        <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('ummah.subtitle')}</Text>
+      <View className="px-6 pt-16 pb-4 flex-row justify-between items-center">
+        <View>
+          <Text className="text-amber-400 text-3xl font-extrabold tracking-tight">{t('ummah.title')}</Text>
+          <Text className="text-emerald-200 text-sm mt-1 font-medium">{t('ummah.subtitle')}</Text>
+        </View>
+        <View className="bg-emerald-800/60 px-3 py-1.5 rounded-full border border-amber-500/30">
+          <Text className="text-amber-300 text-xs font-bold uppercase tracking-wider">{t('community.preview')}</Text>
+        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
@@ -39,13 +51,13 @@ export default function SquadsScreen() {
             </View>
             
             <View className="space-y-4">
-              {['Omar', 'Zaid', 'Yusuf (You)'].map((name, index) => (
+              {['Omar', 'Zaid', displayName].map((name, index) => (
                 <View key={name} className="flex-row items-center justify-between mb-4 border-b border-emerald-700/50 pb-4">
                   <View className="flex-row items-center">
                     <View className="w-12 h-12 bg-emerald-800 rounded-full items-center justify-center mr-4 border border-emerald-600/50 shadow-md">
                       <Text className="text-amber-400 font-bold text-lg">{name[0]}</Text>
                     </View>
-                    <Text className="text-emerald-50 text-base font-medium">{name}</Text>
+                    <Text className="text-emerald-50 text-base font-medium">{name}{index === 2 ? ` (${userTitle})` : ''}</Text>
                   </View>
                   <View className="flex-row items-center gap-3">
                     <View className="flex-row items-center">
@@ -67,7 +79,7 @@ export default function SquadsScreen() {
               ))}
             </View>
 
-            <TouchableOpacity className="mt-4 shadow-xl active:opacity-80 rounded-full overflow-hidden">
+            <TouchableOpacity onPress={() => Alert.alert(t('misc.comingSoon'), t('misc.comingSoonDesc'))} className="mt-4 shadow-xl active:opacity-80 rounded-full overflow-hidden">
               <LinearGradient
                 colors={['#f59e0b', '#d97706']}
                 start={{ x: 0, y: 0 }}
@@ -149,20 +161,29 @@ export default function SquadsScreen() {
               <Text className="text-white text-xl font-bold tracking-wide">{t('ummah.communityRanks')}</Text>
             </View>
             
+            <View className="bg-emerald-800/30 p-3 rounded-2xl mb-3 border border-emerald-800/50">
+              <Text className="text-emerald-400/60 text-[10px] uppercase tracking-wider text-center mb-2">{t('community.demoLeaderboard')}</Text>
+            </View>
             <View className="flex-row justify-between items-center bg-emerald-800/60 p-4 rounded-2xl mb-3 border border-emerald-700/50 shadow-md">
               <View className="flex-row items-center">
-                <Text className="text-emerald-100 font-bold text-lg">1. Al-Muqeem</Text>
-                <Text className="text-emerald-300 text-sm ml-2 font-medium">{t('ummah.theConstant')}</Text>
+                <Text className="text-emerald-100 font-bold text-lg">1. {t('ummah.theConstant')}</Text>
               </View>
               <Ionicons name="trophy" size={24} color="#fbbf24" />
             </View>
             
             <View className="flex-row justify-between items-center bg-emerald-800/30 p-4 rounded-2xl border border-emerald-800/50">
               <View className="flex-row items-center">
-                <Text className="text-emerald-200 text-base font-semibold">2. Al-Talib</Text>
-                <Text className="text-emerald-400 text-xs ml-2">{t('ummah.theSeeker')}</Text>
+                <Text className="text-emerald-200 text-base font-semibold">2. {t('ummah.theSeeker')}</Text>
               </View>
               <Ionicons name="star" size={20} color="#6ee7b7" />
+            </View>
+            
+            <View className="flex-row justify-between items-center bg-emerald-800/20 p-4 rounded-2xl mt-3 border border-emerald-800/40">
+              <View className="flex-row items-center">
+                <Text className="text-emerald-300 text-base font-semibold">3. {displayName}</Text>
+                <Text className="text-emerald-400 text-xs ml-2">{userTitle}</Text>
+              </View>
+              <Ionicons name="trending-up" size={18} color="#34d399" />
             </View>
           </View>
         </View>

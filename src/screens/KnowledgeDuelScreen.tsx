@@ -7,22 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { useAppStore } from '../store';
-
-interface Question {
-  id: string;
-  text: string;
-  options: string[];
-  correctAnswer: number;
-}
-
-const quizData: Question[] = [
-  { id: '1', text: 'In which month was the Quran first revealed?', options: ['Rajab', 'Ramadan', 'Dhul-Hijjah', 'Sha\'ban'], correctAnswer: 1 },
-  { id: '2', text: 'Who was the first person to accept Islam?', options: ['Ali ibn Abi Talib', 'Abu Bakr', 'Khadijah bint Khuwaylid', 'Zayd ibn Harithah'], correctAnswer: 2 },
-  { id: '3', text: 'What is the longest Surah in the Quran?', options: ['Al-Imran', 'Al-Ma\'idah', 'Al-Nisa', 'Al-Baqarah'], correctAnswer: 3 },
-  { id: '4', text: 'Which prophet was swallowed by a whale?', options: ['Prophet Nuh', 'Prophet Yunus', 'Prophet Musa', 'Prophet Ibrahim'], correctAnswer: 1 },
-  { id: '5', text: 'How many times is prayer (Salah) obligatory daily?', options: ['3', '4', '5', '7'], correctAnswer: 2 },
-  { id: '6', text: 'In which battle did the Muslims face the Quraish despite being heavily outnumbered?', options: ['Battle of Uhud', 'Battle of the Trench', 'Battle of Hunayn', 'Battle of Badr'], correctAnswer: 3 },
-];
+import { saveDuelResult, getBestDuelResult } from '../store/database';
+import quizData from '../data/duelQuestions.json';
+import LoadingState from '../components/LoadingState';
 
 export default function KnowledgeDuelScreen() {
   const navigation = useNavigation();
@@ -35,6 +22,16 @@ export default function KnowledgeDuelScreen() {
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [correctOption, setCorrectOption] = useState<number | null>(null);
+  const [bestScore, setBestScore] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const hapticLock = useRef(false);
+
+  useEffect(() => {
+    getBestDuelResult().then((row: any) => {
+      if (row) setBestScore(row.score);
+    }).catch((e) => console.warn('getBestDuelResult failed:', e))
+    .finally(() => setLoading(false));
+  }, []);
 
   const timerAnim = useRef(new Animated.Value(1)).current;
   const cardAnim = useRef(new Animated.Value(1)).current;
@@ -56,8 +53,15 @@ export default function KnowledgeDuelScreen() {
     return () => clearTimeout(timer);
   }, [isPlaying, timeLeft, isGameOver]);
 
+  const safeHaptic = (fn: () => void) => {
+    if (hapticLock.current) return;
+    hapticLock.current = true;
+    fn();
+    setTimeout(() => { hapticLock.current = false; }, 200);
+  };
+
   const startGame = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    safeHaptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium));
     setIsPlaying(true);
     setIsGameOver(false);
     setTimeLeft(60);
@@ -69,8 +73,10 @@ export default function KnowledgeDuelScreen() {
   };
 
   const handleGameOver = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    safeHaptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning));
     addNoorPoints(score);
+    saveDuelResult(new Date().toISOString().split('T')[0], score, quizData.length, Date.now()).catch((e) => console.warn('saveDuelResult failed:', e));
+    if (score > bestScore) setBestScore(score);
     setIsGameOver(true);
     setIsPlaying(false);
   };
@@ -90,10 +96,10 @@ export default function KnowledgeDuelScreen() {
     setCorrectOption(currentQ.correctAnswer);
 
     if (index === currentQ.correctAnswer) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      safeHaptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success));
       setScore(prev => prev + 10);
     } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      safeHaptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error));
     }
 
     setTimeout(() => {
@@ -115,10 +121,15 @@ export default function KnowledgeDuelScreen() {
       <View className="w-24 h-24 rounded-full bg-teal-900/60 items-center justify-center border-4 border-teal-500/30 mb-8 shadow-2xl">
         <Ionicons name="flash" size={48} color="#fbbf24" />
       </View>
-      <Text className="text-4xl font-extrabold text-amber-400 tracking-tight text-center mb-4">Knowledge Duel</Text>
-      <Text className="text-emerald-100 text-lg text-center font-medium leading-relaxed mb-12">
-        Test your knowledge of the Seerah and Quran. You have 60 seconds to answer as many questions as you can.
+      <Text className="text-4xl font-extrabold text-amber-400 tracking-tight text-center mb-4">{t('duel.title')}</Text>
+      <Text className="text-emerald-100 text-lg text-center font-medium leading-relaxed mb-6">
+        {t('duel.description')}
       </Text>
+      {bestScore > 0 && (
+        <View className="bg-amber-500/10 border border-amber-500/30 px-6 py-3 rounded-full mb-8">
+          <Text className="text-amber-400 font-bold text-base">{t('duel.bestScore')}: {bestScore}</Text>
+        </View>
+      )}
       <TouchableOpacity 
         onPress={startGame}
         className="w-full shadow-2xl active:opacity-80 rounded-full overflow-hidden"
@@ -131,7 +142,7 @@ export default function KnowledgeDuelScreen() {
         />
         <View className="py-4 items-center flex-row justify-center">
           <Ionicons name="play" size={24} color="#022c22" style={{ marginRight: 8 }} />
-          <Text className="text-emerald-950 font-extrabold text-xl tracking-wide">Start Duel</Text>
+          <Text className="text-emerald-950 font-extrabold text-xl tracking-wide">{t('duel.startDuel')}</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -140,17 +151,22 @@ export default function KnowledgeDuelScreen() {
   const renderGameOverScreen = () => (
     <View className="flex-1 items-center justify-center px-8">
       <Ionicons name="trophy" size={80} color="#fbbf24" style={{ marginBottom: 24 }} />
-      <Text className="text-2xl font-bold text-emerald-50 mb-2">Duel Complete!</Text>
-      <Text className="text-5xl font-extrabold text-amber-400 mb-8">+{score} Noor</Text>
+      <Text className="text-2xl font-bold text-emerald-50 mb-2">{t('duel.duelComplete')}</Text>
+      <Text className="text-5xl font-extrabold text-amber-400 mb-8">+{score} {t('duel.score')}</Text>
       
       <View className="bg-emerald-900/60 w-full p-6 rounded-3xl border border-emerald-800/50 mb-8 shadow-lg">
         <View className="flex-row justify-between mb-4">
-          <Text className="text-emerald-200 font-medium text-lg">Correct Answers:</Text>
+          <Text className="text-emerald-200 font-medium text-lg">{t('duel.correctAnswers')}:</Text>
           <Text className="text-white font-bold text-lg">{score / 10}/{quizData.length}</Text>
         </View>
         <View className="flex-row justify-between">
-          <Text className="text-emerald-200 font-medium text-lg">Accuracy:</Text>
+          <Text className="text-emerald-200 font-medium text-lg">{t('duel.accuracy')}:</Text>
           <Text className="text-amber-400 font-bold text-lg">{Math.round((score / 10) / quizData.length * 100)}%</Text>
+        </View>
+        <View className="h-px bg-emerald-800 my-4" />
+        <View className="flex-row justify-between">
+          <Text className="text-emerald-200 font-medium text-lg">{t('duel.bestEver')}:</Text>
+          <Text className="text-amber-400 font-bold text-lg">{bestScore} {t('duel.score')}</Text>
         </View>
       </View>
 
@@ -159,7 +175,7 @@ export default function KnowledgeDuelScreen() {
           onPress={() => navigation.goBack()}
           className="flex-1 bg-emerald-800/80 py-4 rounded-full border border-emerald-700/50 items-center mr-2"
         >
-          <Text className="text-emerald-50 font-bold text-lg">Back</Text>
+          <Text className="text-emerald-50 font-bold text-lg">{t('duel.back')}</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={startGame}
@@ -171,7 +187,7 @@ export default function KnowledgeDuelScreen() {
             end={{ x: 1, y: 0 }}
             style={StyleSheet.absoluteFillObject}
           />
-          <Text className="text-emerald-950 font-bold text-lg">Play Again</Text>
+          <Text className="text-emerald-950 font-bold text-lg">{t('duel.playAgain')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -184,12 +200,12 @@ export default function KnowledgeDuelScreen() {
       <View className="flex-1 pt-12 px-6">
         {/* Top Bar */}
         <View className="flex-row justify-between items-center mb-8">
-          <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50">
+          <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50" accessibilityLabel="Close">
             <Ionicons name="close" size={20} color="#6ee7b7" />
           </TouchableOpacity>
           <View className="bg-amber-500/20 px-4 py-2 rounded-full border border-amber-500/40 flex-row items-center">
             <Ionicons name="star" size={16} color="#fbbf24" style={{ marginRight: 6 }} />
-            <Text className="text-amber-400 font-bold text-base">{score} Noor</Text>
+            <Text className="text-amber-400 font-bold text-base">{score} {t('duel.score')}</Text>
           </View>
         </View>
 
@@ -210,7 +226,7 @@ export default function KnowledgeDuelScreen() {
           className="flex-1"
         >
           <Text className="text-emerald-400 text-sm font-bold tracking-widest uppercase mb-4 text-center">
-            Question {currentQuestionIdx + 1} of {quizData.length}
+            {t('duel.question', { current: currentQuestionIdx + 1, total: quizData.length })}
           </Text>
           
           <View className="bg-emerald-900/40 p-6 rounded-3xl border border-emerald-700/30 mb-8 shadow-xl">
@@ -270,9 +286,10 @@ export default function KnowledgeDuelScreen() {
         style={StyleSheet.absoluteFillObject}
       />
       
-      {!isPlaying && !isGameOver && renderStartScreen()}
-      {isPlaying && !isGameOver && renderGameScreen()}
-      {isGameOver && renderGameOverScreen()}
+      {loading && <LoadingState message={t('loading')} />}
+      {!loading && !isPlaying && !isGameOver && renderStartScreen()}
+      {!loading && isPlaying && !isGameOver && renderGameScreen()}
+      {!loading && isGameOver && renderGameOverScreen()}
     </View>
   );
 }
