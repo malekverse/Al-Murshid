@@ -11,6 +11,12 @@ const resources = {
   ar: { common: arCommon }
 };
 
+// Force RTL immediately at module load time since the default language is Arabic.
+// This is critical for iOS — unlike Android, iOS does NOT auto-detect RTL from
+// the device locale. Without this, the very first render on iOS will be LTR.
+I18nManager.allowRTL(true);
+I18nManager.forceRTL(true);
+
 i18n
   .use(initReactI18next)
   .init({
@@ -32,6 +38,9 @@ export async function initLanguageFromStorage() {
   try {
     const stored = await AsyncStorage.getItem('app-language');
     if (stored === 'ar' || stored === 'en') {
+      const isArabic = stored === 'ar';
+      I18nManager.allowRTL(isArabic);
+      I18nManager.forceRTL(isArabic);
       i18n.changeLanguage(stored);
     }
   } catch {

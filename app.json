@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
+        "UIInterfaceLayoutDirection": "right-to-left",
         "NSHealthShareUsageDescription": "Al-Murshid needs access to your sleep data to automatically track your Sunnah sleep habits.",
         "NSHealthUpdateUsageDescription": "Al-Murshid needs access to update your sleep data for accurate Sunnah sleep tracking."
       }
