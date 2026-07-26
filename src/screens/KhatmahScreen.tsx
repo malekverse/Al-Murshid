@@ -12,7 +12,7 @@ import { saveKhatmahProgress, getKhatmahProgress } from '../store/database';
 const TOTAL_QURAN_PAGES = 604;
 
 export default function KhatmahScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t } = useTranslation();
 
   const GOAL_PRESETS = [

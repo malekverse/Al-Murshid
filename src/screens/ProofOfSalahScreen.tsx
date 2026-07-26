@@ -11,7 +11,7 @@ import { useAppStore } from '../store';
 import { saveCheckIn } from '../store/database';
 
 export default function ProofOfSalahScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const addNoorPoints = useAppStore((s) => s.addNoorPoints);
   const [permission, requestPermission] = useCameraPermissions();

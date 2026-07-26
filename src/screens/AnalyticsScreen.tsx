@@ -249,12 +249,12 @@ export default function AnalyticsScreen() {
             </View>
             {sleepStat.totalLogs > 0 ? (
               <>
-                <View className="flex-row justify-between mb-3">
-                  <View className="flex-1 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50 mr-2 items-center">
+                <View className="flex-row gap-2 mb-3">
+                  <View className="flex-1 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50 items-center">
                     <Text className="text-indigo-200 text-xs font-medium uppercase tracking-wider mb-1">{t('analytics.avgHours')}</Text>
                     <Text className="text-white font-bold text-2xl">{sleepStat.avgHours.toFixed(1)}</Text>
                   </View>
-                  <View className="flex-1 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50 ml-2 items-center">
+                  <View className="flex-1 bg-indigo-900/40 p-4 rounded-2xl border border-indigo-800/50 items-center">
                     <Text className="text-indigo-200 text-xs font-medium uppercase tracking-wider mb-1">{t('analytics.nightsLogged')}</Text>
                     <Text className="text-white font-bold text-2xl">{sleepStat.totalLogs}</Text>
                   </View>

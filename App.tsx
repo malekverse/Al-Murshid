@@ -157,7 +157,7 @@ export default function App() {
 function AppContent({ langKey }: { langKey: string }) {
   const colors = useTheme().colors;
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.bg }}>
+    <View className="flex-1" style={{ backgroundColor: colors.bg, direction: langKey === 'ar' ? 'rtl' : 'ltr' }}>
       <NavigationContainer key={langKey}>
         <RootNavigator />
       </NavigationContainer>

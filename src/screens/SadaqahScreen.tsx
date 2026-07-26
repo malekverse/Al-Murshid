@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../contexts/ThemeContext';
 import { saveSadaqahLog, getSadaqahSummary, getCategories, SadaqahSummary } from '../services/data/sadaqahService';
+import { flipIcon } from '../utils/rtl';
 
 export default function SadaqahScreen() {
   const { t } = useTranslation();
@@ -79,7 +80,7 @@ export default function SadaqahScreen() {
       <ScrollView className="flex-1 px-4 pt-16" showsVerticalScrollIndicator={false}>
         <View className="flex-row items-center mb-6">
           <TouchableOpacity onPress={() => (navigation as any).goBack()} className="w-10 h-10 rounded-full bg-emerald-800/60 items-center justify-center border border-emerald-700/50">
-            <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+            <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
           </TouchableOpacity>
           <Text className="text-emerald-50 text-2xl font-bold ml-4">{t('sadaqah.title')}</Text>
         </View>

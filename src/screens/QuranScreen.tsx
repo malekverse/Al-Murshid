@@ -18,7 +18,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 type ViewMode = 'list' | 'detail' | 'mushaf';
 
 export default function QuranScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
@@ -337,17 +337,17 @@ export default function QuranScreen() {
               <TextInput
                 value={goToPageText}
                 onChangeText={setGoToPageText}
-                placeholder="Page 1–604"
+                placeholder={t('quran.goToPagePlaceholder')}
                 placeholderTextColor="#6b9080"
                 keyboardType="number-pad"
                 autoFocus
                 onSubmitEditing={handleGoToPage}
                 style={mStyles.goToInput}
               />
-<TouchableOpacity onPress={handleGoToPage} style={[mStyles.topBtn, { marginLeft: 6 }]} accessibilityLabel="Go to page">
+<TouchableOpacity onPress={handleGoToPage} style={[mStyles.topBtn, i18n.language === 'ar' ? { marginRight: 6 } : { marginLeft: 6 }]} accessibilityLabel="Go to page">
                   <Ionicons name={flipIcon('arrow-forward') as any} size={16} color="#065f46" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { setShowGoTo(false); setGoToPageText(''); }} style={[mStyles.topBtn, { marginLeft: 4 }]} accessibilityLabel="Close">
+                <TouchableOpacity onPress={() => { setShowGoTo(false); setGoToPageText(''); }} style={[mStyles.topBtn, i18n.language === 'ar' ? { marginRight: 4 } : { marginLeft: 4 }]} accessibilityLabel="Close">
                   <Ionicons name="close" size={16} color="#065f46" />
                 </TouchableOpacity>
             </View>
@@ -382,6 +382,8 @@ export default function QuranScreen() {
           </View>
         ) : (
           <View style={{ flex: 1, backgroundColor: '#f0fdf4' }}>
+            {/* RTL: wrap + scaleX(-1) reverses scroll direction, inner scaleX(-1) flips content back */}
+            <View style={i18n.language === 'ar' ? { flex: 1, transform: [{ scaleX: -1 }] } : { flex: 1 }}>
             <FlatList
               ref={hListRef}
               data={pageWindow}
@@ -400,7 +402,7 @@ export default function QuranScreen() {
                 const pageData = pageCache.current.get(item);
                 if (!pageData) {
                   return (
-                    <View style={{ width: SCREEN_WIDTH, alignItems: 'center', justifyContent: 'center' }}>
+                    <View style={{ width: SCREEN_WIDTH, alignItems: 'center', justifyContent: 'center', transform: i18n.language === 'ar' ? [{ scaleX: -1 }] as any : [] }}>
                       <ActivityIndicator size="small" color="#059669" />
                     </View>
                   );
@@ -409,7 +411,7 @@ export default function QuranScreen() {
                 const surahHeaders = Object.values(pageData.surahs);
 
                 return (
-                  <View style={{ width: SCREEN_WIDTH }}>
+                  <View style={{ width: SCREEN_WIDTH, transform: i18n.language === 'ar' ? [{ scaleX: -1 }] as any : [] }}>
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 50 }}>
                       <View style={mStyles.ornamentBar}>
                         <View style={mStyles.ornamentLine} />
@@ -422,12 +424,12 @@ export default function QuranScreen() {
                         if (!firstAyah) return null;
                         return (
                           <View key={s.number} style={mStyles.surahHeader}>
-                            <View style={mStyles.surahDecorLeft}><Text style={mStyles.surahDecorText}>❁</Text></View>
+                            <View style={i18n.language === 'ar' ? mStyles.surahDecorRightRtl : mStyles.surahDecorLeft}><Text style={mStyles.surahDecorText}>❁</Text></View>
                             <View style={{ flex: 1, alignItems: 'center' }}>
                               <Text style={mStyles.surahArabicName}>{s.name}</Text>
                               <Text style={mStyles.surahEngName}>{s.englishName}</Text>
                             </View>
-                            <View style={mStyles.surahDecorRight}><Text style={mStyles.surahDecorText}>❁</Text></View>
+                            <View style={i18n.language === 'ar' ? mStyles.surahDecorLeftRtl : mStyles.surahDecorRight}><Text style={mStyles.surahDecorText}>❁</Text></View>
                             {s.number !== 9 && s.number !== 1 && (
                               <Text style={[mStyles.bismillah, { fontSize: mushafFontSize }]}>
                                 {t('quran.bismillahTranslation')}
@@ -478,6 +480,7 @@ export default function QuranScreen() {
                 );
               }}
             />
+            </View>
 
             {/* Footer */}
             <View style={mStyles.footer}>
@@ -851,6 +854,12 @@ const mStyles = StyleSheet.create({
   },
   surahDecorRight: {
     marginLeft: 8,
+  },
+  surahDecorLeftRtl: {
+    marginLeft: 8,
+  },
+  surahDecorRightRtl: {
+    marginRight: 8,
   },
   surahDecorText: {
     color: '#6ee7b7',

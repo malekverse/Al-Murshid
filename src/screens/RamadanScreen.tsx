@@ -102,7 +102,7 @@ export default function RamadanScreen() {
       });
       await loadData();
     } catch (e) {
-      Alert.alert('Error', 'Failed to save Ramadan log');
+      Alert.alert(t('ramadan.errorSave'));
     } finally {
       setSaving(false);
     }
@@ -114,7 +114,7 @@ export default function RamadanScreen() {
       setGoals({ year: currentYear, quran_goal_pages: quranGoal, sadaqah_goal: sadaqahGoal });
       setShowGoalForm(false);
     } catch (e) {
-      Alert.alert('Error', 'Failed to save goals');
+      Alert.alert(t('ramadan.errorGoals'));
     }
   };
 

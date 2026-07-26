@@ -24,7 +24,7 @@ interface AlarmNode {
 }
 
 export default function CommunityHeatmapScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const [nodes, setNodes] = useState<AlarmNode[]>([]);
   const [activeCount, setActiveCount] = useState(0);

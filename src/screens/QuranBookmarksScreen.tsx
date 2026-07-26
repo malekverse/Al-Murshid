@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../contexts/ThemeContext';
 import { getAllBookmarks, removeBookmark, QuranBookmark } from '../services/data/quranBookmarkService';
+import { flipIcon } from '../utils/rtl';
 
 export default function QuranBookmarksScreen({ navigation }: any) {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ export default function QuranBookmarksScreen({ navigation }: any) {
       <View className="px-6 pt-16 pb-4">
         <View className="flex-row items-center mb-6">
           <TouchableOpacity onPress={() => navigation.goBack()} className="w-10 h-10 rounded-full bg-emerald-800/60 items-center justify-center border border-emerald-700/50 mr-4">
-            <Ionicons name="arrow-back" size={20} color="#6ee7b7" />
+            <Ionicons name={flipIcon('arrow-back') as any} size={20} color="#6ee7b7" />
           </TouchableOpacity>
           <Text className="text-emerald-50 text-2xl font-bold">{t('quran.bookmarks')}</Text>
         </View>

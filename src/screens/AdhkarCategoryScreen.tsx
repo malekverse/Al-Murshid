@@ -4,15 +4,17 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
+import type { RootStackParamList } from '../navigation/types';
 
 // Load local JSON data
 const azkarData = require('../data/azkar.json');
 
 export default function AdhkarCategoryScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+  const navigation = useNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, 'AdhkarCategory'>>();
   const { categoryTitle, categoryName } = route.params || {};
   const { t } = useTranslation();
 

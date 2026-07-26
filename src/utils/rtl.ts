@@ -1,18 +1,16 @@
-import { I18nManager } from 'react-native';
+import i18n from '../i18n';
 
-/**
- * Returns true if the app is currently in RTL mode.
- */
-export function isRTL(): boolean {
-  return I18nManager.isRTL;
+function isRtlLang(): boolean {
+  return i18n.language === 'ar';
 }
 
 /**
  * Flips directional icon names for RTL.
  * e.g., 'arrow-back' becomes 'arrow-forward' in RTL.
+ * Uses the live i18n language so it works instantly on switch.
  */
 export function flipIcon(iconName: string): string {
-  if (!I18nManager.isRTL) return iconName;
+  if (!isRtlLang()) return iconName;
 
   const flips: Record<string, string> = {
     'arrow-back': 'arrow-forward',
@@ -25,16 +23,34 @@ export function flipIcon(iconName: string): string {
 }
 
 /**
- * Returns the flex direction for a row that should respect RTL.
- * Use this when NativeWind's automatic RTL flipping is not enough.
+ * Returns the correct margin/padding side for RTL.
+ * In LTR, 'end' = right, 'start' = left.
+ * In RTL, 'end' = left, 'start' = right.
  */
-export function flexDir(): 'row' | 'row-reverse' {
-  return I18nManager.isRTL ? 'row-reverse' : 'row';
+export function marginEnd(val: number) {
+  return isRtlLang() ? { marginLeft: val } : { marginRight: val };
+}
+
+export function marginStart(val: number) {
+  return isRtlLang() ? { marginRight: val } : { marginLeft: val };
+}
+
+export function paddingEnd(val: number) {
+  return isRtlLang() ? { paddingLeft: val } : { paddingRight: val };
+}
+
+export function paddingStart(val: number) {
+  return isRtlLang() ? { paddingRight: val } : { paddingLeft: val };
 }
 
 /**
- * Returns text alignment based on RTL.
+ * Flips horizontal absolute position for RTL.
+ * Pass the LTR value and it returns the correct value for current direction.
  */
-export function textAlign(): 'left' | 'right' {
-  return I18nManager.isRTL ? 'right' : 'left';
+export function posEnd(val: number) {
+  return isRtlLang() ? { left: val } : { right: val };
+}
+
+export function posStart(val: number) {
+  return isRtlLang() ? { right: val } : { left: val };
 }

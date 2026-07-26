@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store';
-import { signInWithEmail, signInWithGoogle, signInWithApple } from '../../services/supabase/auth';
+import { signInWithEmail, signInWithGoogle, signInWithApple, signInLocally } from '../../services/supabase/auth';
 import { getSupabase } from '../../services/supabase/client';
 
 export default function LoginScreen() {
@@ -171,11 +171,25 @@ export default function LoginScreen() {
             </View>
 
             <TouchableOpacity
-              onPress={() => (navigation as any).navigate('Register')}
+              onPress={() => navigation.navigate('Register')}
               className="items-center"
             >
               <Text className="text-emerald-400 text-sm">
                 {t('auth.noAccount')} <Text className="text-amber-400 font-bold">{t('auth.signUp')}</Text>
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                const result = signInLocally();
+                if (result.success && result.user) {
+                  setUser(result.user);
+                }
+              }}
+              className="items-center mt-4"
+            >
+              <Text className="text-emerald-600 text-xs">
+                {t('auth.continueOffline') || 'Continue Offline (Guest Mode)'}
               </Text>
             </TouchableOpacity>
           </View>

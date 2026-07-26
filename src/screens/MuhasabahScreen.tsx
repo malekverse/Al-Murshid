@@ -59,7 +59,7 @@ export default function MuhasabahScreen() {
       setSelectedMood(null);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      Alert.alert('Error', 'Failed to save reflection.');
+      Alert.alert(t('muhasabah.errorSave'));
     }
   };
 
@@ -83,7 +83,7 @@ export default function MuhasabahScreen() {
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('muhasabah.title')}</Text>
         <TouchableOpacity
-          onPress={() => (navigation as any).navigate('ReflectionHistory')}
+          onPress={() => navigation.navigate('ReflectionHistory')}
           className="w-10 h-10 rounded-full bg-emerald-900/80 items-center justify-center border border-emerald-700/50"
           accessibilityLabel="Reflection history"
         >
@@ -239,7 +239,7 @@ export default function MuhasabahScreen() {
               const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
               const recent = rows.filter(r => r.date >= weekAgo).slice(0, 14);
               if (recent.length === 0) {
-                Alert.alert('No Data', 'No reflections from the past week. Write a few reflections first!');
+                Alert.alert(t('misc.noData'), t('muhasabah.errorNoData'));
                 setDigestLoading(false);
                 return;
               }
@@ -254,7 +254,7 @@ export default function MuhasabahScreen() {
               const reply = await sendMessage(prompt, i18n.language, sunnahStreak, userLevel);
               setDigestText(reply);
             } catch (err: any) {
-              Alert.alert('Error', err.message || 'Failed to generate digest');
+              Alert.alert(t('muhasabah.errorDigest'));
             } finally {
               setDigestLoading(false);
             }

@@ -139,6 +139,19 @@ export const initDatabase = async () => {
       synced INTEGER DEFAULT 0
     );
 
+    CREATE TABLE IF NOT EXISTS daily_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      target_prayers INTEGER DEFAULT 5,
+      target_dhikr INTEGER DEFAULT 100,
+      target_quran_pages INTEGER DEFAULT 1,
+      target_sadaqah REAL DEFAULT 0,
+      target_sleep_hours REAL DEFAULT 7,
+      target_physical_exercise INTEGER DEFAULT 0,
+      synced INTEGER DEFAULT 0,
+      UNIQUE(date)
+    );
+
     CREATE UNIQUE INDEX IF NOT EXISTS idx_prayer_logs_unique ON prayer_logs(prayerName, date);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_sleep_logs_unique ON sleep_logs(date);
     CREATE UNIQUE INDEX IF NOT EXISTS idx_check_ins_unique ON check_ins(date, prayerName);
@@ -163,6 +176,7 @@ export const clearAllData = async () => {
     DELETE FROM ramadan_goals;
     DELETE FROM sadaqah_logs;
     DELETE FROM quran_bookmarks;
+    DELETE FROM daily_goals;
   `);
 };
 

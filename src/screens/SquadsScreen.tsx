@@ -10,7 +10,7 @@ import { useAppStore } from '../store';
 import { getLevel, getLevelTitle } from '../types';
 
 export default function SquadsScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   const user = useAppStore((s) => s.user);
   const noorPoints = useAppStore((s) => s.noorPoints);
@@ -95,10 +95,10 @@ export default function SquadsScreen() {
         </View>
 
         {/* Proof of Salah & Heatmap */}
-        <View className="flex-row space-x-4 mb-8">
+        <View className="flex-row gap-2 mb-8">
           <TouchableOpacity 
             onPress={() => navigation.navigate('ProofOfSalah')}
-            className="flex-1 bg-emerald-800/80 p-4 rounded-3xl border border-emerald-600/50 shadow-lg items-center justify-center mr-2"
+            className="flex-1 bg-emerald-800/80 p-4 rounded-3xl border border-emerald-600/50 shadow-lg items-center justify-center"
           >
             <View className="w-12 h-12 rounded-full bg-amber-500/20 items-center justify-center mb-3 border border-amber-500/30">
               <Ionicons name="camera" size={24} color="#fbbf24" />
@@ -109,7 +109,7 @@ export default function SquadsScreen() {
 
           <TouchableOpacity 
             onPress={() => navigation.navigate('CommunityHeatmap')}
-            className="flex-1 bg-teal-900/80 p-4 rounded-3xl border border-teal-700/50 shadow-lg items-center justify-center ml-2"
+            className="flex-1 bg-teal-900/80 p-4 rounded-3xl border border-teal-700/50 shadow-lg items-center justify-center"
           >
             <View className="w-12 h-12 rounded-full bg-teal-500/20 items-center justify-center mb-3 border border-teal-500/30">
               <Ionicons name="map" size={24} color="#6ee7b7" />

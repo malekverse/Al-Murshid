@@ -101,7 +101,7 @@ const FlipCard = ({ item, t, currentLang }: { item: typeof namesData[0], t: any,
 };
 
 export default function NamesOfAllahScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
 
   return (

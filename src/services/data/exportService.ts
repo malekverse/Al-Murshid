@@ -6,7 +6,7 @@ const ALL_TABLES = [
   'reflections', 'prayer_logs', 'sleep_logs', 'conversation_messages',
   'khatmah_progress', 'alarm_logs', 'check_ins', 'user_settings',
   'user_profile', 'sync_metadata', 'duel_results',
-  'ramadan_logs', 'ramadan_goals', 'sadaqah_logs', 'quran_bookmarks',
+  'ramadan_logs', 'ramadan_goals', 'sadaqah_logs', 'quran_bookmarks', 'daily_goals',
 ];
 
 export const exportAllDataAsJson = async (): Promise<string> => {

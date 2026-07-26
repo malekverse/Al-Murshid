@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { setAppLanguage } from '../i18n';
 import { flipIcon } from '../utils/rtl';
 import { getLevel, getLevelTitle } from '../types';
+import * as Updates from 'expo-updates';
 import { signOut } from '../services/supabase/auth';
 import { fullSync } from '../services/supabase/sync';
 import { loadPersistedSettings, persistSetting } from '../services/data/settingsService';
@@ -93,9 +94,21 @@ export default function SettingsScreen() {
 
   const handleChangeLanguage = () => {
     const targetLang = i18n.language === 'ar' ? 'en' : 'ar';
-    // Instant switch — no restart needed for text
-    setLanguage(targetLang);
-    setAppLanguage(targetLang);
+    Alert.alert(
+      t('settings.restartRequired'),
+      '',
+      [
+        { text: t('settings.cancel'), style: 'cancel' },
+        {
+          text: t('settings.restart'),
+          onPress: () => {
+            setLanguage(targetLang);
+            setAppLanguage(targetLang);
+            Updates.reloadAsync().catch(() => {});
+          },
+        },
+      ]
+    );
   };
 
   const handleSaveApiKey = () => {
@@ -131,7 +144,7 @@ export default function SettingsScreen() {
     {
           title: t('settings.account'),
           items: [
-            { label: t('profile.manageAccount'), subtitle: user?.email || '', icon: 'person-circle', action: true, onPress: () => (navigation as any).navigate('Profile') },
+            { label: t('profile.manageAccount'), subtitle: user?.email || '', icon: 'person-circle', action: true, onPress: () => navigation.navigate('Profile') },
             { label: t('settings.language'), subtitle: currentLanguageLabel, icon: 'language', action: true, onPress: handleChangeLanguage },
             { label: t('settings.privacyPolicy'), subtitle: t('settings.privacyPolicySubtitle'), icon: 'shield-checkmark', action: true },
             { label: t('settings.aboutAlMurshid'), subtitle: t('settings.version'), icon: 'information-circle', action: true },
@@ -154,7 +167,7 @@ export default function SettingsScreen() {
         </TouchableOpacity>
         <Text className="text-emerald-50 text-xl font-bold tracking-wide">{t('settings.title')}</Text>
         <TouchableOpacity
-          onPress={() => (navigation as any).navigate('Profile')}
+          onPress={() => navigation.navigate('Profile')}
           className="w-10 h-10 rounded-full bg-amber-500/20 items-center justify-center border border-amber-500/30"
           accessibilityLabel="Profile"
         >
@@ -166,7 +179,7 @@ export default function SettingsScreen() {
 
         {/* Profile Card */}
         <TouchableOpacity
-          onPress={() => (navigation as any).navigate('Profile')}
+          onPress={() => navigation.navigate('Profile')}
           className="rounded-3xl shadow-2xl border border-amber-500/20 overflow-hidden mb-8 active:opacity-80"
         >
           <LinearGradient
@@ -324,7 +337,7 @@ export default function SettingsScreen() {
         {/* Export Data */}
         <Animated.View style={{ opacity: sectionOpacities[3], transform: [{ translateY: sectionTranslates[3] }] }} className="mb-8">
           <TouchableOpacity
-            onPress={() => (navigation as any).navigate('Analytics')}
+            onPress={() => navigation.navigate('Analytics')}
             className="rounded-2xl overflow-hidden shadow-lg border border-emerald-800/50 active:opacity-80 mb-3"
           >
             <View className="bg-emerald-900/60 p-4 flex-row items-center justify-center">

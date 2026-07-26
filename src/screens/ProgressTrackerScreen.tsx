@@ -4,16 +4,20 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../store';
 import { flipIcon } from '../utils/rtl';
 
 export default function ProgressTrackerScreen() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const sunnahStreak = useAppStore((state) => state.sunnahStreak);
   const userLevel = useAppStore((state) => state.userLevel);
   const noorPoints = useAppStore((state) => state.noorPoints);
   const prayerLog = useAppStore((state) => state.prayerLog);
   const totalDhikrCount = useAppStore((state) => state.totalDhikrCount);
+  const prayerLogged = prayerLog.length > 0;
+  const dhikrDone = totalDhikrCount > 0;
 
   const levels = [
     { id: 1, title: 'Al-Mubtadi', subtitle: 'The Beginner', req: 0 },
@@ -63,14 +67,14 @@ export default function ProgressTrackerScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
 
         {/* Core Energy & Streak */}
-        <View className="flex-row space-x-4 mb-6 mt-4">
-          <View className="flex-1 bg-emerald-900/60 p-5 rounded-3xl border border-emerald-800/50 shadow-lg items-center mr-2">
+        <View className="flex-row gap-2 mb-6 mt-4">
+          <View className="flex-1 bg-emerald-900/60 p-5 rounded-3xl border border-emerald-800/50 shadow-lg items-center">
             <Ionicons name="flame" size={32} color="#fbbf24" style={{ marginBottom: 8 }} />
             <Text className="text-3xl font-extrabold text-amber-400 tracking-tight">{sunnahStreak}</Text>
             <Text className="text-emerald-300 text-xs font-bold uppercase tracking-wider mt-1">Day Streak</Text>
           </View>
 
-          <View className="flex-1 bg-teal-900/40 p-5 rounded-3xl border border-teal-800/50 shadow-lg items-center ml-2">
+          <View className="flex-1 bg-teal-900/40 p-5 rounded-3xl border border-teal-800/50 shadow-lg items-center">
             <Ionicons name="star" size={32} color="#6ee7b7" style={{ marginBottom: 8 }} />
             <Text className="text-3xl font-extrabold text-teal-200 tracking-tight">{currentNoor}</Text>
             <Text className="text-teal-400 text-xs font-bold uppercase tracking-wider mt-1">Total Noor</Text>
@@ -134,9 +138,23 @@ export default function ProgressTrackerScreen() {
         <View className="rounded-3xl bg-emerald-900/30 p-5 border border-emerald-800/40 mb-8 relative overflow-hidden">
           <Ionicons name="leaf" size={120} color="rgba(52, 211, 153, 0.03)" style={{ position: 'absolute', right: -20, bottom: -20 }} />
 
-          <View className="flex-row items-center mb-4 opacity-100">
-            <View className="w-8 h-8 rounded-full bg-teal-500 items-center justify-center mr-3 shadow-lg">
-              <Ionicons name="checkmark" size={16} color="#042f2e" />
+          <View className="flex-row items-center gap-3 mb-4 opacity-100">
+            <View className="w-8 h-8 rounded-full bg-teal-500 items-center justify-center shadow-lg">
+              <Ionicons name="checkmark" size={18} color="#022c22" />
+            </View>
+            <Text className="text-teal-100 font-bold text-base flex-1">{t('progress.onboarding')}</Text>
+          </View>
+          <View className="w-0.5 h-6 bg-teal-500 -mt-4 mb-2 opacity-50" />
+          <View className="flex-row items-center gap-3">
+            <View className={'w-8 h-8 rounded-full ' + (prayerLogged ? 'bg-teal-500' : 'bg-emerald-800') + ' items-center justify-center shadow-lg'}>
+              <Ionicons name={prayerLogged ? 'checkmark' : 'time'} size={18} color={prayerLogged ? '#022c22' : '#6ee7b7'} />
+            </View>
+            <Text className={'font-bold text-base flex-1 ' + (prayerLogged ? 'text-teal-100' : 'text-emerald-300')}>{t('progress.firstPrayer')}</Text>
+          </View>
+          <View className="w-0.5 h-6 bg-emerald-800 -mt-4 mb-2" />
+          <View className="flex-row items-center gap-3">
+            <View className={'w-8 h-8 rounded-full ' + (dhikrDone ? 'bg-teal-500' : 'bg-emerald-800') + ' items-center justify-center shadow-lg'}>
+              <Ionicons name={dhikrDone ? 'checkmark' : 'repeat'} size={18} color={dhikrDone ? '#022c22' : '#6ee7b7'} />
             </View>
             <View className="flex-1">
               <Text className="text-teal-200 font-bold text-base">Taharah (Purity)</Text>
@@ -144,10 +162,10 @@ export default function ProgressTrackerScreen() {
             </View>
           </View>
 
-          <View className="w-0.5 h-6 bg-teal-500 ml-4 -mt-4 mb-2 opacity-50" />
+          <View className="w-0.5 h-6 bg-teal-500 -mt-4 mb-2 opacity-50" />
 
-          <View className={`flex-row items-center mb-4 ${userLevel >= 1 ? 'opacity-100' : 'opacity-40'}`}>
-            <View className={`w-8 h-8 rounded-full ${userLevel >= 1 ? 'bg-amber-500 border-2 border-amber-300' : 'bg-emerald-900 border border-emerald-700'} items-center justify-center mr-3 shadow-lg`}>
+          <View className={`flex-row items-center gap-3 mb-4 ${userLevel >= 1 ? 'opacity-100' : 'opacity-40'}`}>
+            <View className={`w-8 h-8 rounded-full ${userLevel >= 1 ? 'bg-amber-500 border-2 border-amber-300' : 'bg-emerald-900 border border-emerald-700'} items-center justify-center shadow-lg`}>
               <Ionicons name={userLevel >= 1 ? 'flame' : 'lock-closed'} size={14} color={userLevel >= 1 ? '#022c22' : '#6ee7b7'} />
             </View>
             <View className="flex-1">

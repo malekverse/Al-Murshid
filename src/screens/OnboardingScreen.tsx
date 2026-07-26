@@ -75,7 +75,7 @@ export default function OnboardingScreen() {
                 />
                 <View className="p-5 flex-row items-center justify-between">
                   <Text className="text-emerald-50 font-bold text-xl" style={{ fontFamily: 'sans-serif' }}>العربية</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#fbbf24" />
+                  <Ionicons name={flipIcon('chevron-forward') as any} size={20} color="#fbbf24" />
                 </View>
               </TouchableOpacity>
 
@@ -92,7 +92,7 @@ export default function OnboardingScreen() {
                 />
                 <View className="p-5 flex-row items-center justify-between">
                   <Text className="text-emerald-50 font-bold text-xl">English</Text>
-                  <Ionicons name="chevron-forward" size={20} color="#6ee7b7" />
+                  <Ionicons name={flipIcon('chevron-forward') as any} size={20} color="#6ee7b7" />
                 </View>
               </TouchableOpacity>
             </View>

@@ -23,7 +23,7 @@ interface ContextualDua {
 }
 
 export default function SmartAdhkarScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const [speed, setSpeed] = useState<number | null>(null);
   const [weatherCode, setWeatherCode] = useState<number>(0);
@@ -214,16 +214,16 @@ export default function SmartAdhkarScreen() {
         </View>
 
         {/* Sensor Status Bar */}
-        <View className="flex-row justify-between mb-8">
-          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center mr-2 shadow-sm">
+        <View className="flex-row gap-1 mb-8">
+          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center shadow-sm">
             <Ionicons name="speedometer" size={20} color="#6ee7b7" style={{ marginBottom: 4 }} />
             <Text className="text-emerald-400 text-xs font-bold uppercase">{speed !== null ? `${Math.round(speed)} km/h` : t('smartAdhkar.detecting')}</Text>
           </View>
-          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center mx-1 shadow-sm">
+          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center shadow-sm">
             <Ionicons name="time" size={20} color="#fbbf24" style={{ marginBottom: 4 }} />
             <Text className="text-amber-400 text-xs font-bold uppercase">{timeOfDay}</Text>
           </View>
-          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center ml-2 shadow-sm">
+          <View className="bg-emerald-900/60 flex-1 p-3 rounded-2xl border border-emerald-800/50 items-center shadow-sm">
             <Ionicons name="cloud" size={20} color="#93c5fd" style={{ marginBottom: 4 }} />
             <Text className="text-blue-300 text-xs font-bold uppercase">{weatherCode >= 51 && weatherCode <= 99 ? 'Rain' : 'Clear'}</Text>
           </View>

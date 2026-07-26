@@ -26,6 +26,7 @@ import SmartAdhkarScreen from '../screens/SmartAdhkarScreen';
 import SunnahSleepScreen from '../screens/SunnahSleepScreen';
 import RamadanScreen from '../screens/RamadanScreen';
 import SadaqahScreen from '../screens/SadaqahScreen';
+import GoalsDashboardScreen from '../screens/GoalsDashboardScreen';
 import ProofOfSalahScreen from '../screens/ProofOfSalahScreen';
 import CommunityHeatmapScreen from '../screens/CommunityHeatmapScreen';
 import NamesOfAllahScreen from '../screens/NamesOfAllahScreen';
@@ -44,10 +45,11 @@ const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
 function MainTabs() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
+      direction={i18n.language === 'ar' ? 'rtl' : 'ltr'}
       screenOptions={{
         swipeEnabled: true,
         tabBarShowIcon: true,
@@ -167,7 +169,7 @@ export default function RootNavigator() {
   if (!hasCompletedOnboarding) {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="Onboarding">{() => <ScreenWrapper><OnboardingScreen /></ScreenWrapper>}</Stack.Screen>
       </Stack.Navigator>
     );
   }
@@ -176,7 +178,7 @@ export default function RootNavigator() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
         <Stack.Screen name="SessionExpired">
-          {() => <SessionExpiredScreen onContinue={() => setSessionExpired(false)} />}
+          {() => <ScreenWrapper><SessionExpiredScreen onContinue={() => setSessionExpired(false)} /></ScreenWrapper>}
         </Stack.Screen>
       </Stack.Navigator>
     );
@@ -186,8 +188,8 @@ export default function RootNavigator() {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
         <Stack.Group>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Login">{() => <ScreenWrapper><LoginScreen /></ScreenWrapper>}</Stack.Screen>
+          <Stack.Screen name="Register">{() => <ScreenWrapper><RegisterScreen /></ScreenWrapper>}</Stack.Screen>
         </Stack.Group>
       </Stack.Navigator>
     );
@@ -215,6 +217,7 @@ export default function RootNavigator() {
           <Stack.Screen name="SunnahSleep" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><SunnahSleepScreen /></ScreenWrapper>}</Stack.Screen>
         <Stack.Screen name="Ramadan" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><RamadanScreen /></ScreenWrapper>}</Stack.Screen>
           <Stack.Screen name="Sadaqah" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><SadaqahScreen /></ScreenWrapper>}</Stack.Screen>
+          <Stack.Screen name="GoalsDashboard" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><GoalsDashboardScreen /></ScreenWrapper>}</Stack.Screen>
           <Stack.Screen name="ProofOfSalah" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><ProofOfSalahScreen /></ScreenWrapper>}</Stack.Screen>
           <Stack.Screen name="CommunityHeatmap" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><CommunityHeatmapScreen /></ScreenWrapper>}</Stack.Screen>
           <Stack.Screen name="NamesOfAllah" options={{ presentation: 'modal' }}>{() => <ScreenWrapper><NamesOfAllahScreen /></ScreenWrapper>}</Stack.Screen>

@@ -43,6 +43,7 @@
     "sleepSunnahSubtitle": "Rest & Qailulah",
     "ramadanSubtitle": "Fasting & Tracker",
     "sadaqahSubtitle": "Charity Tracker",
+    "goalsSubtitle": "Daily Goals & Streaks",
     "nextPrayer": "Next Prayer",
     "prayerTimes": "Prayer Times",
     "now": "Now",
@@ -54,7 +55,11 @@
     "locationDenied": "Location permission denied. Tap to set manually.",
     "locationError": "Unable to fetch location. Tap to retry.",
     "verseAr": "إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-    "verseEn": "\"Indeed, with hardship [will be] ease.\" (94:6)"
+    "verseEn": "\"Indeed, with hardship [will be] ease.\" (94:6)",
+    "insight0": "Every journey begins with a single step. Make your intention pure today.",
+    "insight1_2": "You have completed {{days}} days of consistency. The Prophet (PBUH) loved small continuous deeds over large sporadic ones. Keep it up!",
+    "insight3_6": "MashaAllah, you are building a habit that Allah loves. Don't let Shaytan break your stride.",
+    "insight7": "Your tree is blooming with Noor. Remember to stay humble and guide your brothers and sisters."
   },
 
   "azkar": {
@@ -165,7 +170,8 @@
     "tafsirNotFound": "Tafsir not available for this ayah.",
     "bookmarks": "Bookmarks",
     "noBookmarks": "No bookmarks yet. Tap the bookmark icon on any ayah to save it.",
-    "removeBookmark": "Remove Bookmark"
+    "removeBookmark": "Remove Bookmark",
+    "goToPagePlaceholder": "Page 1–604"
   },
 
   "ummah": {
@@ -318,7 +324,15 @@
     "pause": "Pause Nap",
     "restart": "Restart Timer",
     "start": "Start 20m Nap",
-    "sunnahs": "Bedtime Sunnahs"
+    "sunnahs": "Bedtime Sunnahs",
+    "customBuildTitle": "Custom Build Required",
+    "customBuildDesc": "Health app sync requires a native build.\n\nTo enable:\n1. Run: npx expo prebuild --clean\n2. Run: npx expo run:android (or run:ios)\n\nThis cannot work in Expo Go.",
+    "permissionDenied": "Permission Denied. Enable Health access in Settings > Privacy > Health.",
+    "fetchError": "Could not fetch sleep data.",
+    "imported": "Imported {{hours}} hours of sleep from {{source}}.",
+    "noData": "No sleep records found for last night.",
+    "nativeBuildRequired": "Native Build Required.\n\nRun: npx expo run:{{platform}}",
+    "healthConnectNotFound": "Health Connect Not Found. Please install Google Health Connect from the Play Store."
   },
 
   "muhasabah": {
@@ -341,6 +355,9 @@
     "noReflections": "No reflections yet",
     "noReflectionsDesc": "Your self-reflections will appear here",
     "emptyReflection": "Write at least one reflection field before saving.",
+    "errorSave": "Failed to save reflection.",
+    "errorNoData": "No reflections from the past week. Write a few reflections first!",
+    "errorDigest": "Failed to generate digest",
     "moods": {
       "grateful": "Grateful",
       "peaceful": "Peaceful",
@@ -365,7 +382,10 @@
     "howToStart": "How it works:",
     "step1": "Select your goal duration above (30, 60, or 90 days).",
     "step2": "Every time you read, tap \"Log +10 Pages\" to record your progress.",
-    "step3": "Watch your percentage grow as you work towards completing the entire Qur'an!"
+    "step3": "Watch your percentage grow as you work towards completing the entire Qur'an!",
+    "days30": "30 Days",
+    "days60": "60 Days",
+    "days90": "90 Days"
   },
 
   "fajrAlarm": {
@@ -402,11 +422,18 @@
   },
 
   "community": {
-    "heatmapTitle": "Spiritual Heatmap",
+    "heatmapTitle": "Fajr Heatmap",
     "activeUsers": "Sabiqoon awake for Fajr",
     "cityLabel": "City: London",
     "pingSquad": "Ping Squad",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "fajrAlarmsLogged": "Fajr alarms logged (30 days)",
+    "completed": "Completed",
+    "dismissed": "Dismissed",
+    "you": "You",
+    "refreshData": "Refresh Data",
+    "preview": "Preview",
+    "demoLeaderboard": "Demo Leaderboard — Currently showing sample data"
   },
 
   "auth": {
@@ -430,6 +457,7 @@
     "invalidEmail": "Please enter a valid email address",
     "loginError": "Sign in failed. Check your credentials.",
     "registerError": "Registration failed. Try again.",
+    "continueOffline": "Continue Offline (Guest Mode)",
     "signOut": "Sign Out",
     "sessionExpired": "Session Expired",
     "sessionExpiredDesc": "Your session has ended. Please sign in again to continue syncing your spiritual journey.",
@@ -481,17 +509,6 @@
     "reflections": "Reflections (4 weeks)"
   },
 
-  "community": {
-    "heatmapTitle": "Fajr Heatmap",
-    "fajrAlarmsLogged": "Fajr alarms logged (30 days)",
-    "completed": "Completed",
-    "dismissed": "Dismissed",
-    "you": "You",
-    "refreshData": "Refresh Data",
-    "preview": "Preview",
-    "demoLeaderboard": "Demo Leaderboard — Currently showing sample data"
-  },
-
   "duel": {
     "title": "Knowledge Duel",
     "description": "Test your knowledge of the Seerah and Quran. You have 60 seconds to answer as many questions as you can.",
@@ -509,12 +526,6 @@
     "correct": "Correct!",
     "wrong": "Wrong!",
     "playAgain": "Play Again"
-  },
-
-  "khatmah": {
-    "days30": "30 Days",
-    "days60": "60 Days",
-    "days90": "90 Days"
   },
 
   "ramadan": {
@@ -536,7 +547,9 @@
     "sadaqah": "Sadaqah ($)",
     "duaNotes": "Du'a & Reflections",
     "duaNotesPlaceholder": "Your personal duas and thoughts...",
-    "save": "Save Today's Log"
+    "save": "Save Today's Log",
+    "errorSave": "Failed to save Ramadan log",
+    "errorGoals": "Failed to save goals"
   },
 
   "sadaqah": {
@@ -553,6 +566,26 @@
     "save": "Save",
     "invalidAmount": "Please enter a valid amount",
     "recentLogs": "Recent Entries"
+  },
+
+  "goals": {
+    "title": "Goals & Streaks",
+    "level": "Level",
+    "points": "pts",
+    "dayStreak": "Day Streak",
+    "noorPoints": "Noor Points",
+    "totalDhikr": "Total Dhikr",
+    "todayProgress": "Today's Progress",
+    "prayers": "Prayers",
+    "dhikr": "Dhikr",
+    "quranPages": "Quran Pages",
+    "sadaqah": "Sadaqah",
+    "sleep": "Sleep (hrs)",
+    "weeklyOverview": "Weekly Overview",
+    "setGoals": "Set Goals",
+    "setDailyTargets": "Set Daily Targets",
+    "save": "Save",
+    "cancel": "Cancel"
   },
 
   "misc": {

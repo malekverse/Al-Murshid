@@ -12,7 +12,7 @@ import { logPrayer as logPrayerService } from '../services/data/prayerService';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 import { LinearGradient } from 'expo-linear-gradient';
-import { flipIcon } from '../utils/rtl';
+import { flipIcon, marginEnd } from '../utils/rtl';
 import dailyHadith from '../data/dailyHadith.json';
 
 const DAILY_HADITH_COUNT = dailyHadith.length;
@@ -92,7 +92,8 @@ export default function HomeScreen({ navigation }: any) {
 
         const currentNext = getNextPrayer(latitude, longitude, new Date(), method);
         setNextPrayerName(currentNext === 'none' || currentNext === 'sunrise' ? '' : currentNext);
-        setNextPrayer(currentNext === 'none' ? 'Isha (Tomorrow)' : currentNext);
+        const prayerLabel = currentNext === 'none' ? t('home.ishaTomorrow') : t(`prayerTimes.names.${currentNext}`);
+        setNextPrayer(prayerLabel);
         setLocationError(null);
 
         // Schedule notifications for all prayer times
@@ -205,7 +206,7 @@ export default function HomeScreen({ navigation }: any) {
                 style={StyleSheet.absoluteFillObject}
               />
               <View className="px-4 py-2 flex-row items-center">
-                <Ionicons name="flame" size={16} color="#fbbf24" style={{ marginRight: 6 }} />
+                <Ionicons name="flame" size={16} color="#fbbf24" style={marginEnd(6)} />
                 <Text className="text-amber-300 font-bold text-base">{sunnahStreak}</Text>
               </View>
             </TouchableOpacity>
@@ -238,7 +239,7 @@ export default function HomeScreen({ navigation }: any) {
         {/* Quick Tools */}
         <Animated.View style={{ opacity: fadeAnim1, transform: [{ translateY: slideAnim1 }] }} className="mb-8">
           <Text className="text-emerald-50 text-xl font-bold tracking-wide mb-4">{t('home.quickTools')}</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 24 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: i18n.language === 'ar' ? 0 : 24, paddingLeft: i18n.language === 'ar' ? 24 : 0 }}>
             <TouchableOpacity
               onPress={() => navigation.navigate('ZakatCalculator')}
               className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-amber-500/30"
@@ -352,6 +353,25 @@ export default function HomeScreen({ navigation }: any) {
                 <Text className="text-emerald-300/80 text-xs font-medium">{t('home.sadaqahSubtitle')}</Text>
               </View>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('GoalsDashboard')}
+              className="w-40 mr-4 rounded-3xl overflow-hidden shadow-lg border border-purple-700/40"
+            >
+              <LinearGradient
+                colors={['#4c1d95', '#2e1065']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              <View className="p-4">
+                <View className="w-10 h-10 rounded-full bg-purple-500/20 items-center justify-center mb-3 border border-purple-500/30">
+                  <Ionicons name="trophy" size={20} color="#c084fc" />
+                </View>
+                <Text className="text-emerald-50 font-bold text-base mb-1">{t('goals.title')}</Text>
+                <Text className="text-purple-300/80 text-xs font-medium">{t('home.goalsSubtitle')}</Text>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </Animated.View>
 
@@ -367,7 +387,7 @@ export default function HomeScreen({ navigation }: any) {
             {/* Header with next prayer + countdown */}
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center">
-                <Ionicons name="time-outline" size={18} color="#6ee7b7" style={{ marginRight: 6 }} />
+                <Ionicons name="time-outline" size={18} color="#6ee7b7" style={marginEnd(6)} />
                 <Text className="text-emerald-300 text-sm font-bold uppercase tracking-widest">{t('home.nextPrayer')}</Text>
               </View>
               <Text className="text-emerald-400/60 text-xs font-mono">{currentTime}</Text>
@@ -402,13 +422,13 @@ export default function HomeScreen({ navigation }: any) {
                     {['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'].map((key) => {
                       const time = prayerTimesList[key];
                       if (!time) return null;
-                      const isNext = key === nextPrayer;
+                      const isNext = key === nextPrayerName;
                       return (
                         <View key={key} className={`flex-row justify-between items-center py-1.5 ${isNext ? '' : ''}`}>
                           <View className="flex-row items-center">
                             {isNext && <View className="w-1.5 h-1.5 rounded-full bg-amber-400 mr-2" />}
-                            <Text className={`text-sm capitalize ${isNext ? 'text-amber-300 font-bold' : 'text-emerald-200/70'}`}>
-                              {key}
+                            <Text className={`text-sm ${isNext ? 'text-amber-300 font-bold' : 'text-emerald-200/70'}`}>
+                              {t(`prayerTimes.names.${key}`)}
                             </Text>
                           </View>
                           <Text className={`text-sm font-mono ${isNext ? 'text-amber-300 font-bold' : 'text-emerald-200/70'}`}>
@@ -434,7 +454,7 @@ export default function HomeScreen({ navigation }: any) {
           />
           <View className="p-6">
             <View className="flex-row items-center mb-4">
-              <Ionicons name="sunny" size={16} color="#fbbf24" style={{ marginRight: 8 }} />
+              <Ionicons name="sunny" size={16} color="#fbbf24" style={marginEnd(8)} />
               <Text className="text-amber-300 text-sm font-bold uppercase tracking-widest">{t('home.dailyHadith')}</Text>
             </View>
             <Text className="text-amber-100 text-right leading-relaxed mb-3" style={{ fontFamily: 'sans-serif', fontSize: 16, lineHeight: 30 }}>
@@ -458,7 +478,7 @@ export default function HomeScreen({ navigation }: any) {
           <View className="p-6">
             <Ionicons name="book-outline" size={100} color="rgba(255,255,255,0.03)" style={{ position: 'absolute', right: -20, bottom: -20 }} />
             <View className="flex-row items-center mb-4">
-              <Ionicons name="star" size={16} color="#fbbf24" style={{ marginRight: 8 }} />
+              <Ionicons name="star" size={16} color="#fbbf24" style={marginEnd(8)} />
               <Text className="text-teal-200 text-sm font-bold uppercase tracking-widest">{t('home.verseOfTheHour')}</Text>
             </View>
             <Text className="text-amber-300 text-3xl font-serif text-right leading-relaxed mb-4" style={{ fontFamily: 'sans-serif' }}>
@@ -503,7 +523,7 @@ export default function HomeScreen({ navigation }: any) {
               style={StyleSheet.absoluteFillObject}
             />
             <View className="py-4 items-center flex-row justify-center">
-              <Ionicons name="checkmark-circle" size={24} color="#022c22" style={{ marginRight: 8 }} />
+              <Ionicons name="checkmark-circle" size={24} color="#022c22" style={marginEnd(8)} />
               <Text className="text-emerald-950 font-extrabold text-lg tracking-wide">{t('home.logCurrentPrayer')}</Text>
             </View>
           </TouchableOpacity>

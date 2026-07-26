@@ -152,3 +152,11 @@ function extractParams(url: string): { access_token: string; refresh_token: stri
 function localAuthResponse(email?: string): AuthResult {
   return { success: false, error: 'Supabase is not configured. Please set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in your .env file.' };
 }
+
+export function signInLocally(): AuthResult {
+  const id = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+  return {
+    success: true,
+    user: { id, email: 'local@almurshid.app', displayName: 'Local User' },
+  };
+}

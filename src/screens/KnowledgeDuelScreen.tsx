@@ -170,16 +170,16 @@ export default function KnowledgeDuelScreen() {
         </View>
       </View>
 
-      <View className="w-full flex-row space-x-4">
+      <View className="w-full flex-row gap-2">
         <TouchableOpacity 
           onPress={() => navigation.goBack()}
-          className="flex-1 bg-emerald-800/80 py-4 rounded-full border border-emerald-700/50 items-center mr-2"
+          className="flex-1 bg-emerald-800/80 py-4 rounded-full border border-emerald-700/50 items-center"
         >
           <Text className="text-emerald-50 font-bold text-lg">{t('duel.back')}</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={startGame}
-          className="flex-1 py-4 rounded-full overflow-hidden shadow-lg items-center ml-2"
+          className="flex-1 py-4 rounded-full overflow-hidden shadow-lg items-center"
         >
           <LinearGradient
             colors={['#f59e0b', '#d97706']}

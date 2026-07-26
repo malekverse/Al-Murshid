@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../store';
 import { signUpWithEmail } from '../../services/supabase/auth';
 import { getSupabase } from '../../services/supabase/client';
+import { flipIcon } from '../../utils/rtl';
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
@@ -66,7 +67,7 @@ export default function RegisterScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View className="flex-1 px-6 justify-center">
             <TouchableOpacity onPress={() => navigation.goBack()} className="mb-6 self-start" accessibilityLabel="Go back">
-              <Ionicons name="arrow-back" size={24} color="#6ee7b7" />
+              <Ionicons name={flipIcon('arrow-back') as any} size={24} color="#6ee7b7" />
             </TouchableOpacity>
 
             <View className="items-center mb-8">

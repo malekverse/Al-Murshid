@@ -25,7 +25,7 @@ interface SleepHabit {
 }
 
 export default function SunnahSleepScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   
   // Sleep Logger State
@@ -129,17 +129,8 @@ export default function SunnahSleepScreen() {
   const syncSleepData = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    // Detect Expo Go and show a helpful message
     if (isExpoGo) {
-      Alert.alert(
-        "Custom Build Required",
-        "Health app sync requires a native build.\n\n" +
-        "To enable this feature:\n" +
-        "1. Run: npx expo prebuild --clean\n" +
-        "2. Run: npx expo run:android (or run:ios on Mac)\n\n" +
-        "This feature cannot work inside Expo Go.",
-        [{ text: "OK" }]
-      );
+      Alert.alert(t('sleep.customBuildTitle'), t('sleep.customBuildDesc'), [{ text: "OK" }]);
       return;
     }
     
@@ -155,7 +146,7 @@ export default function SunnahSleepScreen() {
         
         AppleHealthKit.initHealthKit(permissions, (error: string) => {
           if (error) {
-            Alert.alert("Permission Denied", "Please enable Health access in Settings > Privacy > Health > Al-Murshid.");
+            Alert.alert(t('sleep.permissionDenied'));
             return;
           }
           
@@ -169,7 +160,7 @@ export default function SunnahSleepScreen() {
           
           AppleHealthKit.getSleepSamples(options, (err: Object, results: any[]) => {
             if (err) {
-              Alert.alert("Error", "Could not fetch sleep data from Apple Health.");
+              Alert.alert(t('sleep.fetchError'));
               return;
             }
             if (results && results.length > 0) {
@@ -183,28 +174,24 @@ export default function SunnahSleepScreen() {
               });
               if (totalMinutes > 0) {
                  setHoursSlept(totalMinutes / 60);
-                 Alert.alert("✅ Synced!", `Imported ${(totalMinutes / 60).toFixed(1)} hours of sleep from Apple Health.`);
+                 Alert.alert(t('sleep.imported', { hours: (totalMinutes / 60).toFixed(1), source: 'Apple Health' }));
               } else {
-                 Alert.alert("No Data", "No sleep records found for last night. Make sure your Apple Watch or iPhone is tracking sleep.");
+                 Alert.alert(t('sleep.noData'));
               }
             } else {
-              Alert.alert("No Data", "No sleep records found for last night. Make sure your Apple Watch or iPhone is tracking sleep.");
+              Alert.alert(t('sleep.noData'));
             }
           });
         });
       } catch (e) {
-        console.log(e);
-        Alert.alert(
-          "Native Build Required",
-          "Apple Health requires a custom native build.\n\nRun: npx expo run:ios"
-        );
+        Alert.alert(t('sleep.nativeBuildRequired', { platform: 'ios' }));
       }
     } else if (Platform.OS === 'android') {
       try {
         const { initialize, requestPermission, readRecords } = require('react-native-health-connect');
         const isInitialized = await initialize();
         if (!isInitialized) {
-           Alert.alert("Health Connect Not Found", "Please install Google Health Connect from the Play Store and try again.");
+           Alert.alert(t('sleep.healthConnectNotFound'));
            return;
         }
         
@@ -229,16 +216,12 @@ export default function SunnahSleepScreen() {
              totalMinutes += (end - start) / (1000 * 60);
           });
           setHoursSlept(totalMinutes / 60);
-          Alert.alert("✅ Synced!", `Imported ${(totalMinutes / 60).toFixed(1)} hours of sleep from Health Connect.`);
+          Alert.alert(t('sleep.imported', { hours: (totalMinutes / 60).toFixed(1), source: 'Health Connect' }));
         } else {
-          Alert.alert("No Data", "No sleep records found for last night in Health Connect.");
+          Alert.alert(t('sleep.noData'));
         }
       } catch (e) {
-        console.log(e);
-        Alert.alert(
-          "Native Build Required",
-          "Health Connect requires a custom native build.\n\nRun: npx expo run:android"
-        );
+        Alert.alert(t('sleep.nativeBuildRequired', { platform: 'android' }));
       }
     }
   };
@@ -332,7 +315,7 @@ export default function SunnahSleepScreen() {
                 <Ionicons name="alert-circle" size={18} color="#fbbf24" style={{ marginRight: 8, marginTop: 2 }} />
                 <Text className="text-amber-300 font-bold flex-1 text-base">{t('sleep.deficit')}</Text>
               </View>
-              <Text className="text-amber-100/80 text-sm leading-relaxed ml-7">
+              <Text className="text-amber-100/80 text-sm leading-relaxed">
                 {t('sleep.deficitDesc')}
               </Text>
             </View>

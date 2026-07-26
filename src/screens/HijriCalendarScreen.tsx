@@ -48,7 +48,7 @@ const PAGES = Array.from({ length: TOTAL_PAGES }, (_, i) => i);
 
 export default function HijriCalendarScreen() {
   const navigation = useNavigation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const pagerRef = useRef<PagerView>(null);
   
   const [currentIndex, setCurrentIndex] = useState(INITIAL_PAGE);
@@ -317,6 +317,7 @@ export default function HijriCalendarScreen() {
         ref={pagerRef}
         style={{ flex: 1 }}
         initialPage={INITIAL_PAGE}
+        layoutDirection={i18n.language === 'ar' ? 'rtl' : 'ltr'}
         onPageSelected={(e) => setCurrentIndex(e.nativeEvent.position)}
       >
         {PAGES.map((index) => {

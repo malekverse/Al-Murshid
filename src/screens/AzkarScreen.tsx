@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { flipIcon } from '../utils/rtl';
 
 export default function AzkarScreen() {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const { t } = useTranslation();
 
   const azkarCategories = [

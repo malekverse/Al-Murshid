@@ -46,6 +46,17 @@ export interface AppState {
   setUserInitiatedSignOut: (val: boolean) => void;
   updateProfile: (updates: Partial<UserState>) => void;
   setDarkMode: (val: boolean) => void;
+  computeUserLevel: () => void;
+}
+
+const LEVEL_MILESTONES = [0, 50, 150, 500, 1000];
+
+function calcLevel(points: number): number {
+  let level = 1;
+  for (let i = LEVEL_MILESTONES.length - 1; i >= 0; i--) {
+    if (points >= LEVEL_MILESTONES[i]) { level = i + 1; break; }
+  }
+  return level;
 }
 
 export const useAppStore = create<AppState>()(
@@ -77,16 +88,27 @@ export const useAppStore = create<AppState>()(
       }),
       incrementStreak: () => set((state) => ({ sunnahStreak: state.sunnahStreak + 1 })),
       setLanguage: (lang: 'en' | 'ar') => set({ language: lang }),
-      logPrayer: (prayerName: string) => set((state) => ({
-        prayerLog: [
-          ...state.prayerLog,
-          { prayerName, date: new Date().toISOString().split('T')[0], timestamp: Date.now() },
-        ],
-        sunnahStreak: state.sunnahStreak + 1,
-        noorPoints: state.noorPoints + 10,
-      })),
-      addNoorPoints: (points: number) => set((state) => ({ noorPoints: state.noorPoints + points })),
-      incrementDhikr: () => set((state) => ({ totalDhikrCount: state.totalDhikrCount + 1 })),
+      logPrayer: (prayerName: string) => set((state) => {
+        const newPoints = state.noorPoints + 10;
+        return {
+          prayerLog: [
+            ...state.prayerLog,
+            { prayerName, date: new Date().toISOString().split('T')[0], timestamp: Date.now() },
+          ],
+          sunnahStreak: state.sunnahStreak + 1,
+          noorPoints: newPoints,
+          userLevel: calcLevel(newPoints),
+        };
+      }),
+      addNoorPoints: (points: number) => set((state) => {
+        const newPoints = state.noorPoints + points;
+        return { noorPoints: newPoints, userLevel: calcLevel(newPoints) };
+      }),
+      incrementDhikr: () => set((state) => {
+        const newPoints = state.noorPoints + 1;
+        return { totalDhikrCount: state.totalDhikrCount + 1, noorPoints: newPoints, userLevel: calcLevel(newPoints) };
+      }),
+      computeUserLevel: () => set((state) => ({ userLevel: calcLevel(state.noorPoints) })),
       setOpenRouterApiKey: (key: string) => set({ openRouterApiKey: key }),
       setUser: (user: UserState | null) => set({ user }),
       setOnlineStatus: (online: boolean) => set({ isOnline: online }),
