@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local assistant files
+claude.md
+CLAUDE.md
+.claude/
