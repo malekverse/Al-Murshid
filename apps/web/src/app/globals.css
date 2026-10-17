@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@import '@murshid/tokens/theme.web.css';
+
+@layer base {
+  html {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Arabic is never letter-spaced and never synthetically bolded or slanted (SPEC 6.2). */
+  :lang(ar) {
+    letter-spacing: 0;
+    font-synthesis: none;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: var(--radius-control);
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-lantern) 30%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-property: opacity, color, background-color, border-color !important;
+    }
+  }
+}
+
+/* Visually hidden until focused: the skip link (SPEC 11). */
+@utility sr-only-focusable {
+  position: absolute;
+  inset-inline-start: var(--spacing-touch);
+  inset-block-start: calc(var(--spacing) * 2);
+  transform: translateY(-200%);
+  &:focus-visible {
+    transform: none;
+  }
+}

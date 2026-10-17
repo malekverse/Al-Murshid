@@ -1,0 +1,21 @@
+{
+  "app": {
+    "name": "Al-Murshid",
+    "tagline": "A calm companion for the five moments of your day"
+  },
+  "theme": {
+    "label": "Appearance",
+    "light": "Day",
+    "dark": "Night",
+    "auto": "Auto"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "time": {
+    "minutes": "{count, plural, one {# minute} other {# minutes}}"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  }
+}

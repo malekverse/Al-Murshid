@@ -1,0 +1,7 @@
+{
+  "extends": "@murshid/config/tsconfig/library.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "ES2024.String"]
+  },
+  "include": ["src", "scripts", "messages/**/*.json"]
+}

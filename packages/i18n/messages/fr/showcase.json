@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "Lumière paisible · Système de design",
+    "description": "Les jetons de design d’Al-Murshid : couleurs, ciel, typographie, espace et mouvement."
+  },
+  "eyebrow": "Système de design",
+  "title": "Lumière paisible",
+  "intro": "La lumière elle-même est le langage : le ciel est la seule couleur forte, les surfaces flottent comme du papier et du verre, et une seule lanterne chaleureuse signale ce qui compte.",
+  "sections": {
+    "color": "Couleurs",
+    "colorHint": "Chaque paire respecte le niveau AA des WCAG, de jour comme de nuit.",
+    "sky": "Ciel",
+    "skyHint": "Les points d’ancrage. Le ciel vivant passe de l’un à l’autre au rythme du soleil.",
+    "type": "Typographie",
+    "typeHint": "Readex Pro pour l’interface, Amiri pour les textes transmis. L’arabe est plus grand et plus aéré.",
+    "space": "Espace et formes",
+    "spaceHint": "Une grille de 4 points, et des zones tactiles d’au moins {size, number} points partout.",
+    "motion": "Mouvement",
+    "motionHint": "Appuyez longuement. Chaque élément revient en place sur un ressort doux."
+  },
+  "specimen": {
+    "display": "Lumière paisible",
+    "headline": "Les cinq moments de votre journée",
+    "body": "Un compagnon serein qui se présente à chaque moment de prière, puis s’efface.",
+    "caption": "Pensé pour tous les âges, l’arabe d’abord.",
+    "sacredSample": "خطّ النسخ الكلاسيكي، مخصّصٌ للنصوص المأثورة",
+    "sacredCaption": "Amiri · pour les adhkar et les douas"
+  },
+  "swatch": {
+    "contrast": "Contraste {ratio}:1"
+  },
+  "space": {
+    "radius": "Arrondis",
+    "spacing": "Espacements",
+    "touch": "Zone tactile"
+  },
+  "motion": {
+    "press": "Appuyez",
+    "durations": "Durées",
+    "springs": "Ressorts",
+    "ms": "{value, number} ms"
+  }
+}

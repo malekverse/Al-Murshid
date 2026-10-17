@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "Quiet Light · Design system",
+    "description": "Al-Murshid design tokens: color, sky, type, space and motion."
+  },
+  "eyebrow": "Design system",
+  "title": "Quiet Light",
+  "intro": "Light itself is the language: the sky is the only strong color, surfaces float like paper and glass, and one warm lantern marks what matters.",
+  "sections": {
+    "color": "Color",
+    "colorHint": "Every pair here passes WCAG AA, by day and by night.",
+    "sky": "Sky",
+    "skyHint": "The anchor stops. The living sky moves between them with the sun.",
+    "type": "Type",
+    "typeHint": "Readex Pro for the interface, Amiri for transmitted texts. Arabic runs larger and looser.",
+    "space": "Space and shape",
+    "spaceHint": "A 4-point grid, and touch targets of at least {size, number} points everywhere.",
+    "motion": "Motion",
+    "motionHint": "Press and hold. Every pressable settles back on a gentle spring."
+  },
+  "specimen": {
+    "display": "Quiet light",
+    "headline": "The five moments of your day",
+    "body": "A calm companion that shows up at each prayer moment, then gets out of the way.",
+    "caption": "Built for every age, Arabic first.",
+    "sacredSample": "خطّ النسخ الكلاسيكي، مخصّصٌ للنصوص المأثورة",
+    "sacredCaption": "Amiri · for adhkar and duas"
+  },
+  "swatch": {
+    "contrast": "Contrast {ratio}:1"
+  },
+  "space": {
+    "radius": "Radius",
+    "spacing": "Spacing",
+    "touch": "Touch target"
+  },
+  "motion": {
+    "press": "Press me",
+    "durations": "Durations",
+    "springs": "Springs",
+    "ms": "{value, number} ms"
+  }
+}

@@ -1,46 +1,47 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
 # dependencies
 node_modules/
 
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
+# env
+.env
+.env*.local
 
-# Native
-.kotlin/
-*.orig.*
+# build output
+.next/
+out/
+dist/
+build/
+web-build/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Expo (continuous native generation: no committed native folders)
+.expo/
+expo-env.d.ts
+apps/mobile/ios/
+apps/mobile/android/
+.metro-health-check*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
 *.pem
 
-# local env files
-.env*.local
+# Supabase
+supabase/.branches/
+supabase/.temp/
 
-# typescript
-*.tsbuildinfo
+# test output
+coverage/
+playwright-report/
+test-results/
 
-# generated native folders
-/ios
-/android
+# OS / editors
+.DS_Store
+Thumbs.db
+*.log
 
-# local assistant files
-claude.md
-CLAUDE.md
-.claude/
+# Image drops wait in design/inbox until reviewed; accepted originals move to design/source
+design/inbox/*
+!design/inbox/README.md

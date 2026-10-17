@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Al-Murshid",
+    "slug": "al-murshid",
+    "version": "0.1.0",
+    "scheme": "almurshid",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#F7F4EE",
+    "ios": {
+      "bundleIdentifier": "com.malekverse.almurshid",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleLocalizations": ["ar", "en", "fr"],
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "package": "com.malekverse.almurshid",
+      "adaptiveIcon": {
+        "backgroundColor": "#1E2A4A",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120,
+          "backgroundColor": "#F7F4EE",
+          "dark": {
+            "image": "./assets/images/splash-icon.png",
+            "backgroundColor": "#0E1116"
+          }
+        }
+      ],
+      "./plugins/with-short-native-build-paths"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

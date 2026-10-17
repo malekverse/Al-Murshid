@@ -1,0 +1,16 @@
+diff --git a/src/components/index.ts b/src/components/index.ts
+index 6fcad21b91dae2d029671aca1a6588a031831236..e03bb0e39c5c0ce7146def23dca78770b6ce0553 100644
+--- a/src/components/index.ts
++++ b/src/components/index.ts
+@@ -94,6 +94,11 @@ module.exports = {
+     get AccessibilityInfo() {
+         return require('react-native').AccessibilityInfo
+     },
++    // React Native 0.88 exports AssetRegistry from 'react-native'; expo-asset (fonts, images)
++    // imports it from there. Without this getter it resolves to undefined through Uniwind.
++    get AssetRegistry() {
++        return require('react-native').AssetRegistry
++    },
+     get ActionSheetIOS() {
+         return require('react-native').ActionSheetIOS
+     },

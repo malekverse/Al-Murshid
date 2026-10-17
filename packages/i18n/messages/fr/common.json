@@ -1,0 +1,21 @@
+{
+  "app": {
+    "name": "Al-Murshid",
+    "tagline": "Un compagnon serein pour les cinq moments de votre journée"
+  },
+  "theme": {
+    "label": "Apparence",
+    "light": "Jour",
+    "dark": "Nuit",
+    "auto": "Auto"
+  },
+  "language": {
+    "label": "Langue"
+  },
+  "time": {
+    "minutes": "{count, plural, one {# minute} many {# minutes} other {# minutes}}"
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu"
+  }
+}

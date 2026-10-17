@@ -1,0 +1,4 @@
+{
+  "extends": "@murshid/config/tsconfig/library.json",
+  "include": ["src", "scripts"]
+}

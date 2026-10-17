@@ -1,0 +1,33 @@
+{
+  "name": "@murshid/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@murshid/i18n": "workspace:*",
+    "@murshid/tokens": "workspace:*",
+    "motion": "14.3.0",
+    "next": "16.4.2",
+    "next-intl": "4.14.9",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@murshid/config": "workspace:*",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "19.3.0",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "catalog:",
+    "eslint-config-next": "16.4.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "catalog:"
+  }
+}

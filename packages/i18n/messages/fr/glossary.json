@@ -1,0 +1,12 @@
+{
+  "prayer": {
+    "fajr": "Fajr",
+    "sunrise": "Lever du soleil",
+    "dhuhr": "Dohr",
+    "asr": "Asr",
+    "maghrib": "Maghreb",
+    "isha": "Icha",
+    "jumuah": "Joumou’a"
+  },
+  "night": "Nuit"
+}

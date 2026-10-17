@@ -1,0 +1,32 @@
+packages:
+  - apps/*
+  - packages/*
+  - supabase
+
+catalog:
+  '@types/node': 22.20.5
+  '@types/react': 19.3.0
+  eslint: 9.39.5
+  react: 19.3.0
+  react-dom: 19.3.0
+  tsx: 4.23.15
+  typescript: 6.0.3
+  typescript-eslint: 8.71.2
+  use-intl: 4.14.9
+  vitest: 5.0.5
+  zod: 4.6.7
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@swc/core'
+
+nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp
+  - unrs-resolver
+
+patchedDependencies:
+  uniwind@1.12.2: patches/uniwind@1.12.2.patch

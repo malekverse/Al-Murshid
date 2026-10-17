@@ -1,0 +1,26 @@
+{
+  "name": "@murshid/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.web.css": "./generated/theme.web.css",
+    "./theme.native.css": "./generated/theme.native.css"
+  },
+  "scripts": {
+    "build": "tsx scripts/generate.ts",
+    "check": "tsx scripts/generate.ts --check",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@murshid/config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "app": {
+    "name": "المُرشِد",
+    "tagline": "رفيقٌ هادئ للحظات يومك الخمس"
+  },
+  "theme": {
+    "label": "المظهر",
+    "light": "نهار",
+    "dark": "ليل",
+    "auto": "تلقائي"
+  },
+  "language": {
+    "label": "اللغة"
+  },
+  "time": {
+    "minutes": "{count, plural, zero {أقل من دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}"
+  },
+  "a11y": {
+    "skipToContent": "انتقل إلى المحتوى"
+  }
+}
