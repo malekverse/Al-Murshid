@@ -97,6 +97,17 @@ Newest phase at the bottom.
 - **The debug build is not a valid measurement.** On the emulator it renders at ~10 fps even when idle, because debug native libraries (Skia, Reanimated) are unoptimized and JS runs in dev mode.
 - **This emulator cannot show 60 fps for anything.** Release-build medians (`dumpsys gfxinfo`): Android's own Settings app 53 ms, the sky test screen 69 ms (26 fps on its UI-thread counter), the full gallery 97 ms. The sky costs about 1.3x the system baseline here, which is encouraging but proves nothing about a phone.
 - **`/dev/sky` is the gate's test bench:** the sky alone, gliding through a whole day the way Today drives it, with a frame counter measured on the UI thread. The Phase 2 gate stays open until it holds about 60 fps on a three-year-old mid-range Android phone in a release build.
+- **Passed on the owner's Android phone (2026-10-18).** With the ARM64 release APK, the gallery and `/dev/sky` ran smoothly ("it works perfectly"), so the frame-rate part of the gate is closed.
+
+### Quran text and font, and the gate (2026-10-18)
+
+- **The Quran font is the King Fahd Complex's QPC Hafs V22 (KFGQPC HAFS Uthmanic Script 2.2), with its matching QPC Hafs ayah-by-ayah text, both from QUL.** SPEC 6.2 names this font, and the text uses exactly the characters it was built for. QUL's Digital Khatt and IndoPak scripts serve other mushaf styles. The King Fahd Complex's own sites time out from here, and QUL downloads need an account (the owner's).
+- **The font's license (embedded in the font) allows free use, copying and distribution, but no selling or modifying, so it ships exactly as published.** There is no subsetting (SPEC 8.3's "subset" does not apply to it): WOFF2 on web and TTF on mobile, both as QUL serves them. Web loads it only where Quran text appears (no preload) with `font-display: block`, so Quran text never flashes in a fallback that lacks its marks.
+- **`packages/content` starts now: the downloaded files, untouched, plus `sources.json` (URL, publisher, license, date, SHA-256).** `sources.test.ts` is SPEC 10's hash test and also pins both font files; Turborepo hashes the fonts as inputs to that test. The full content schema (references, reviews, translations) comes in Phases 5 and 7. QUL states no terms for the QPC Hafs text itself, which is the King Fahd Complex's published text. Confirm before launch (Phase 9).
+- **The QPC Hafs text ends each ayah with its number in Arabic-Indic digits, which the font draws as the end-of-ayah ornament.** `AyahText` now renders the text as it is and no longer adds its own `۝` marker. In 2:72 the number follows a plain space instead of a no-break space. The text stays as published; the reader (Phase 5) should keep the last word and the ornament on one line.
+- **Quran text lays out right to left in every UI language:** `dir="rtl"` on web, `direction` plus `writingDirection` on native. Android had aligned it left inside English screens.
+- **A dhikr that is Quran (Al-Ikhlas, Ayat al-Kursi) renders in the Quran font through `DhikrCard quran`.** The gallery shows Al-Ikhlas this way, with a count of 3 as a sample only. Real adhkar, with their hadith references, arrive with reviewed content in Phase 7. Galleries use only text from `packages/content`, nothing typed by hand.
+- **The Phase 2 gate is closed.** The sky test held on the owner's phone, and the gallery now includes every SPEC 6.6 component. It was checked on web and Android in Arabic and English, light and dark, and at phone width.
 
 ## Phase 3 · Core engine (2026-10-18)
 

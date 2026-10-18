@@ -4,3 +4,6 @@
 *.ttf binary
 *.otf binary
 *.woff2 binary
+
+# Content sources stay byte for byte as published (packages/content/sources.json)
+packages/content/quran/source/** -text

@@ -1,9 +1,11 @@
-import { toArabicIndic } from '@murshid/i18n';
 import { quranSizeRange, typeScale } from '@murshid/tokens';
 import { useTranslations } from 'next-intl';
 
 export interface AyahTextProps {
-  /** Verbatim Quran text from packages/content. Never edited, generated or animated. */
+  /**
+   * Verbatim Quran text from packages/content, ending with its ayah number (the QPC Hafs font
+   * draws it as the end-of-ayah ornament). Never edited, generated or animated.
+   */
   text: string;
   surahName: string;
   number: number;
@@ -12,9 +14,9 @@ export interface AyahTextProps {
 }
 
 /**
- * One ayah in the Quran font, followed by its end-of-ayah marker with Arabic-Indic digits
- * whatever the digit setting (SPEC 7). No letter spacing, synthetic weight or transform is
- * ever applied (SPEC 5.5), and nothing here animates (SPEC 2).
+ * One ayah in the Quran font, exactly as published. Its end-of-ayah ornament keeps the mushaf's
+ * own numerals whatever the digit setting (SPEC 7). No letter spacing, synthetic weight or
+ * transform is ever applied (SPEC 5.5), and nothing here animates (SPEC 2).
  */
 export function AyahText({
   text,
@@ -33,11 +35,7 @@ export function AyahText({
       className="font-quran text-ink"
       style={{ fontSize: px, lineHeight: typeScale.quran.arabic.lineHeight }}
     >
-      {text}{' '}
-      <span aria-hidden className="whitespace-nowrap">
-        {'۝'}
-        {toArabicIndic(number)}
-      </span>
+      {text}
     </p>
   );
 }

@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
-  transpilePackages: ['@murshid/i18n', '@murshid/tokens'],
+  transpilePackages: ['@murshid/content', '@murshid/i18n', '@murshid/tokens'],
   turbopack: {
     rules: {
       '*.css': {

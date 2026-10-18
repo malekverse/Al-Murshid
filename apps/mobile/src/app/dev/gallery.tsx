@@ -1,4 +1,14 @@
-import { colors, glassToneFor, radius, skyAt, space, type SunPosition } from '@murshid/tokens';
+import { ayah, ayahs, surah } from '@murshid/content';
+import {
+  colors,
+  glassToneFor,
+  quranSizeRange,
+  radius,
+  skyAt,
+  space,
+  typeScale,
+  type SunPosition,
+} from '@murshid/tokens';
 import { router } from 'expo-router';
 import { ArrowLeft } from 'phosphor-react-native/src/icons/ArrowLeft';
 import { Bell } from 'phosphor-react-native/src/icons/Bell';
@@ -10,9 +20,11 @@ import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isolate } from '@murshid/i18n';
 import { useFormatter, useTranslations } from 'use-intl';
+import { AyahText } from '@/components/ui/ayah-text';
 import { Button } from '@/components/ui/button';
 import { Card, GlassCard } from '@/components/ui/card';
 import { Countdown } from '@/components/ui/countdown';
+import { DhikrCard } from '@/components/ui/dhikr-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
@@ -26,6 +38,7 @@ import { Slider } from '@/components/ui/slider';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { Toggle } from '@/components/ui/toggle';
+import { useAppLocale } from '@/lib/locale';
 
 // Sample times only (shown in UTC); real times come from packages/core in Phase 3.
 const at = (h: number, m: number) => new Date(Date.UTC(2026, 9, 16, h, m));
@@ -68,6 +81,7 @@ export default function GalleryScreen() {
       <ButtonsSection />
       <ControlsSection />
       <CardsSection />
+      <SacredSection />
       <ProgressSection />
       <PrayerSection />
       <FeedbackSection />
@@ -246,6 +260,63 @@ function CardsSection() {
         />
         <ListRow title={t('samples.rowMethod')} icon={Calculator} onPress={() => {}} disabled />
       </ListGroup>
+    </Section>
+  );
+}
+
+// Al-Muzzammil 73:4, Ayat al-Kursi (2:255) and Al-Ikhlas, verbatim from packages/content.
+const sacred = { short: ayah(73, 4), long: ayah(2, 255), ikhlas: ayahs(112, 1, 4) };
+
+function SacredSection() {
+  const t = useTranslations('gallery');
+  // The app's language, not use-intl's locale (an Intl tag such as ar-u-nu-latn).
+  const { locale } = useAppLocale();
+  const format = useFormatter();
+  const [size, setSize] = useState<number>(typeScale.quran.arabic.size);
+  const name = (n: number) => (locale === 'ar' ? surah(n).nameArabic : surah(n).nameSimple);
+  const [first, last] = [sacred.ikhlas[0]!, sacred.ikhlas.at(-1)!];
+  // "112:1–4" reads left to right in every language.
+  const range = isolate(
+    `${format.number(first.surah)}:${format.number(first.ayah)}–${format.number(last.ayah)}`,
+    'ltr',
+  );
+  const sizeText = format.number(size / typeScale.quran.arabic.size, { style: 'percent' });
+
+  return (
+    <Section title={t('sections.sacred')}>
+      <Card className="gap-4 p-6">
+        <Label>{t('samples.ayah')}</Label>
+        <AyahText
+          text={sacred.short.text}
+          surahName={name(sacred.short.surah)}
+          number={sacred.short.ayah}
+        />
+      </Card>
+      <Label>{t('samples.dhikrFromQuran')}</Label>
+      <DhikrCard
+        arabic={sacred.ikhlas.map((a) => a.text).join(' ')}
+        quran
+        reference={t('samples.verseRange', { surah: name(first.surah), range })}
+        target={3}
+      />
+      <Card className="gap-4 p-6">
+        <Label>{t('samples.longAyah')}</Label>
+        <Slider
+          label={t('samples.textSize')}
+          valueText={sizeText}
+          value={size}
+          onChange={setSize}
+          min={quranSizeRange.min}
+          max={quranSizeRange.max}
+          step={2}
+        />
+        <AyahText
+          text={sacred.long.text}
+          surahName={name(sacred.long.surah)}
+          number={sacred.long.ayah}
+          size={size}
+        />
+      </Card>
     </Section>
   );
 }

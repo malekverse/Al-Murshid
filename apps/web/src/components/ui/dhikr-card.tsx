@@ -18,6 +18,8 @@ export interface DhikrCardProps {
   reference: string;
   /** How many times to say it. */
   target: number;
+  /** The text is Quran (e.g. Al-Ikhlas in the morning adhkar): render it in the Quran font. */
+  quran?: boolean;
   showTranslation?: boolean;
   showTransliteration?: boolean;
   onComplete?: () => void;
@@ -33,6 +35,7 @@ export function DhikrCard({
   transliteration,
   reference,
   target,
+  quran = false,
   showTranslation = true,
   showTransliteration = false,
   onComplete,
@@ -79,9 +82,15 @@ export function DhikrCard({
         </ProgressRing>
       </div>
 
-      <Text role="dhikr" script="arabic" className="w-full">
-        {arabic}
-      </Text>
+      {quran ? (
+        <p lang="ar" dir="rtl" className="w-full font-quran text-quran text-ink">
+          {arabic}
+        </p>
+      ) : (
+        <Text role="dhikr" script="arabic" className="w-full">
+          {arabic}
+        </Text>
+      )}
 
       {showTransliteration && transliteration && (
         <Text role="callout" tone="muted" dir="ltr" lang={locale === 'fr' ? 'fr' : 'en'}>

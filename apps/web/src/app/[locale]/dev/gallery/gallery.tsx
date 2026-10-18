@@ -1,13 +1,24 @@
 'use client';
 
 import { ArrowLeft, Bell, Calculator, Plus, TextAa } from '@phosphor-icons/react';
-import { duration, glassToneFor, skyAt, type SunPosition } from '@murshid/tokens';
-import { useFormatter, useTranslations } from 'next-intl';
+import type { Ayah, Surah } from '@murshid/content';
+import { isolate } from '@murshid/i18n';
+import {
+  duration,
+  glassToneFor,
+  quranSizeRange,
+  skyAt,
+  typeScale,
+  type SunPosition,
+} from '@murshid/tokens';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { ShowcaseControls } from '@/components/showcase-controls';
+import { AyahText } from '@/components/ui/ayah-text';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Countdown } from '@/components/ui/countdown';
+import { DhikrCard } from '@/components/ui/dhikr-card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
@@ -27,7 +38,15 @@ import { Link } from '@/i18n/navigation';
 // Sample times only (shown in UTC); real times come from packages/core in Phase 3.
 const at = (h: number, m: number) => new Date(Date.UTC(2026, 9, 16, h, m));
 
-export function Gallery() {
+/** Verbatim samples from packages/content, read on the server so the full text never ships here. */
+export interface SacredSamples {
+  short: Ayah;
+  long: Ayah;
+  ikhlas: Ayah[];
+  surahs: Record<number, Surah>;
+}
+
+export function Gallery({ sacred }: { sacred: SacredSamples }) {
   const t = useTranslations('gallery');
 
   return (
@@ -57,6 +76,7 @@ export function Gallery() {
       <ButtonsSection />
       <ControlsSection />
       <CardsSection />
+      <SacredSection samples={sacred} />
       <ProgressSection />
       <PrayerSection />
       <FeedbackSection />
@@ -286,6 +306,64 @@ function CardsSection() {
           <ListRow title={t('samples.rowMethod')} icon={Calculator} onPress={() => {}} disabled />
         </ListGroup>
       </div>
+    </Section>
+  );
+}
+
+function SacredSection({ samples }: { samples: SacredSamples }) {
+  const t = useTranslations('gallery');
+  const locale = useLocale();
+  const format = useFormatter();
+  const [size, setSize] = useState<number>(typeScale.quran.arabic.size);
+  const name = (n: number) =>
+    locale === 'ar' ? samples.surahs[n]!.nameArabic : samples.surahs[n]!.nameSimple;
+  const [first, last] = [samples.ikhlas[0]!, samples.ikhlas.at(-1)!];
+  // "112:1–4" reads left to right in every language.
+  const range = isolate(
+    `${format.number(first.surah)}:${format.number(first.ayah)}–${format.number(last.ayah)}`,
+    'ltr',
+  );
+  const sizeText = format.number(size / typeScale.quran.arabic.size, { style: 'percent' });
+
+  return (
+    <Section title={t('sections.sacred')}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="flex flex-col gap-4 p-6">
+          <Label>{t('samples.ayah')}</Label>
+          <AyahText
+            text={samples.short.text}
+            surahName={name(samples.short.surah)}
+            number={samples.short.ayah}
+          />
+        </Card>
+        <div className="flex flex-col gap-2">
+          <Label>{t('samples.dhikrFromQuran')}</Label>
+          <DhikrCard
+            arabic={samples.ikhlas.map((a) => a.text).join(' ')}
+            quran
+            reference={t('samples.verseRange', { surah: name(first.surah), range })}
+            target={3}
+          />
+        </div>
+      </div>
+      <Card className="flex flex-col gap-4 p-6">
+        <Label>{t('samples.longAyah')}</Label>
+        <Slider
+          label={t('samples.textSize')}
+          valueText={sizeText}
+          value={size}
+          onChange={setSize}
+          min={quranSizeRange.min}
+          max={quranSizeRange.max}
+          step={2}
+        />
+        <AyahText
+          text={samples.long.text}
+          surahName={name(samples.long.surah)}
+          number={samples.long.ayah}
+          size={size}
+        />
+      </Card>
     </Section>
   );
 }

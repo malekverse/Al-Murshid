@@ -55,6 +55,8 @@ export default function RootLayout() {
     [fonts.native.ui[500]]: ReadexPro_500Medium,
     [fonts.native.ui[600]]: ReadexPro_600SemiBold,
     [fonts.native.sacred]: Amiri_400Regular,
+    // King Fahd Complex Uthmanic Hafs (QPC Hafs V22, via QUL), bundled unmodified as its license requires.
+    [fonts.native.quran]: require('../../assets/fonts/UthmanicHafs_V22.ttf'),
   });
   // A font that fails to load must never leave the app on a blank screen: fall back to the
   // system font and carry on.

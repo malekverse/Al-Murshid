@@ -1,3 +1,4 @@
+import { ayah, ayahs, surah } from '@murshid/content';
 import { isLocale } from '@murshid/i18n';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
@@ -18,5 +19,12 @@ export async function generateMetadata({
 }
 
 export default function GalleryPage() {
-  return <Gallery />;
+  // Al-Muzzammil 73:4, Ayat al-Kursi (2:255) and Al-Ikhlas, verbatim from packages/content.
+  const sacred = {
+    short: ayah(73, 4),
+    long: ayah(2, 255),
+    ikhlas: ayahs(112, 1, 4),
+    surahs: { 2: surah(2), 73: surah(73), 112: surah(112) },
+  };
+  return <Gallery sacred={sacred} />;
 }

@@ -86,7 +86,7 @@ export const fonts = {
   web: {
     ui: 'var(--font-readex-pro), ui-sans-serif, system-ui, sans-serif',
     sacred: 'var(--font-amiri), serif',
-    // King Fahd Complex QPC Hafs font, self-hosted (SPEC 6.2, 10). Amiri until it is bundled.
+    // King Fahd Complex QPC Hafs font, self-hosted (SPEC 6.2, 10); Amiri only if it fails to load.
     quran: 'var(--font-qpc-hafs), var(--font-amiri), serif',
   },
   native: {

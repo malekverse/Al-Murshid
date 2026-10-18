@@ -9,3 +9,4 @@ apps/mobile/ios
 apps/mobile/src/uniwind-types.d.ts
 supabase/.temp
 supabase/config.toml
+packages/content/quran/source

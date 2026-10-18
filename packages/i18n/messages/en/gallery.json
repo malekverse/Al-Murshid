@@ -70,6 +70,10 @@
     "playDay": "Play a day",
     "skyTest": "Sky test",
     "fps": "{value, number} fps",
-    "skyTestHint": "The sky runs through a whole day. On a mid-range phone this should stay near {target, number}."
+    "skyTestHint": "The sky runs through a whole day. On a mid-range phone this should stay near {target, number}.",
+    "ayah": "An ayah",
+    "longAyah": "A long ayah at the reader’s size",
+    "dhikrFromQuran": "A dhikr from the Quran",
+    "verseRange": "{surah} {range}"
   }
 }

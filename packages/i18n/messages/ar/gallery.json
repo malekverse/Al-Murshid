@@ -70,6 +70,10 @@
     "playDay": "تشغيل يوم كامل",
     "skyTest": "اختبار السماء",
     "fps": "{value, number} إطارًا في الثانية",
-    "skyTestHint": "السماء تمرّ بيوم كامل. على هاتف متوسط يجب أن تبقى قرب {target, number}."
+    "skyTestHint": "السماء تمرّ بيوم كامل. على هاتف متوسط يجب أن تبقى قرب {target, number}.",
+    "ayah": "آية",
+    "longAyah": "آية طويلة بالحجم الذي يختاره القارئ",
+    "dhikrFromQuran": "ذكر من القرآن",
+    "verseRange": "{surah} {range}"
   }
 }

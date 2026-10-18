@@ -1,7 +1,7 @@
 import { spring } from '@murshid/tokens';
 import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text as RNText, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -21,6 +21,8 @@ export interface DhikrCardProps {
   transliteration?: string;
   reference: string;
   target: number;
+  /** The text is Quran (e.g. Al-Ikhlas in the morning adhkar): render it in the Quran font. */
+  quran?: boolean;
   showTranslation?: boolean;
   showTransliteration?: boolean;
   onComplete?: () => void;
@@ -36,6 +38,7 @@ export function DhikrCard({
   transliteration,
   reference,
   target,
+  quran = false,
   showTranslation = true,
   showTransliteration = false,
   onComplete,
@@ -86,9 +89,18 @@ export function DhikrCard({
             />
           </ProgressRing>
         </View>
-        <Text role="dhikr" script="arabic">
-          {arabic}
-        </Text>
+        {quran ? (
+          <RNText
+            className="font-quran text-quran text-ink"
+            style={{ writingDirection: 'rtl', direction: 'rtl' }}
+          >
+            {arabic}
+          </RNText>
+        ) : (
+          <Text role="dhikr" script="arabic">
+            {arabic}
+          </Text>
+        )}
         {showTransliteration && transliteration && (
           <Text role="callout" tone="muted" script="latin">
             {transliteration}

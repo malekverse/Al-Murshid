@@ -19,6 +19,7 @@
     "@formatjs/intl-locale": "5.3.12",
     "@formatjs/intl-numberformat": "9.4.3",
     "@formatjs/intl-pluralrules": "6.3.15",
+    "@murshid/content": "workspace:*",
     "@murshid/i18n": "workspace:*",
     "@murshid/tokens": "workspace:*",
     "@shopify/react-native-skia": "2.14.0",

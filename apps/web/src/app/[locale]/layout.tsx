@@ -2,6 +2,7 @@ import { direction, isLocale, locales } from '@murshid/i18n';
 import { colors } from '@murshid/tokens';
 import type { Metadata, Viewport } from 'next';
 import { Amiri, Readex_Pro } from 'next/font/google';
+import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
@@ -21,6 +22,17 @@ const amiri = Amiri({
   weight: '400',
   variable: '--font-amiri',
   display: 'swap',
+});
+
+// King Fahd Complex Uthmanic Hafs (QPC Hafs V22, via QUL). Its license forbids modifying the
+// font, so it ships exactly as published: no subsetting. Only Quran screens use it, so it is not
+// preloaded; `block` keeps Quran text from flashing in a fallback that lacks its marks.
+const qpcHafs = localFont({
+  src: '../fonts/UthmanicHafs_V22.woff2',
+  variable: '--font-qpc-hafs',
+  display: 'block',
+  preload: false,
+  adjustFontFallback: false,
 });
 
 export function generateStaticParams() {
@@ -53,7 +65,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
     <html
       lang={locale}
       dir={direction(locale)}
-      className={`${readex.variable} ${amiri.variable}`}
+      className={`${readex.variable} ${amiri.variable} ${qpcHafs.variable}`}
       suppressHydrationWarning
     >
       <head>

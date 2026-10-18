@@ -1,0 +1,45 @@
+{
+  "$comment": "Every Quran text and Quran font the apps ship, exactly as published (SPEC 10). Paths are from the repository root; sources.test.ts fails if a file's SHA-256 changes. Never edit these files: replace them with a new download and update this record.",
+  "files": [
+    {
+      "path": "packages/content/quran/source/qpc-hafs.json",
+      "title": "QPC Hafs script - Ayah by Ayah",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/86",
+      "retrieved": "2026-10-18",
+      "license": "The King Fahd Complex's published Quran text; QUL states no further terms for it. Shipped unmodified.",
+      "sha256": "93864197a949dac54f324875f41348875455bb138b7abdfde43daefe87230403"
+    },
+    {
+      "path": "packages/content/quran/source/surah-names.json",
+      "title": "Surah names",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-metadata/70",
+      "retrieved": "2026-10-18",
+      "license": "QUL metadata; no terms stated on the resource page.",
+      "sha256": "ada09f674efd35d0c054c9b81c98d14550f6c66b77767a9173674799f675d7de"
+    },
+    {
+      "path": "apps/web/src/app/fonts/UthmanicHafs_V22.woff2",
+      "title": "QPC Hafs font (KFGQPC HAFS Uthmanic Script 2.2), WOFF2",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/245",
+      "retrieved": "2026-10-18",
+      "license": "KFGQPC end-user license, embedded in the font: free to use, copy and distribute; never sold, modified or subset.",
+      "sha256": "d7ae6b285ca600cffb83751cdda44947b7be47414a598689e1f152a01ba0292a"
+    },
+    {
+      "path": "apps/mobile/assets/fonts/UthmanicHafs_V22.ttf",
+      "title": "QPC Hafs font (KFGQPC HAFS Uthmanic Script 2.2), TTF",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/245",
+      "retrieved": "2026-10-18",
+      "license": "KFGQPC end-user license, embedded in the font: free to use, copy and distribute; never sold, modified or subset.",
+      "sha256": "aa68bffce289b4c0ebac68e90502eb69e42356abcd1603cb2b8e99c2c723f145"
+    }
+  ]
+}

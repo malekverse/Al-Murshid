@@ -70,6 +70,10 @@
     "playDay": "Jouer une journée",
     "skyTest": "Test du ciel",
     "fps": "{value, number} i/s",
-    "skyTestHint": "Le ciel parcourt une journée entière. Sur un téléphone moyen, cela doit rester proche de {target, number}."
+    "skyTestHint": "Le ciel parcourt une journée entière. Sur un téléphone moyen, cela doit rester proche de {target, number}.",
+    "ayah": "Un verset",
+    "longAyah": "Un long verset à la taille choisie",
+    "dhikrFromQuran": "Un dhikr tiré du Coran",
+    "verseRange": "{surah} {range}"
   }
 }
