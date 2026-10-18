@@ -1,0 +1,28 @@
+{
+  "name": "@murshid/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "test": "vitest run --coverage",
+    "reference": "tsx scripts/fetch-reference.ts"
+  },
+  "dependencies": {
+    "@tabby_ai/hijri-converter": "1.0.5",
+    "adhan": "4.4.6"
+  },
+  "devDependencies": {
+    "@murshid/config": "workspace:*",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

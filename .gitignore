@@ -45,3 +45,7 @@ Thumbs.db
 # Image drops wait in design/inbox until reviewed; accepted originals move to design/source
 design/inbox/*
 !design/inbox/README.md
+
+# Installable test builds
+builds/
+*.apk

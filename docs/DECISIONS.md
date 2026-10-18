@@ -97,3 +97,44 @@ Newest phase at the bottom.
 - **The debug build is not a valid measurement.** On the emulator it renders at ~10 fps even when idle, because debug native libraries (Skia, Reanimated) are unoptimized and JS runs in dev mode.
 - **This emulator cannot show 60 fps for anything.** Release-build medians (`dumpsys gfxinfo`): Android's own Settings app 53 ms, the sky test screen 69 ms (26 fps on its UI-thread counter), the full gallery 97 ms. The sky costs about 1.3x the system baseline here, which is encouraging but proves nothing about a phone.
 - **`/dev/sky` is the gate's test bench:** the sky alone, gliding through a whole day the way Today drives it, with a frame counter measured on the UI thread. The Phase 2 gate stays open until it holds about 60 fps on a three-year-old mid-range Android phone in a release build.
+
+## Phase 3 · Core engine (2026-10-18)
+
+### Order
+
+- **Phase 3 started while the Phase 2 gate waits on the owner** (the 60 fps test on a real phone with the release APK, and the QUL font and text for `AyahText` and `DhikrCard`). SPEC 12 says not to start a phase with the previous gate open. `packages/core` is pure TypeScript with no UI, so it touches nothing that gate checks, and nothing from it is wired into the apps until the gate closes.
+
+### Libraries
+
+- **Prayer times and Qibla come from adhan-js 4.4.6 (MIT); the Hijri calendar from `@tabby_ai/hijri-converter` 1.0.5, which ships the official Umm al-Qura table (1343–1500 AH).** Both are offline and deterministic, so web and mobile get identical results from the same inputs.
+- **The sky uses its own low-precision sun model (`sun.ts`, about 0.01°).** It drives colors and the sun's height, never a prayer time.
+
+### Accuracy gate (SPEC 11, 12)
+
+- **The reference is the Aladhan API, an independent implementation: 27 cities, 71 city-days.** They cover winter, the June solstice, the EU and US DST change days, Casablanca's Ramadan clock change, Cairo's DST, Makkah in Ramadan, Sydney's DST and Oslo, Stockholm and Reykjavik at high latitude. `pnpm --filter @murshid/core reference` fetches them once into `fixtures/reference-times.json`; tests never touch the network.
+- **Result: 318 of 355 times match Aladhan to the minute and the rest are within one minute.** The one exception is the Moonsighting Committee's seasonal Fajr and Isha, allowed 3 minutes (Los Angeles in January is 3 off). moonsighting.com's own calculator could not be fetched to settle which side is right. Pending reviewer.
+- **Asr is tested against its definition, not against Aladhan.** Aladhan's Asr drifts from the shadow rule by up to 20 minutes (Reykjavik in January). The test finds the moment the shadow equals the object plus its noon shadow, using the apparent sun (with refraction) and adding the method's own Asr minutes. adhan-js lands within 1.7 minutes of it up to 55° latitude (tolerance 2) and within 2.7 above (tolerance 5).
+- **Times are compared modulo one day.** Aladhan stamps a time after midnight (Isha in a French June, Maghrib in an Icelandic one) with the requested date.
+
+### Methods (SPEC 10)
+
+- **A method can add its own minutes on top of adhan-js's: Morocco +5 for Dhuhr and Maghrib, Jordan +5 for Maghrib.** Aladhan's methods include the same minutes, so the accuracy test checks them independently.
+- **Country defaults beyond the obvious ones:** France gets the Muslim World League because there is no single official authority (UOIF's 12° is a choice in settings). The UK, Ireland, the US and Canada get the Moonsighting Committee, and Bahrain and Oman the Gulf method (Isha 90 minutes after Maghrib). Every method keeps `reviewed: false` until the reviewer confirms each country's current practice.
+- **Above 48° the automatic high-latitude rule is adhan-js's recommendation (seventh of the night). Inside the polar circles, times come from the nearest latitude where the sun still rises and sets.** Every time always exists, even in an Arctic June.
+- **Umm al-Qura sets Isha 120 minutes after Maghrib during Ramadan, 90 otherwise.**
+
+### Hijri
+
+- **The converter matches ICU's Umm al-Qura table on every day from 2024 to the end of 1450 AH (2029-08-10). From 1451 AH the two tables differ on some month starts.** The app follows the converter, which ships the official table; the ±2-day setting covers local sighting. The agreement test stops at 1450 AH.
+- **White days are the 13th to 15th of every month, except 13 Dhu al-Hijjah, a day of Tashreeq on which fasting is not done.** Pending reviewer.
+
+### Journey (SPEC 3)
+
+- **Onboarding sets only the starting prayer step:** just starting → one prayer, sometimes → two, most days → all five, all five → five plus the adhkar.
+- **A next step is offered after the current one held on 5 of the last 7 days, then nothing for 7 days, accepted or not.** Each date counts once, and records outside the window (including future dates from a wrong clock) are ignored.
+- **Welcome back after 3 days away. After 5 reminders ignored in a row, reminders quietly reduce to the focus prayer.**
+
+### Reminders (SPEC 5.2)
+
+- **The plan is plain data: 6 days ahead, at most 64 pending (the iOS limit), nearest first.** Ids are `date-prayer-kind`, so rebuilding the plan on every app open is idempotent.
+- **A heads-up is 5 to 30 minutes before the prayer, always quiet (an adhan setting becomes soft), and never carries "I prayed".** Fajr and Isha notifications open in the dark theme.
