@@ -60,9 +60,10 @@ Contrast pairs are unit-tested (`pnpm --filter @murshid/tokens test`); a new pai
 
 - Strings: `packages/i18n/messages/<locale>/<namespace>.json`, ICU. Arabic plurals need all six
   categories; `pnpm i18n:check` enforces it. Prefer gender-neutral phrasing.
-- Numbers through `Intl` (`useFormatter`), never interpolated raw: digits follow the locale and
-  the Maghreb rule. Token names, hex values and other code go in `<bdi dir="ltr">` on web or a
-  Latin `script` on native.
+- Numbers through `Intl` (`useFormatter`), never interpolated raw. Western digits (0123) in every
+  language by default, Arabic included; Arabic-Indic only when the person opts in (owner
+  decision). Signed numbers, token names, hex values and other code go in `<bdi dir="ltr">` on
+  web or `isolate(text, 'ltr')` on native.
 - Mirror layout, navigation, progress and directional icons. Never mirror clocks, checks, media
   controls, numbers or the Quran page turn.
 - Mixed content: wrap in `<bdi>` (web) or `isolate()` from `@murshid/i18n` (native).

@@ -31,9 +31,9 @@ function Segment<V extends string>({
 }) {
   const on = useSharedValue(selected ? 1 : 0);
   useEffect(() => {
-    on.value = withTiming(selected ? 1 : 0, { duration: duration.quick });
+    on.set(withTiming(selected ? 1 : 0, { duration: duration.quick }));
   }, [on, selected]);
-  const thumb = useAnimatedStyle(() => ({ opacity: on.value }));
+  const thumb = useAnimatedStyle(() => ({ opacity: on.get() }));
 
   return (
     <PressableScale

@@ -365,7 +365,7 @@ Arabic is the design language, not a translation. English and French are full pe
 
 **Numbers, dates and time**
 
-- Digits setting: Auto, Arabic-Indic (٠١٢٣) or Western (0123). Auto uses Western digits for English, French and Maghreb Arabic locales (Tunisia, Morocco, Algeria), and Arabic-Indic digits for other Arabic locales.
+- Digits setting: Auto, Arabic-Indic (٠١٢٣) or Western (0123). Auto uses Western digits in every language, Arabic included (owner decision, Oct 18, 2026); Arabic-Indic digits are an opt-in.
 - Ayah numbers inside Quran text always use Arabic-Indic digits in the traditional marker.
 - Use `Intl` for numbers, dates, times and lists. Time format (12 or 24 hour) follows the device, with an override.
 - Hijri dates use the Umm al-Qura calendar. Verify that the JavaScript engine on each platform supports it through `Intl`; otherwise use one tested conversion in the shared core package for both apps.

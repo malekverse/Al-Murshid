@@ -1,5 +1,6 @@
+import { colors, type ColorTokens } from '@murshid/tokens';
 import { useState } from 'react';
-import { Uniwind } from 'uniwind';
+import { Uniwind, useUniwind } from 'uniwind';
 import { keys, storage } from './storage';
 
 export type ThemePreference = 'light' | 'dark' | 'auto';
@@ -29,4 +30,10 @@ export function useThemePreference() {
   };
 
   return [pref, update] as const;
+}
+
+/** Token colors for the active theme, for props that take a color value (icons, SVG, Skia). */
+export function useColors(): ColorTokens {
+  const { theme } = useUniwind();
+  return colors[theme === 'dark' ? 'dark' : 'light'];
 }

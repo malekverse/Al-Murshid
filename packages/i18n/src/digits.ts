@@ -1,25 +1,22 @@
-// Digits (SPEC 7): Auto uses Western digits for English, French and Maghreb Arabic
-// (Tunisia, Morocco, Algeria), and Arabic-Indic digits for other Arabic locales.
+// Digits (SPEC 7, as decided by the owner on 2026-10-18): Western digits (0123) in every
+// language, Arabic included. A person can still opt into Arabic-Indic digits (٠١٢٣) in
+// Settings. Ayah numbers inside Quran text follow the mushaf, not this setting.
 
 import type { Locale } from './locales';
 
 export type DigitsPreference = 'auto' | 'arab' | 'latn';
 export type NumberingSystem = 'arab' | 'latn';
 
-const maghreb: ReadonlySet<string> = new Set(['TN', 'MA', 'DZ']);
-
 export function numberingSystem(
-  locale: Locale,
-  region: string | null | undefined,
+  _locale: Locale,
+  _region: string | null | undefined,
   preference: DigitsPreference = 'auto',
 ): NumberingSystem {
-  if (preference !== 'auto') return preference;
-  if (locale !== 'ar') return 'latn';
-  return region && maghreb.has(region.toUpperCase()) ? 'latn' : 'arab';
+  return preference === 'arab' ? 'arab' : 'latn';
 }
 
 /**
- * The BCP 47 tag to hand to Intl (and to next-intl / use-intl), e.g. `ar-TN-u-nu-latn`.
+ * The BCP 47 tag to hand to Intl (and to use-intl), e.g. `ar-TN-u-nu-latn`.
  * Keeps the region so dates and lists follow local conventions.
  */
 export function intlLocale(
@@ -34,7 +31,7 @@ export function intlLocale(
 
 const arabicIndic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
-/** Arabic-Indic digits, used for ayah numbers inside Quran text whatever the setting. */
+/** Arabic-Indic digits, for ayah numbers inside Quran text and the opt-in setting. */
 export function toArabicIndic(value: number | string): string {
   return String(value).replace(/[0-9]/g, (d) => arabicIndic[Number(d)] ?? d);
 }

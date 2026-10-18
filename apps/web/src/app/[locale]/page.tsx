@@ -21,7 +21,7 @@ import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 import { PressDemo } from '@/components/press-demo';
 import { ShowcaseControls } from '@/components/showcase-controls';
-import { Text } from '@/components/text';
+import { Text } from '@/components/ui/text';
 
 export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
   const { locale } = await params;
@@ -154,10 +154,16 @@ function ColorGrid() {
               {s.against && (
                 <Text role="caption" tone="muted" className="pt-1">
                   {t('common.theme.light')} ·{' '}
-                  {t('showcase.swatch.contrast', { ratio: ratio('light', s.token, s.against) })}
+                  {t('showcase.swatch.contrast', {
+                    ratio: ratio('light', s.token, s.against),
+                    one: 1,
+                  })}
                   <br />
                   {t('common.theme.dark')} ·{' '}
-                  {t('showcase.swatch.contrast', { ratio: ratio('dark', s.token, s.against) })}
+                  {t('showcase.swatch.contrast', {
+                    ratio: ratio('dark', s.token, s.against),
+                    one: 1,
+                  })}
                 </Text>
               )}
             </div>

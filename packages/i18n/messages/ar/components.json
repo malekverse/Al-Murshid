@@ -1,0 +1,37 @@
+{
+  "loading": "جارٍ التحميل",
+  "close": "إغلاق",
+  "dismiss": "إخفاء",
+  "tryAgain": "إعادة المحاولة",
+  "tabs": {
+    "label": "التنقّل الرئيسي",
+    "today": "اليوم",
+    "quran": "القرآن",
+    "remember": "الذِّكر",
+    "you": "أنت"
+  },
+  "prayer": {
+    "iPrayed": "صلّيتُ",
+    "prayed": "تمّت",
+    "now": "الآن: {name}",
+    "next": "التالية: {name}",
+    "row": "{name}، {time}{state, select, logged {، تمّت} current {، حان وقتها} other {}}"
+  },
+  "countdown": {
+    "remaining": "باقٍ {duration}",
+    "seconds": "{count, plural, zero {أقل من ثانية} one {ثانية واحدة} two {ثانيتان} few {# ثوانٍ} many {# ثانية} other {# ثانية}}"
+  },
+  "ayah": {
+    "label": "{surah}، الآية {number}"
+  },
+  "dhikr": {
+    "count": "{count} من {target}",
+    "tapToCount": "المس البطاقة للعدّ",
+    "done": "اكتمل",
+    "translation": "الترجمة",
+    "transliteration": "النطق"
+  },
+  "sheet": {
+    "handle": "اسحب للأسفل للإغلاق"
+  }
+}

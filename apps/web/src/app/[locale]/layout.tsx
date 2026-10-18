@@ -3,8 +3,10 @@ import { colors } from '@murshid/tokens';
 import type { Metadata, Viewport } from 'next';
 import { Amiri, Readex_Pro } from 'next/font/google';
 import { notFound } from 'next/navigation';
+import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+import { Providers } from '@/components/providers';
 import { themeScript } from '@/components/theme';
 import '../globals.css';
 
@@ -55,7 +57,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Runs before paint so the page never flashes the wrong theme. */}
+        <Script id="theme" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
       </head>
       <body className="bg-canvas font-ui text-ink">
         <a
@@ -64,7 +69,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
         >
           {t('a11y.skipToContent')}
         </a>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <Providers>
+            {/* The page behind an open sheet scales from here (globals.css). */}
+            <div id="app-root" className="bg-canvas">
+              {children}
+            </div>
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

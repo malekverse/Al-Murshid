@@ -21,18 +21,18 @@ export function PressableScale({
 
   const animated = useAnimatedStyle(() =>
     reduce
-      ? { opacity: 1 - pressed.value * 0.2 }
-      : { transform: [{ scale: 1 - pressed.value * (1 - motion.pressScale) }] },
+      ? { opacity: 1 - pressed.get() * 0.2 }
+      : { transform: [{ scale: 1 - pressed.get() * (1 - motion.pressScale) }] },
   );
 
   return (
     <AnimatedPressable
       onPressIn={(e) => {
-        pressed.value = withSpring(1, spring.snappy);
+        pressed.set(withSpring(1, spring.snappy));
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        pressed.value = withSpring(0, spring.snappy);
+        pressed.set(withSpring(0, spring.snappy));
         onPressOut?.(e);
       }}
       style={[animated, style as object]}

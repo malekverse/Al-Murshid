@@ -13,7 +13,9 @@
     "label": "اللغة"
   },
   "time": {
-    "minutes": "{count, plural, zero {أقل من دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}"
+    "minutes": "{count, plural, zero {أقل من دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}",
+    "hours": "{count, plural, zero {أقل من ساعة} one {ساعة واحدة} two {ساعتان} few {# ساعات} many {# ساعة} other {# ساعة}}",
+    "hoursMinutes": "{hours} و{minutes}"
   },
   "a11y": {
     "skipToContent": "انتقل إلى المحتوى"

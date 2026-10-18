@@ -40,6 +40,7 @@
 
   --font-ui: var(--font-readex-pro), ui-sans-serif, system-ui, sans-serif;
   --font-sacred: var(--font-amiri), serif;
+  --font-quran: var(--font-qpc-hafs), var(--font-amiri), serif;
   --default-font-family: var(--font-ui);
 
   --text-display: 2.5rem;
@@ -99,6 +100,7 @@
   --shadow-lift: 0 2px 4px rgb(28 27 25 / 0.05), 0 12px 24px rgb(28 27 25 / 0.08), 0 32px 64px rgb(28 27 25 / 0.08);
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  --blur-glass: 24px;
   --container-reading: 45rem;
   --container-page: 75rem;
 }

@@ -3,7 +3,7 @@
 import { localeNames, locales, type Locale } from '@murshid/i18n';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { Segmented } from './segmented';
+import { Segmented } from './ui/segmented';
 import { useThemePreference, type ThemePreference } from './theme';
 
 export function ShowcaseControls() {

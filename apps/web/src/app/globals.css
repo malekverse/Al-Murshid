@@ -1,6 +1,18 @@
 @import 'tailwindcss';
 @import '@murshid/tokens/theme.web.css';
 
+/* Sky colors are registered so the gradient itself can transition (ambient sky shifts). */
+@property --sky-top {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #0b1020;
+}
+@property --sky-bottom {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #1c2541;
+}
+
 @layer base {
   html {
     background-color: var(--color-canvas);
@@ -21,14 +33,28 @@
     font-synthesis: none;
   }
 
+  /* The outline follows each element's own radius, so pills stay pills when focused. */
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 3px;
-    border-radius: var(--radius-control);
   }
 
   ::selection {
     background-color: color-mix(in srgb, var(--color-lantern) 30%, transparent);
+  }
+
+  /* The page behind an open sheet settles back and dims (SPEC 6.4). */
+  #app-root {
+    min-height: 100dvh;
+    transform-origin: 50% 0;
+    transition:
+      transform var(--duration-standard) var(--ease-standard),
+      border-radius var(--duration-standard) var(--ease-standard);
+  }
+  [data-sheet='open'] #app-root {
+    transform: scale(0.96);
+    border-radius: var(--radius-sheet);
+    overflow: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -40,7 +66,58 @@
       scroll-behavior: auto !important;
       transition-property: opacity, color, background-color, border-color !important;
     }
+    [data-sheet='open'] #app-root {
+      transform: none;
+    }
   }
+}
+
+@keyframes murshid-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes murshid-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes murshid-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Glass over the sky; solid when the person asks for less transparency (SPEC 11). */
+@utility glass {
+  background-color: var(--color-surface-glass);
+  backdrop-filter: blur(var(--blur-glass)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.15);
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--color-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Digits that keep their width while counting. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Visually hidden until focused: the skip link (SPEC 11). */

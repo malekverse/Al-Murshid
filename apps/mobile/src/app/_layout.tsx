@@ -1,3 +1,5 @@
+// Must run before anything formats a number or a plural.
+import '@/lib/intl-polyfills';
 import { Amiri_400Regular } from '@expo-google-fonts/amiri';
 import {
   ReadexPro_400Regular,
@@ -14,6 +16,8 @@ import { View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useUniwind } from 'uniwind';
+import { SheetHost } from '@/components/ui/sheet';
+import { ToastProvider } from '@/components/ui/toast';
 import { AppLocaleProvider, useAppLocale } from '@/lib/locale';
 import { restoreTheme } from '@/lib/theme';
 import '../global.css';
@@ -30,9 +34,16 @@ function Root() {
     <View style={{ flex: 1, direction }} className="bg-canvas">
       <LocaleProvider direction={direction}>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}
-        />
+        <ToastProvider>
+          <SheetHost>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
+              }}
+            />
+          </SheetHost>
+        </ToastProvider>
       </LocaleProvider>
     </View>
   );

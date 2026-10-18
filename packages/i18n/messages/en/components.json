@@ -1,0 +1,37 @@
+{
+  "loading": "Loading",
+  "close": "Close",
+  "dismiss": "Dismiss",
+  "tryAgain": "Try again",
+  "tabs": {
+    "label": "Main navigation",
+    "today": "Today",
+    "quran": "Quran",
+    "remember": "Remember",
+    "you": "You"
+  },
+  "prayer": {
+    "iPrayed": "I prayed",
+    "prayed": "Prayed",
+    "now": "Now: {name}",
+    "next": "Next: {name}",
+    "row": "{name}, {time}{state, select, logged {, prayed} current {, now} other {}}"
+  },
+  "countdown": {
+    "remaining": "{duration} left",
+    "seconds": "{count, plural, one {# second} other {# seconds}}"
+  },
+  "ayah": {
+    "label": "{surah}, verse {number}"
+  },
+  "dhikr": {
+    "count": "{count} of {target}",
+    "tapToCount": "Tap the card to count",
+    "done": "Done",
+    "translation": "Translation",
+    "transliteration": "Transliteration"
+  },
+  "sheet": {
+    "handle": "Drag down to close"
+  }
+}

@@ -20,6 +20,10 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
   `with-short-native-build-paths` config plugin (C++ builds go to `%LOCALAPPDATA%\murshid-cxx`).
   Stop Metro, Gradle (`./gradlew --stop`) and dev servers before reinstalling, or Windows file locks block it.
 - Run the app on Android: start the `Medium_Phone` emulator, then `pnpm --filter @murshid/mobile android`.
+- Reanimated shared values: use `.get()` and `.set()`, never `.value =` (the React Compiler lint rejects it).
+- Hermes needs the FormatJS polyfills in `apps/mobile/src/lib/intl-polyfills.ts` (plurals, digits, times).
+- Measure performance on a release build (`./gradlew app:assembleRelease`); debug builds run unoptimized
+  native code and dev-mode JS, and are roughly ten times slower.
 - Commands run from the repo root through Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Design tokens live in `packages/tokens`; run `pnpm --filter @murshid/tokens build` after editing them
   (it regenerates `theme.css` for both apps).

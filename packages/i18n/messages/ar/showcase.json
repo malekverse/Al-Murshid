@@ -27,7 +27,7 @@
     "sacredCaption": "أميري · للأذكار والأدعية"
   },
   "swatch": {
-    "contrast": "تباين {ratio}:1"
+    "contrast": "تباين {ratio}:{one, number}"
   },
   "space": {
     "radius": "الانحناء",

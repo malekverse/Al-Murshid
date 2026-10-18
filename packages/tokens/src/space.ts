@@ -20,5 +20,8 @@ export const shadow = {
   lift: '0 2px 4px rgb(28 27 25 / 0.05), 0 12px 24px rgb(28 27 25 / 0.08), 0 32px 64px rgb(28 27 25 / 0.08)',
 } as const;
 
+/** Backdrop blur of glass cards over the sky (px). Reduce Transparency turns glass solid. */
+export const glassBlur = 24;
+
 /** Opacity ceiling for the eight-fold star lattice motif (never behind text). */
 export const patternOpacity = 0.04;

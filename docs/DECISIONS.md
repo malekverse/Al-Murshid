@@ -54,6 +54,46 @@ Newest phase at the bottom.
 
 ### Open items carried into Phase 2–3
 
-- **Arabic-Indic digits don't appear on Android.** `ar-US-u-nu-arab` still formats `48` as Western digits in Hermes, while Node and Chrome honor it. Phase 3 (core) verifies Intl on each engine, as SPEC 7 asks, and falls back to a tested digit mapping if needed.
-- **Native glass has no blur yet, and the native sky uses React Native's gradient style.** Phase 2 moves both to Skia and expo-blur / expo-glass-effect.
+- ~~Arabic-Indic digits don't appear on Android.~~ Resolved in Phase 2 by the FormatJS polyfills (below).
+- ~~Native glass has no blur yet, and the native sky uses React Native's gradient style.~~ Resolved in Phase 2.
 - **iOS is unverified** (no Mac). The first EAS development build covers it.
+
+## Phase 2 · Design system (2026-10-18)
+
+### Shared
+
+- **The sky blends in OKLab, driven by sun altitude on an axis normalized to the day's noon altitude (`skyAt`).** OKLab avoids the muddy grey band plain RGB mixing makes between navy and coral; normalizing means winter days and high latitudes still pass through every color on a lower arc. Dawn spans 10° (about 40 minutes): a 5° span jumped visibly between minutes, caught by the continuity test.
+- **Prayer glyph geometry lives in `packages/tokens` (`prayerGlyph`), drawn by SVG on web and react-native-svg on native.** One shape on both platforms; never mirrored, like a clock.
+- **New tokens: `starlight`, `glassBlur`, `toastVisible`, `loadingDelay`, `font-quran`.** Keeps stars, blur, timings and the Quran font out of feature code.
+- **Grain on the sky is generated in code (SVG turbulence on web), not an AI texture.** Exact, tiny and resolution-independent.
+
+### Web
+
+- **Sheet and Slider build on Radix (Dialog, Slider), restyled to Quiet Light.** Focus trap, Escape, RTL keyboard handling and ARIA come for free (SPEC 8.2 allows Radix). The sheet takes an optional `trigger` so focus returns to it on close (WCAG 2.4.3).
+- **The page behind an open sheet scales to 96% through `data-sheet` on `<html>` and `#app-root`.** No portal-aware context needed; Reduce Motion skips the scale.
+- **Sky colors are registered CSS properties (`@property --sky-top`), so the gradient itself transitions.** Browsers cannot transition `background-image` otherwise.
+- **Star coordinates are rounded to two decimals.** `Math.pow` differs in the last bits between Node and browsers, which caused a hydration mismatch.
+- **The theme script runs through `next/script` with `beforeInteractive`.** React 19 warns about inline `<script>` elements in components; this still runs before paint.
+
+### Mobile
+
+- **FormatJS polyfills are forced on Hermes: Intl.PluralRules, NumberFormat and DateTimeFormat with `ar`, `en`, `fr` data and every IANA time zone.** Hermes has no PluralRules (Arabic plurals crashed), ignored `-u-nu-arab` (no Arabic-Indic digits) and formatted Arabic times as "4:52 AM". Now Android matches the web. A new language adds its locale-data lines in `lib/intl-polyfills.ts`.
+- **Glass blurs on iOS (expo-blur) and is tinted without blur on Android.** Android blur needs a `BlurTargetView` wrapped around what it blurs; behind glass there is only the smooth Skia sky, so the tint alone reads the same. Reduce Transparency turns glass solid on both.
+- **List rows and prayer rows highlight when pressed instead of scaling to 0.97.** A full-width row that shrinks looks broken; native lists highlight. Buttons, icon buttons, segments and cards keep the scale.
+- **The mobile tab bar is Expo Router's NativeTabs, set up with real navigation in Phase 4.** The gallery shows the web tab bar and rail only.
+- **Phosphor icons are imported one file at a time on native (`phosphor-react-native/src/icons/X`).** The package root re-exports every icon and Metro does not tree-shake.
+
+### Content and assets
+
+- **`AyahText` and `DhikrCard` exist on both platforms but are not in the galleries yet.** They must show verified text, and the QPC Hafs font and its matching text come from QUL downloads that need the owner's sign-in and terms acceptance (SPEC 10). They join the galleries when those files land.
+- **Gemini illustrations are exported by `design/scripts/export_illustrations.py`: background re-keyed to the exact canvas, edges faded to transparent, WebP for both apps.** Empty states live on the canvas, not on cards, because their pictures are keyed to it.
+
+### Digits (owner decision, 2026-10-18)
+
+- **Western digits (0123) everywhere, Arabic included; Arabic-Indic digits only as an opt-in setting.** The owner prefers the digits everyone is used to. This replaces the SPEC's Maghreb/other-Arabic rule (SPEC 7 updated). Ayah numbers inside Quran text keep the mushaf's own numerals.
+
+### Performance gate (SPEC 12, Phase 2)
+
+- **The debug build is not a valid measurement.** On the emulator it renders at ~10 fps even when idle, because debug native libraries (Skia, Reanimated) are unoptimized and JS runs in dev mode.
+- **This emulator cannot show 60 fps for anything.** Release-build medians (`dumpsys gfxinfo`): Android's own Settings app 53 ms, the sky test screen 69 ms (26 fps on its UI-thread counter), the full gallery 97 ms. The sky costs about 1.3x the system baseline here, which is encouraging but proves nothing about a phone.
+- **`/dev/sky` is the gate's test bench:** the sky alone, gliding through a whole day the way Today drives it, with a frame counter measured on the UI thread. The Phase 2 gate stays open until it holds about 60 fps on a three-year-old mid-range Android phone in a release build.

@@ -20,15 +20,18 @@ import type { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFormatter, useTranslations } from 'use-intl';
-import { PressableScale } from '@/components/pressable-scale';
-import { Segmented } from '@/components/segmented';
-import { Text } from '@/components/text';
+import { router } from 'expo-router';
+import { Button } from '@/components/ui/button';
+import { PressableScale } from '@/components/ui/pressable-scale';
+import { Segmented } from '@/components/ui/segmented';
+import { Text } from '@/components/ui/text';
 import { useAppLocale } from '@/lib/locale';
 import { useThemePreference, type ThemePreference } from '@/lib/theme';
 
 // Phase 1 token showcase (SPEC 12). Today replaces this screen in Phase 4.
 export default function ShowcaseScreen() {
   const t = useTranslations('showcase');
+  const tg = useTranslations('gallery');
   const insets = useSafeAreaInsets();
 
   return (
@@ -52,6 +55,11 @@ export default function ShowcaseScreen() {
           </Text>
         </View>
         <Controls />
+        <View className="flex-row">
+          <Button variant="secondary" onPress={() => router.push('/dev/gallery')}>
+            {tg('title')}
+          </Button>
+        </View>
       </View>
 
       <Section title={t('sections.color')} hint={t('sections.colorHint')}>
@@ -176,7 +184,7 @@ function ColorGrid() {
             <TokenName muted>{colors.dark[s.token]}</TokenName>
             {s.against && (
               <Text role="caption" tone="muted" className="pt-1">
-                {`${t('common.theme.light')} · ${t('showcase.swatch.contrast', { ratio: ratio('light', s.token, s.against) })}\n${t('common.theme.dark')} · ${t('showcase.swatch.contrast', { ratio: ratio('dark', s.token, s.against) })}`}
+                {`${t('common.theme.light')} · ${t('showcase.swatch.contrast', { ratio: ratio('light', s.token, s.against), one: 1 })}\n${t('common.theme.dark')} · ${t('showcase.swatch.contrast', { ratio: ratio('dark', s.token, s.against), one: 1 })}`}
               </Text>
             )}
           </View>

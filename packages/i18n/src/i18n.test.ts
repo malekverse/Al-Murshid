@@ -26,31 +26,26 @@ describe('locales', () => {
 });
 
 describe('digits', () => {
-  it('uses Western digits for English, French and Maghreb Arabic', () => {
+  it('uses Western digits in every language by default, Arabic included', () => {
     expect(numberingSystem('en', 'US')).toBe('latn');
     expect(numberingSystem('fr', 'MA')).toBe('latn');
     expect(numberingSystem('ar', 'TN')).toBe('latn');
-    expect(numberingSystem('ar', 'ma')).toBe('latn');
-    expect(numberingSystem('ar', 'DZ')).toBe('latn');
+    expect(numberingSystem('ar', 'SA')).toBe('latn');
+    expect(numberingSystem('ar', 'EG')).toBe('latn');
+    expect(numberingSystem('ar', null)).toBe('latn');
   });
 
-  it('uses Arabic-Indic digits for other Arabic locales', () => {
-    expect(numberingSystem('ar', 'SA')).toBe('arab');
-    expect(numberingSystem('ar', 'EG')).toBe('arab');
-    expect(numberingSystem('ar', null)).toBe('arab');
-  });
-
-  it('respects an explicit preference', () => {
-    expect(numberingSystem('ar', 'TN', 'arab')).toBe('arab');
+  it('lets a person opt into Arabic-Indic digits', () => {
+    expect(numberingSystem('ar', 'SA', 'arab')).toBe('arab');
     expect(numberingSystem('en', 'US', 'arab')).toBe('arab');
     expect(numberingSystem('ar', 'SA', 'latn')).toBe('latn');
   });
 
   it('builds a tag Intl understands', () => {
     expect(intlLocale('ar', 'tn')).toBe('ar-TN-u-nu-latn');
-    expect(intlLocale('ar', undefined)).toBe('ar-u-nu-arab');
-    expect(new Intl.NumberFormat(intlLocale('ar', 'SA')).format(48)).toBe('٤٨');
-    expect(new Intl.NumberFormat(intlLocale('ar', 'TN')).format(48)).toBe('48');
+    expect(intlLocale('ar', undefined)).toBe('ar-u-nu-latn');
+    expect(new Intl.NumberFormat(intlLocale('ar', 'SA')).format(48)).toBe('48');
+    expect(new Intl.NumberFormat(intlLocale('ar', 'SA', 'arab')).format(48)).toBe('٤٨');
   });
 
   it('converts ayah numbers to Arabic-Indic', () => {

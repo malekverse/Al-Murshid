@@ -51,4 +51,8 @@ export const motion = {
   staggerMax: 8,
   /** "I prayed" light rising into the sky. */
   prayerLightRise: 800,
+  /** How long a toast stays before it leaves on its own. */
+  toastVisible: 4000,
+  /** A loading indicator waits this long before appearing, so quick loads never flash one. */
+  loadingDelay: 150,
 } as const;

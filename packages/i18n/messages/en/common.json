@@ -13,7 +13,9 @@
     "label": "Language"
   },
   "time": {
-    "minutes": "{count, plural, one {# minute} other {# minutes}}"
+    "minutes": "{count, plural, one {# minute} other {# minutes}}",
+    "hours": "{count, plural, one {# hour} other {# hours}}",
+    "hoursMinutes": "{hours} {minutes}"
   },
   "a11y": {
     "skipToContent": "Skip to content"

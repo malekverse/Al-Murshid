@@ -27,7 +27,7 @@
     "sacredCaption": "Amiri · for adhkar and duas"
   },
   "swatch": {
-    "contrast": "Contrast {ratio}:1"
+    "contrast": "Contrast {ratio}:{one, number}"
   },
   "space": {
     "radius": "Radius",
