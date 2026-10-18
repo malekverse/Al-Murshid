@@ -1,5 +1,7 @@
 // Must run before anything formats a number or a plural.
 import '@/lib/intl-polyfills';
+// Background tasks must exist before the OS can wake the app for them (SPEC 5.2).
+import { registerBackgroundTasks } from '@/lib/background';
 import { Amiri_400Regular } from '@expo-google-fonts/amiri';
 import {
   ReadexPro_400Regular,
@@ -9,21 +11,93 @@ import {
 import { fonts } from '@murshid/tokens';
 import { useFonts } from 'expo-font';
 import { LocaleProvider, Stack } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { AppState, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useUniwind } from 'uniwind';
+import { Uniwind, useUniwind } from 'uniwind';
 import { SheetHost } from '@/components/ui/sheet';
 import { ToastProvider } from '@/components/ui/toast';
 import { AppLocaleProvider, useAppLocale } from '@/lib/locale';
+import {
+  checkIgnoredReminders,
+  handleReminderResponse,
+  rescheduleReminders,
+  wasOpened,
+} from '@/lib/reminders';
+import { useSettings } from '@/lib/settings';
 import { restoreTheme } from '@/lib/theme';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
 restoreTheme();
+
+// Reminders that arrive while the app is open still show, quietly styled by their channel.
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+function respond(response: Notifications.NotificationResponse) {
+  const result = handleReminderResponse(response);
+  // Fajr and Isha open into the night theme (SPEC 6.1), for this visit only.
+  if (result?.openInDark && response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
+    Uniwind.setTheme('dark');
+  }
+}
+
+/**
+ * Keeps about six days of reminders scheduled (SPEC 5.2): on every return to the app and
+ * whenever a setting that moves them changes. Also answers taps on reminders.
+ */
+function ReminderSync() {
+  const s = useSettings();
+  const key = JSON.stringify([
+    s.onboarded,
+    s.location,
+    s.method,
+    s.asr,
+    s.highLatitude,
+    s.adjustments,
+    s.reminders,
+    s.remindersReduced,
+    s.journey.prayer.focusPrayer,
+  ]);
+
+  useEffect(() => {
+    void registerBackgroundTasks();
+    const onActive = () => checkIgnoredReminders();
+    onActive();
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        onActive();
+        void rescheduleReminders();
+      }
+    });
+    const sub = Notifications.addNotificationResponseReceivedListener(respond);
+    // A reminder that launched the app (iOS, or Android before the background task ran).
+    const last = Notifications.getLastNotificationResponse();
+    if (last && !wasOpened(last.notification.request.identifier)) respond(last);
+    return () => {
+      appState.remove();
+      sub.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(() => void rescheduleReminders(), 500);
+    return () => clearTimeout(id);
+  }, [key]);
+
+  return null;
+}
 
 function Root() {
   const { direction } = useAppLocale();
@@ -34,6 +108,7 @@ function Root() {
     <View style={{ flex: 1, direction }} className="bg-canvas">
       <LocaleProvider direction={direction}>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+        <ReminderSync />
         <ToastProvider>
           <SheetHost>
             <Stack

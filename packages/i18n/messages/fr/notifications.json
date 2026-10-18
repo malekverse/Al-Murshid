@@ -1,0 +1,19 @@
+{
+  "body": {
+    "fajr": "C’est l’heure du Fajr. Un nouveau départ avec Allah.",
+    "dhuhr": "C’est l’heure du Dohr. Une pause au milieu de la journée.",
+    "asr": "C’est l’heure de l’Asr. Deux minutes avec Allah ?",
+    "maghrib": "C’est l’heure du Maghreb. La journée se referme doucement.",
+    "isha": "C’est l’heure de l’Icha. Finir la journée avec Allah.",
+    "jumuah": "C’est l’heure de la Joumou’a."
+  },
+  "before": {
+    "title": "{name} dans {duration}",
+    "body": "Un petit rappel."
+  },
+  "channels": {
+    "adhan": "Adhan",
+    "soft": "Rappels doux",
+    "silent": "Rappels silencieux"
+  }
+}

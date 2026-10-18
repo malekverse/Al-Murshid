@@ -1,0 +1,96 @@
+{
+  "title": "Vous",
+  "soon": "Votre ciel, votre parcours et vos réflexions du soir viendront ici.",
+  "sections": {
+    "prayer": "Horaires de prière",
+    "reminders": "Rappels",
+    "appearance": "Apparence",
+    "about": "À propos"
+  },
+  "location": {
+    "label": "Lieu",
+    "device": "Selon la position de l’appareil",
+    "change": "Changer de lieu",
+    "refresh": "Utiliser ma position actuelle"
+  },
+  "method": {
+    "label": "Méthode de calcul",
+    "recommended": "Recommandée pour {country}",
+    "names": {
+      "mwl": "Ligue islamique mondiale",
+      "isna": "ISNA (Amérique du Nord)",
+      "egypt": "Autorité égyptienne de géodésie",
+      "umm-al-qura": "Umm al-Qura, La Mecque",
+      "karachi": "Université des sciences islamiques, Karachi",
+      "dubai": "Émirats (Dubaï)",
+      "kuwait": "Koweït",
+      "qatar": "Qatar",
+      "gulf": "Région du Golfe",
+      "singapore": "Singapour (MUIS)",
+      "turkey": "Diyanet, Turquie",
+      "moonsighting": "Moonsighting Committee",
+      "tunisia": "Tunisie",
+      "algeria": "Algérie",
+      "morocco": "Maroc",
+      "uoif": "UOIF (Musulmans de France)",
+      "kemenag": "Kemenag, Indonésie",
+      "jakim": "JAKIM, Malaisie",
+      "jordan": "Ministère des Awqaf, Jordanie"
+    }
+  },
+  "asr": {
+    "label": "Heure de l’Asr",
+    "standard": "Majoritaire (chaféite, malékite, hanbalite)",
+    "hanafi": "Hanafite"
+  },
+  "highLatitude": {
+    "label": "Règle des hautes latitudes",
+    "auto": "Automatique",
+    "middle-of-the-night": "Milieu de la nuit",
+    "seventh-of-the-night": "Un septième de la nuit",
+    "twilight-angle": "Angle du crépuscule",
+    "note": "Pour les lieux aux nuits d’été courtes, au-delà d’environ 48°."
+  },
+  "adjust": {
+    "label": "Ajuster les minutes",
+    "note": "Certaines mosquées ajoutent quelques minutes. Alignez-vous sur la vôtre.",
+    "none": "À l’heure",
+    "later": "Une minute plus tard",
+    "earlier": "Une minute plus tôt"
+  },
+  "hijri": {
+    "label": "Date hégirienne",
+    "value": "{direction, select, later {{count, plural, one {# jour plus tard} many {# jours plus tard} other {# jours plus tard}}} earlier {{count, plural, one {# jour plus tôt} many {# jours plus tôt} other {# jours plus tôt}}} other {Telle que calculée (Umm al-Qura)}}",
+    "note": "L’observation du croissant varie selon les pays. Décalez la date de deux jours au plus.",
+    "earlier": "Un jour plus tôt",
+    "later": "Un jour plus tard"
+  },
+  "reminders": {
+    "styles": {
+      "adhan": "Adhan complet",
+      "soft": "Tonalité douce",
+      "silent": "Bannière silencieuse",
+      "off": "Désactivé"
+    },
+    "before": "Rappel avant",
+    "beforeValue": "{count, plural, one {# minute avant} many {# minutes avant} other {# minutes avant}}",
+    "noBefore": "Aucun rappel avant",
+    "permission": "Les notifications sont désactivées pour cette application. Activez-les dans les réglages du téléphone.",
+    "openSettings": "Ouvrir les réglages",
+    "enable": "Activer les rappels",
+    "reduced": "Les rappels sont plus discrets : seulement {name}.",
+    "restore": "Rétablir tous les rappels",
+    "webNote": "Les rappels viennent de l’application mobile.",
+    "exact": "Les rappels peuvent arriver avec quelques minutes de retard sur ce téléphone. Autoriser l’heure exacte ?",
+    "exactAction": "Autoriser l’heure exacte",
+    "title": "Rappel pour {name}"
+  },
+  "simpleView": {
+    "label": "Vue simple",
+    "note": "Aujourd’hui n’affiche que les horaires et un grand bouton."
+  },
+  "about": {
+    "sources": "Horaires : adhan-js. Villes : GeoNames (CC BY 4.0). Texte et police du Coran : Complexe du roi Fahd, via QUL.",
+    "noRulings": "Al-Murshid n’émet pas d’avis religieux."
+  }
+}

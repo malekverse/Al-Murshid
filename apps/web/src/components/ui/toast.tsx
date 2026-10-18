@@ -7,16 +7,26 @@ import { useTranslations } from 'next-intl';
 import { createContext, use, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Text } from './text';
 
-type ShowToast = (message: string) => void;
+export interface ToastAction {
+  label: string;
+  onPress: () => void;
+}
+
+type ShowToast = (message: string, action?: ToastAction) => void;
 
 const ToastContext = createContext<ShowToast>(() => {});
 
 /** One calm toast at a time, at the top, announced politely to screen readers. */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('components');
-  const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const [toast, setToast] = useState<{ id: number; message: string; action?: ToastAction } | null>(
+    null,
+  );
 
-  const show = useCallback<ShowToast>((message) => setToast({ id: Date.now(), message }), []);
+  const show = useCallback<ShowToast>(
+    (message, action) => setToast({ id: Date.now(), message, action }),
+    [],
+  );
 
   useEffect(() => {
     if (!toast) return;
@@ -45,6 +55,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <Text as="span" role="callout" tone="inherit">
                 {toast.message}
               </Text>
+              {toast.action && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    toast.action?.onPress();
+                    setToast(null);
+                  }}
+                  className="min-h-touch rounded-full bg-canvas/10 px-4 text-canvas hover:bg-canvas/20"
+                >
+                  <Text as="span" role="callout" tone="inherit" className="font-medium">
+                    {toast.action.label}
+                  </Text>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setToast(null)}

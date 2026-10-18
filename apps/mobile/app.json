@@ -24,7 +24,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": true
+      "predictiveBackGestureEnabled": true,
+      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
     },
     "plugins": [
       "expo-router",
@@ -38,6 +39,31 @@
           "dark": {
             "image": "./assets/images/splash-icon.png",
             "backgroundColor": "#0E1116"
+          }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#BB7E25",
+          "sounds": ["./assets/sounds/soft_tone.wav"],
+          "enableRemoteNotifications": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Al-Murshid uses your location to calculate prayer times and the Qibla. It stays on your device."
+        }
+      ],
+      "expo-sqlite",
+      "expo-background-task",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraProguardRules": "# WorkManager (used by expo-notifications and expo-background-task) creates its Room database\n# through reflection; R8 must keep the generated implementation or release builds crash at start.\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }"
           }
         }
       ],

@@ -49,6 +49,7 @@
   --color-sky-maghrib-bottom: #E9876B;
   --color-sky-night-top: #0B1020;
   --color-sky-night-bottom: #1C2541;
+  --color-starlight: #F7F4EE;
 
   /* One family per weight on native, so Arabic never gets synthetic bold. */
   --font-ui: ReadexPro-Regular;

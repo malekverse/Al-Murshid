@@ -16,6 +16,8 @@ export interface PrayerRowProps {
   state?: PrayerRowState;
   /** Friday's Dhuhr reads "Jumu'ah" (SPEC 5.8). */
   jumuah?: boolean;
+  /** The place's time zone: a chosen city can be far from this device's clock. */
+  timeZone?: string;
   onPress?: () => void;
 }
 
@@ -28,6 +30,7 @@ export function PrayerRow({
   time,
   state = 'upcoming',
   jumuah = false,
+  timeZone,
   onPress,
 }: PrayerRowProps) {
   const t = useTranslations();
@@ -37,7 +40,7 @@ export function PrayerRow({
   const key = jumuah && prayer === 'dhuhr' ? 'jumuah' : prayer;
   const name = t(`glossary.prayer.${key}`);
   const arabicName = messages.ar.glossary.prayer[key];
-  const timeText = format.dateTime(time, { hour: 'numeric', minute: '2-digit' });
+  const timeText = format.dateTime(time, { hour: 'numeric', minute: '2-digit', timeZone });
   const marker = prayer === 'sunrise';
   const current = state === 'current' && !marker;
 

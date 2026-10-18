@@ -49,3 +49,7 @@ design/inbox/*
 # Installable test builds
 builds/
 *.apk
+
+# Playwright results and review screenshots
+apps/web/e2e/.results/
+apps/web/e2e/.screens/

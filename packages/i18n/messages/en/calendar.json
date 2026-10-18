@@ -1,0 +1,21 @@
+{
+  "title": "Hijri calendar",
+  "previous": "Previous month",
+  "next": "Next month",
+  "today": "Today",
+  "monthYear": "{month} {year} AH",
+  "note": "Moon sighting differs by country, so a date may be a day off.",
+  "adjust": "Adjust the date",
+  "legend": "Marked days",
+  "events": {
+    "new-year": "Islamic New Year",
+    "ashura": "Ashura",
+    "ramadan": "Ramadan",
+    "last-ten-nights": "Last ten nights",
+    "eid-al-fitr": "Eid al-Fitr",
+    "dhul-hijjah-ten": "First ten days of Dhu al-Hijjah",
+    "arafah": "Day of Arafah",
+    "eid-al-adha": "Eid al-Adha",
+    "white-days": "White days"
+  }
+}

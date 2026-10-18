@@ -149,3 +149,58 @@ Newest phase at the bottom.
 
 - **The plan is plain data: 6 days ahead, at most 64 pending (the iOS limit), nearest first.** Ids are `date-prayer-kind`, so rebuilding the plan on every app open is idempotent.
 - **A heads-up is 5 to 30 minutes before the prayer, always quiet (an adhan setting becomes soft), and never carries "I prayed".** Fajr and Isha notifications open in the dark theme.
+
+## Phase 4 · Today (2026-10-18)
+
+### Shape
+
+- **What Today shows is computed in `packages/core` (`todayView`): rows, the hero, earlier prayers and at most one card, from the instant, the place, the settings and the logs.** Both apps render the same day from the same inputs, and the rules are unit-tested (100% coverage), including the Hijri month grid.
+- **Before Fajr, the Isha being prayed belongs to yesterday.** Once the current prayer is logged, the hero moves on to the next prayer and its countdown.
+- **Settings and logs share one schema in a new `packages/data` (Zod).** Every settings field falls back to its own default, so a damaged or older value never resets the rest. Logs keep a `deleted` tombstone, so an un-log can sync in Phase 8.
+- **Storage: web keeps settings in localStorage (in memory if storage is blocked) and logs in IndexedDB through Dexie. Mobile keeps settings in MMKV and logs in expo-sqlite through Drizzle.** Mobile migrations are plain SQL tracked by SQLite's `user_version`, which avoids drizzle-kit's bundler plugin for `.sql` files.
+- **The You tab arrives early with the settings the daily loop needs:** location, method, Asr, the high-latitude rule, minute adjustments, the Hijri offset, reminders, language, theme and simple view. Your Sky, Journey and night reflection stay in Phase 7.
+
+### Location, offline
+
+- **Cities come from GeoNames cities15000 (CC BY 4.0) with their Arabic, French and English names: 31,766 places, built by `packages/content/scripts/import-cities.ts`.** Neighbourhoods and historical, abandoned or destroyed places are left out. The 2.5 MB table loads only when someone searches or locates, and its hash is pinned in `sources.json`.
+- **Search forgives Latin accents, Arabic diacritics, letter variants (أ إ آ ٱ ى ة ؤ ئ) and a missing article, so "قاهرة" finds "القاهرة".** Whole-name matches rank first, then prefixes, then inner words, larger cities first.
+- **A device position is named offline after the most populous place within 10 km, else the nearest one.** Central Paris reads "Paris", not an arrondissement. Coordinates keep three decimals (about 100 m). The location stores its name in each language, so the label follows the UI language.
+- **"You seem to be in X" appears only when the device location is in use, location is already allowed, and the device has moved more than 50 km or into another time zone.** It never asks for permission.
+
+### Onboarding
+
+- **On web the steps live in the URL hash, so Back works and a language change keeps the place.** Web skips the reminders step, since reminders are mobile-only in v1. The language is preselected from the device (next-intl's middleware on web, expo-localization on mobile).
+- **Mobile offers simple view when the system font scale is 1.3 or more (SPEC 3).**
+- **"Just starting" sets one prayer a day, with Maghrib as the focus until Journey (Phase 7) lets the person choose.** Maghrib is short and falls at a natural pause.
+
+### Today
+
+- **Cards shown in Phase 4: Welcome back and the new-step offer.** The Jumu'ah and adhkar-window rules exist and are tested in core, but each card waits for its destination: Al-Kahf in Phase 5, adhkar in Phase 7. Ramadan and the verse of the day come with seasonal content.
+- **Welcome back shows Az-Zumar 39:53 in Arabic only, read verbatim from `packages/content` (on web, by the server page).** Translations wait for licensed texts (SPEC 10). The du'a on accepting a new step also waits for reviewed content.
+- **On mobile, the Quran text loads only when the Welcome back card shows.** Today no longer parses the whole text (about 1.8 MB of JSON) on every cold start for one verse it rarely shows.
+- **"I prayed" turns into a check while a light rises into the sky, with a success haptic. A toast says "Prayed. May Allah accept it." and offers Undo**, since a mis-tap should cost nothing. The Earlier prayers sheet logs and un-logs today's and yesterday's prayers.
+- **Each logged prayer adds a light to today's sky: gold by day, starlight by night.** Unlogged prayers leave no mark. The lights sit in the band of sky above the glass card; placed over the whole hero, Fajr's and Isha's slipped behind the card.
+- **Text inside mobile glass reads the glass tone (a `GlassTone` context from `GlassCard`), not the app theme.** Text over a bright sky stays dark even in the dark theme.
+
+### Reminders (mobile)
+
+- **Six days are scheduled and rebuilt on every return to the app, whenever a setting that moves them changes, and by a 12-hour background task.** About 27 are pending at any time, well under iOS's 64.
+- **Android notification channels are versioned (`adhan-2`, `soft-1`, `silent-1`), because Android fixes a channel's sound once it is created.** The soft tone is a two-partial chime synthesized for the app, so no third-party recording is involved. Android 14+ asks for exact alarms from the reminder settings when the permission is missing.
+- **The adhan recordings are not chosen yet. Until they are, "Full adhan" rings the phone's default sound.** Choosing 3 to 5 recordings with confirmed rights is an open item for the owner (SPEC 5.2, 10).
+- **"I prayed" in a notification logs with source `notification` and dismisses the notification, with the app open or closed.** Verified on the Android emulator in both cases; the closed case on a release build with the process killed, since a debug dev client cannot run background tasks reliably. iOS answers the tap through the response listener and the last response at launch; it gets checked on a device through EAS.
+- **Background tasks are defined in the app's entry (`apps/mobile/index.ts`), before Expo Router loads.** When Android wakes a closed app for a notification action, it runs the entry without rendering a screen. Tasks defined in the root layout therefore never existed, and the release build logged "No task registered" and dropped the tap. The task then receives the raw response, where a local notification's data is still a JSON string (`content.dataString`), so the task parses it before handling the tap.
+- **Ignored reminders (SPEC 3): a prayer-time reminder counts as ignored once 90 minutes pass with the prayer neither logged nor the reminder opened.** Delivered reminders are remembered for 8 days. At five in a row, reminders reduce to the focus prayer, with one note on Today and a way to bring them all back, which starts a fresh count.
+- **`/dev/reminders` (mobile) rings a test reminder in five seconds**, so the notification path can be checked without waiting for a prayer time.
+
+### Navigation and tools
+
+- **Mobile tabs use the Phosphor icons (regular, and fill when selected), rendered to PNGs for NativeTabs' `src`.** Android's `md` icons would need `expo-symbols`, another native module and rebuild. iOS uses the closest SF Symbols.
+- **Qibla: native uses expo-location's true heading, low-pass filtered and sprung, so the dial never jitters.** The screen warms as the phone turns toward the Qibla, and one medium haptic fires on reaching ±3°. Web shows the bearing on a fixed dial and uses DeviceOrientation where the browser allows it (iOS needs a tap to grant motion access). The dial is never mirrored.
+- **Calendar weeks start on Saturday in Arabic, Sunday in English and Monday in French. Arabic uses the narrow weekday names, which fit seven columns on a 360 dp phone.** Numeric ranges such as "13–15" are wrapped in left-to-right isolates.
+- **On mobile, use-intl's `useLocale()` is an Intl tag (`ar-u-nu-latn`); language checks use the app locale (`useAppLocale`).** This caused a duplicated Arabic prayer name in the hero, now fixed.
+
+### Verification
+
+- **Web: a Playwright flow covers first visit, onboarding by city, Today, "I prayed", an earlier prayer and a reload, and passes at 1280 px and 360 px.** It runs with `pnpm --filter @murshid/web e2e`, not yet in CI, which would need the browsers installed. A screenshot run covers Today, You, Qibla and the calendar in ar, en and fr, light and dark, at both sizes (`e2e/.screens`, not committed).
+- **Release builds keep WorkManager's Room database through R8 (`expo-build-properties` adds the keep rules).** The notification and background-task modules bring WorkManager, and SDK 58 shrinks release builds by default. Without the rules, the release app crashed at launch (`WorkDatabase_Impl` stripped), which no debug build would ever show.
+- **Offline: the mobile daily loop makes no network calls (prayer times, cities, the Quran verse and the Hijri calendar are all local).** Web offline arrives with the PWA (Serwist) in Phase 5.

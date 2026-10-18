@@ -8,7 +8,12 @@ import { useTranslations } from 'use-intl';
 import { useColors } from '@/lib/theme';
 import { Text } from './text';
 
-type ShowToast = (message: string) => void;
+export interface ToastAction {
+  label: string;
+  onPress: () => void;
+}
+
+type ShowToast = (message: string, action?: ToastAction) => void;
 const ToastContext = createContext<ShowToast>(() => {});
 
 const enter = FadeInUp.springify()
@@ -20,10 +25,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('components');
   const insets = useSafeAreaInsets();
   const color = useColors();
-  const [toast, setToast] = useState<{ id: number; message: string } | null>(null);
+  const [toast, setToast] = useState<{ id: number; message: string; action?: ToastAction } | null>(
+    null,
+  );
 
-  const show = useCallback<ShowToast>((message) => {
-    setToast({ id: Date.now(), message });
+  const show = useCallback<ShowToast>((message, action) => {
+    setToast({ id: Date.now(), message, action });
     AccessibilityInfo.announceForAccessibility(message);
   }, []);
 
@@ -51,6 +58,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <Text role="callout" tone="inherit" style={{ color: color.canvas }}>
               {toast.message}
             </Text>
+            {toast.action && (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  toast.action?.onPress();
+                  setToast(null);
+                }}
+                className="min-h-touch justify-center rounded-full bg-canvas/10 px-4"
+              >
+                <Text role="callout" tone="inherit" style={{ color: color.canvas }}>
+                  {toast.action.label}
+                </Text>
+              </Pressable>
+            )}
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={t('dismiss')}

@@ -7,15 +7,20 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "next typegen && tsc",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@murshid/content": "workspace:*",
+    "@murshid/core": "workspace:*",
+    "@murshid/data": "workspace:*",
     "@murshid/i18n": "workspace:*",
     "@murshid/tokens": "workspace:*",
     "@phosphor-icons/react": "2.1.10",
     "@radix-ui/react-dialog": "1.3.1",
     "@radix-ui/react-slider": "1.6.1",
+    "dexie": "4.4.6",
+    "dexie-react-hooks": "4.4.0",
     "motion": "14.3.0",
     "next": "16.4.2",
     "next-intl": "4.14.9",
@@ -24,6 +29,7 @@
   },
   "devDependencies": {
     "@murshid/config": "workspace:*",
+    "@playwright/test": "1.64.1",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "catalog:",
     "@types/react": "catalog:",

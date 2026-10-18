@@ -1,0 +1,16 @@
+{
+  "focus": "خطوتك الآن: {step}",
+  "steps": {
+    "one-prayer": "{prayer} كل يوم",
+    "two-prayers": "صلاتان كل يوم",
+    "five-prayers": "الصلوات الخمس",
+    "five-and-adhkar": "الصلوات الخمس مع أذكار الصباح والمساء",
+    "rawatib": "الصلوات الخمس مع السنن الرواتب",
+    "one-ayah": "آية كل يوم",
+    "one-page": "صفحة كل يوم",
+    "khatmah": "خطة الختمة",
+    "morning-adhkar": "أذكار الصباح",
+    "evening-adhkar": "أذكار الصباح والمساء",
+    "tasbih-after-prayer": "التسبيح بعد كل صلاة"
+  }
+}

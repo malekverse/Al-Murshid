@@ -1,0 +1,19 @@
+{
+  "body": {
+    "fajr": "Fajr has come in. A fresh start with Allah.",
+    "dhuhr": "Dhuhr has come in. A pause in the middle of the day.",
+    "asr": "Asr has come in. Two minutes with Allah?",
+    "maghrib": "Maghrib has come in. The day closes gently.",
+    "isha": "Isha has come in. End the day with Allah.",
+    "jumuah": "Jumu’ah has come in."
+  },
+  "before": {
+    "title": "{name} in {duration}",
+    "body": "A gentle heads-up."
+  },
+  "channels": {
+    "adhan": "Adhan",
+    "soft": "Soft reminders",
+    "silent": "Silent reminders"
+  }
+}

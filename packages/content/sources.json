@@ -1,5 +1,5 @@
 {
-  "$comment": "Every Quran text and Quran font the apps ship, exactly as published (SPEC 10). Paths are from the repository root; sources.test.ts fails if a file's SHA-256 changes. Never edit these files: replace them with a new download and update this record.",
+  "$comment": "Every content file the apps ship, where it comes from and under which license (SPEC 10). Paths are from the repository root; sources.test.ts fails if a file's SHA-256 changes. Published files are kept byte for byte; never edit them, replace them with a new download. Derived files name the script that builds them.",
   "files": [
     {
       "path": "packages/content/quran/source/qpc-hafs.json",
@@ -40,6 +40,16 @@
       "retrieved": "2026-10-18",
       "license": "KFGQPC end-user license, embedded in the font: free to use, copy and distribute; never sold, modified or subset.",
       "sha256": "aa68bffce289b4c0ebac68e90502eb69e42356abcd1603cb2b8e99c2c723f145"
+    },
+    {
+      "path": "packages/content/places/cities.json",
+      "title": "Cities of 15,000+ people, with Arabic, French and English names",
+      "publisher": "GeoNames",
+      "via": "cities15000, alternateNamesV2 and admin1CodesASCII, built by scripts/import-cities.ts",
+      "url": "https://download.geonames.org/export/dump/",
+      "retrieved": "2026-10-18",
+      "license": "CC BY 4.0; credit GeoNames (https://www.geonames.org) in About.",
+      "sha256": "f332056a4dde66b2d95ecee1bcc0fb4c584f8dafc8238a240dddafadf818dd8c"
     }
   ]
 }

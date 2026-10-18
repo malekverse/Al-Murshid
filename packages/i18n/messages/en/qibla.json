@@ -1,0 +1,17 @@
+{
+  "title": "Qibla",
+  "bearing": "{degrees} from north",
+  "distance": "{distance} to Makkah",
+  "aligned": "Facing the Qibla",
+  "turnRight": "Turn right",
+  "turnLeft": "Turn left",
+  "calibrate": "Low accuracy. Move your phone in a figure eight.",
+  "noCompass": "No compass on this device. Face {degrees} from north.",
+  "desktop": "Face {degrees} from north, turning clockwise.",
+  "enableCompass": "Use the compass",
+  "needsLocation": "Set your location to find the Qibla.",
+  "north": "N",
+  "kaaba": "Kaaba",
+  "from": "From {city}",
+  "dial": "Compass. The Qibla is {offset} {side, select, right {to the right} left {to the left} other {ahead}}."
+}

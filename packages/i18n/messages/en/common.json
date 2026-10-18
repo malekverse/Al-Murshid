@@ -19,5 +19,17 @@
   },
   "a11y": {
     "skipToContent": "Skip to content"
+  },
+  "actions": {
+    "back": "Back",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "done": "Done",
+    "change": "Change",
+    "notNow": "Not now"
+  },
+  "soon": {
+    "quran": "The Quran reader is coming soon, God willing.",
+    "remember": "Adhkar, duas and tasbih are coming soon, God willing."
   }
 }

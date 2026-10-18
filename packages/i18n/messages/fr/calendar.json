@@ -1,0 +1,21 @@
+{
+  "title": "Calendrier hégirien",
+  "previous": "Mois précédent",
+  "next": "Mois suivant",
+  "today": "Aujourd’hui",
+  "monthYear": "{month} {year} H",
+  "note": "L’observation du croissant varie selon les pays : une date peut différer d’un jour.",
+  "adjust": "Ajuster la date",
+  "legend": "Jours marqués",
+  "events": {
+    "new-year": "Nouvel an hégirien",
+    "ashura": "Achoura",
+    "ramadan": "Ramadan",
+    "last-ten-nights": "Dix dernières nuits",
+    "eid-al-fitr": "Aïd al-Fitr",
+    "dhul-hijjah-ten": "Dix premiers jours de Dhou al-hijja",
+    "arafah": "Jour d’Arafat",
+    "eid-al-adha": "Aïd al-Adha",
+    "white-days": "Jours blancs"
+  }
+}

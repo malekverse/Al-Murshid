@@ -1,3 +1,4 @@
+export * from './calendar';
 export * from './geo';
 export * from './hijri';
 export * from './journey';
@@ -7,3 +8,4 @@ export * from './qibla';
 export * from './reminders';
 export * from './sun';
 export * from './time';
+export * from './today';

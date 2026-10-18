@@ -23,7 +23,15 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - Reanimated shared values: use `.get()` and `.set()`, never `.value =` (the React Compiler lint rejects it).
 - Hermes needs the FormatJS polyfills in `apps/mobile/src/lib/intl-polyfills.ts` (plurals, digits, times).
 - Measure performance on a release build (`./gradlew app:assembleRelease`); debug builds run unoptimized
-  native code and dev-mode JS, and are roughly ten times slower.
+  native code and dev-mode JS, and are roughly ten times slower. For the emulator, build only its ABI
+  (`-PreactNativeArchitectures=x86_64 --max-workers=3`) and run `./gradlew --stop` afterwards, or the
+  daemon starves the emulator into ANRs. If `createBundleReleaseJsAndAssets` fails with `0xC0000005`
+  after "Done writing bundle output", node crashed on exit: rerun the build.
+- Web flows and screenshots: `pnpm --filter @murshid/web e2e` (Playwright, reuses the dev server on 3000;
+  screenshots land in `apps/web/e2e/.screens`). Pass dates with `page.clock.setSystemTime` so animations still run.
+- Mobile reminders: `/dev/reminders` rings a test notification in 5 s. Background tasks (a notification
+  action with the app closed) only run reliably in release builds, not in the dev client.
+- If the dev client cannot reach Metro after an adb restart: `adb reverse tcp:8081 tcp:8081`.
 - Commands run from the repo root through Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Design tokens live in `packages/tokens`; run `pnpm --filter @murshid/tokens build` after editing them
   (it regenerates `theme.css` for both apps).

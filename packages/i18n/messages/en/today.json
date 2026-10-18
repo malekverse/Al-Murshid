@@ -1,0 +1,48 @@
+{
+  "title": "Today",
+  "hero": {
+    "left": "<countdown></countdown> left",
+    "in": "in <countdown></countdown>",
+    "at": "at {time}",
+    "prayedToast": "Prayed. May Allah accept it.",
+    "undo": "Undo"
+  },
+  "earlier": {
+    "link": "Earlier prayers",
+    "title": "Earlier prayers",
+    "description": "Log a prayer from earlier today or yesterday. No questions asked.",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "list": {
+    "title": "Today’s prayers",
+    "reminder": "Reminder for {name}"
+  },
+  "cards": {
+    "welcomeBack": {
+      "title": "Welcome back.",
+      "body": "Let’s start with the next prayer: {name}, at {time}.",
+      "action": "Let’s start"
+    },
+    "stepOffer": {
+      "title": "A new step is ready when you are.",
+      "body": "Next step: {step}.",
+      "accept": "Let’s begin",
+      "notNow": "Not now"
+    }
+  },
+  "noLocation": {
+    "title": "Set your location to see today’s prayer times.",
+    "action": "Choose a city"
+  },
+  "moved": {
+    "title": "You seem to be in {city}. Update prayer times?",
+    "update": "Update",
+    "keep": "Not now"
+  },
+  "tools": {
+    "label": "Tools",
+    "qibla": "Qibla",
+    "calendar": "Hijri calendar"
+  }
+}

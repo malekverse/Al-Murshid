@@ -1,0 +1,96 @@
+{
+  "title": "You",
+  "soon": "Your Sky, your Journey and night reflections will live here.",
+  "sections": {
+    "prayer": "Prayer times",
+    "reminders": "Reminders",
+    "appearance": "Appearance",
+    "about": "About"
+  },
+  "location": {
+    "label": "Location",
+    "device": "From your device",
+    "change": "Change location",
+    "refresh": "Use my current location"
+  },
+  "method": {
+    "label": "Calculation method",
+    "recommended": "Recommended for {country}",
+    "names": {
+      "mwl": "Muslim World League",
+      "isna": "ISNA (North America)",
+      "egypt": "Egyptian General Authority of Survey",
+      "umm-al-qura": "Umm al-Qura, Makkah",
+      "karachi": "University of Islamic Sciences, Karachi",
+      "dubai": "UAE (Dubai)",
+      "kuwait": "Kuwait",
+      "qatar": "Qatar",
+      "gulf": "Gulf region",
+      "singapore": "Singapore (MUIS)",
+      "turkey": "Diyanet, Turkey",
+      "moonsighting": "Moonsighting Committee",
+      "tunisia": "Tunisia",
+      "algeria": "Algeria",
+      "morocco": "Morocco",
+      "uoif": "UOIF (Muslims of France)",
+      "kemenag": "Kemenag, Indonesia",
+      "jakim": "JAKIM, Malaysia",
+      "jordan": "Ministry of Awqaf, Jordan"
+    }
+  },
+  "asr": {
+    "label": "Asr time",
+    "standard": "Majority (Shafi‘i, Maliki, Hanbali)",
+    "hanafi": "Hanafi"
+  },
+  "highLatitude": {
+    "label": "High-latitude rule",
+    "auto": "Automatic",
+    "middle-of-the-night": "Middle of the night",
+    "seventh-of-the-night": "One seventh of the night",
+    "twilight-angle": "Twilight angle",
+    "note": "For places where summer nights are short, above about 48°."
+  },
+  "adjust": {
+    "label": "Adjust minutes",
+    "note": "Some mosques add a few minutes. Match yours here.",
+    "none": "On time",
+    "later": "One minute later",
+    "earlier": "One minute earlier"
+  },
+  "hijri": {
+    "label": "Hijri date",
+    "value": "{direction, select, later {{count, plural, one {# day later} other {# days later}}} earlier {{count, plural, one {# day earlier} other {# days earlier}}} other {As calculated (Umm al-Qura)}}",
+    "note": "Moon sighting differs by country. Shift the date by up to two days to match yours.",
+    "earlier": "One day earlier",
+    "later": "One day later"
+  },
+  "reminders": {
+    "styles": {
+      "adhan": "Full adhan",
+      "soft": "Soft tone",
+      "silent": "Silent banner",
+      "off": "Off"
+    },
+    "before": "Heads-up before",
+    "beforeValue": "{count, plural, one {# minute before} other {# minutes before}}",
+    "noBefore": "No heads-up",
+    "permission": "Reminders are off for this app. Turn them on in your phone’s settings.",
+    "openSettings": "Open settings",
+    "enable": "Turn on reminders",
+    "reduced": "Reminders are quieter now: only {name}.",
+    "restore": "Bring all reminders back",
+    "webNote": "Reminders come from the mobile app.",
+    "exact": "Reminders may arrive a few minutes late on this phone. Allow exact timing?",
+    "exactAction": "Allow exact timing",
+    "title": "Reminder for {name}"
+  },
+  "simpleView": {
+    "label": "Simple view",
+    "note": "Today shows only the prayer times and one large button."
+  },
+  "about": {
+    "sources": "Prayer times: adhan-js. Cities: GeoNames (CC BY 4.0). Quran text and font: King Fahd Complex, via QUL.",
+    "noRulings": "Al-Murshid does not issue religious rulings."
+  }
+}

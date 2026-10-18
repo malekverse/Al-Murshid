@@ -99,3 +99,32 @@ export function planReminders({
     .sort((a, b) => a.at.getTime() - b.at.getTime())
     .slice(0, limit);
 }
+
+/** A reminder still has time to be answered this long after it rings. */
+export const ANSWER_WINDOW_MINUTES = 90;
+
+/**
+ * How many prayer-time reminders in a row, most recent first, went by with the prayer neither
+ * logged nor the reminder opened (SPEC 3: after 5, reminders quietly reduce to the focus
+ * prayer). Heads-ups never count, and a reminder counts only once its answer window has passed.
+ */
+export function ignoredInARow(
+  delivered: readonly Pick<PlannedNotification, 'id' | 'at' | 'prayer' | 'kind'>[],
+  logged: ReadonlySet<string>,
+  opened: ReadonlySet<string>,
+  now: Date,
+): number {
+  const settled = delivered
+    .filter(
+      (n) => n.kind === 'time' && n.at.getTime() <= now.getTime() - ANSWER_WINDOW_MINUTES * 60_000,
+    )
+    .sort((a, b) => b.at.getTime() - a.at.getTime());
+  let count = 0;
+  for (const n of settled) {
+    // Ids start with the prayer's ISO date: "2026-10-18-asr-time".
+    const answered = opened.has(n.id) || logged.has(`${n.id.slice(0, 10)}:${n.prayer}`);
+    if (answered) break;
+    count++;
+  }
+  return count;
+}

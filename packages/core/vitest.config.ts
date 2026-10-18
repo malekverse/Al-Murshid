@@ -13,6 +13,8 @@ export default defineConfig({
         'src/reminders.ts',
         'src/sun.ts',
         'src/geo.ts',
+        'src/today.ts',
+        'src/calendar.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

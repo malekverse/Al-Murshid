@@ -10,7 +10,13 @@ import {
   type DayRecord,
 } from './journey';
 import { defaultSettings, prayerTimes, type Prayer } from './prayer-times';
-import { defaultReminders, IOS_PENDING_LIMIT, PLAN_DAYS, planReminders } from './reminders';
+import {
+  defaultReminders,
+  ignoredInARow,
+  IOS_PENDING_LIMIT,
+  PLAN_DAYS,
+  planReminders,
+} from './reminders';
 import { addDays, type CivilDate } from './time';
 
 const today: CivilDate = { year: 2026, month: 10, day: 18 };
@@ -219,5 +225,34 @@ describe('reminder plan', () => {
     });
     expect(plan.find((n) => n.prayer === 'dhuhr')!.jumuah).toBe(true);
     expect(plan.find((n) => n.prayer === 'asr')!.jumuah).toBe(false);
+  });
+});
+
+describe('ignored reminders (SPEC 3)', () => {
+  const tunis = { latitude: 36.8065, longitude: 10.1815 };
+  const days = Array.from({ length: 3 }, (_, i) =>
+    prayerTimes(tunis, addDays(today, i - 2), { ...defaultSettings, method: 'tunisia' }),
+  );
+  const delivered = planReminders({
+    now: new Date(days[0]!.fajr.getTime() - 60_000),
+    days,
+    settings: Object.fromEntries(
+      Object.entries(defaultReminders).map(([k, v]) => [k, { ...v, before: 10 }]),
+    ) as typeof defaultReminders,
+  });
+  const now = days[2]!.isha;
+
+  it('counts unanswered prayer-time reminders back from the latest settled one', () => {
+    // At Isha, Maghrib's reminder is still inside its 90-minute answer window.
+    expect(ignoredInARow(delivered, new Set(), new Set(), now)).toBe(13);
+    expect(
+      ignoredInARow(delivered, new Set(), new Set(), new Date(now.getTime() + 60 * 60_000)),
+    ).toBe(14);
+  });
+
+  it('stops at a logged prayer or an opened reminder', () => {
+    expect(ignoredInARow(delivered, new Set(['2026-10-18:asr']), new Set(), now)).toBe(0);
+    expect(ignoredInARow(delivered, new Set(['2026-10-18:dhuhr']), new Set(), now)).toBe(1);
+    expect(ignoredInARow(delivered, new Set(), new Set(['2026-10-18-asr-time']), now)).toBe(0);
   });
 });

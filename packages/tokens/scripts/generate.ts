@@ -17,6 +17,7 @@ import {
   radius,
   shadow,
   sky,
+  starlight,
   touchTarget,
   typeScale,
   type ColorTokens,
@@ -31,10 +32,12 @@ function colorVars(tokens: ColorTokens, indent: string): string[] {
 }
 
 function skyVars(indent: string): string[] {
-  return Object.entries(sky).flatMap(([period, stop]) => [
-    `${indent}--color-sky-${period}-top: ${stop.top};`,
-    `${indent}--color-sky-${period}-bottom: ${stop.bottom};`,
-  ]);
+  return Object.entries(sky)
+    .flatMap(([period, stop]) => [
+      `${indent}--color-sky-${period}-top: ${stop.top};`,
+      `${indent}--color-sky-${period}-bottom: ${stop.bottom};`,
+    ])
+    .concat(`${indent}--color-starlight: ${starlight};`);
 }
 
 /** `--text-<name>` utilities. Latin roles keep their name; Arabic roles get an `ar-` prefix. */

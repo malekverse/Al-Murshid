@@ -1,0 +1,49 @@
+{
+  "progress": "Step {current} of {total}",
+  "language": {
+    "title": "App language",
+    "body": "You can change it any time in You."
+  },
+  "location": {
+    "title": "Where are you?",
+    "body": "Prayer times follow your location. It stays on your device.",
+    "useLocation": "Use my location",
+    "chooseCity": "Choose a city",
+    "locating": "Finding where you are…",
+    "denied": "Location is off, and that’s fine. Choose your city: everything works the same.",
+    "failed": "We couldn’t find your location. Choose your city instead.",
+    "search": "Search for a city",
+    "searchLabel": "City",
+    "noResults": "No city by that name. Try another spelling.",
+    "place": "{city}, {country}",
+    "method": "Calculation: {method}",
+    "methodNote": "Chosen for {country}. You can change it any time."
+  },
+  "start": {
+    "title": "Where are you today?",
+    "caption": "This stays on your device. There is no wrong answer.",
+    "answers": {
+      "just-starting": "Just starting",
+      "sometimes": "I pray sometimes",
+      "most-days": "I pray most days",
+      "all-five": "I pray all five"
+    }
+  },
+  "reminders": {
+    "title": "A gentle call at each prayer",
+    "body": "A reminder when each prayer comes in, in the sound you prefer. You can change it for each prayer.",
+    "styles": {
+      "adhan": "Full adhan",
+      "soft": "Soft tone",
+      "silent": "Silent banner"
+    },
+    "allow": "Turn on reminders",
+    "denied": "Reminders are off. You can turn them on later in your phone’s settings."
+  },
+  "simpleView": {
+    "title": "Larger and simpler?",
+    "body": "Simple view shows today’s prayer times and one large button.",
+    "use": "Use simple view",
+    "keep": "Keep the full view"
+  }
+}

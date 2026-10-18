@@ -1,0 +1,48 @@
+{
+  "title": "اليوم",
+  "hero": {
+    "left": "باقٍ <countdown></countdown>",
+    "in": "بعد <countdown></countdown>",
+    "at": "عند {time}",
+    "prayedToast": "تمّت. تقبّل الله.",
+    "undo": "تراجع"
+  },
+  "earlier": {
+    "link": "صلوات سابقة",
+    "title": "صلوات سابقة",
+    "description": "يمكن تسجيل صلاة من وقت سابق اليوم أو من الأمس، دون أي سؤال.",
+    "today": "اليوم",
+    "yesterday": "أمس"
+  },
+  "list": {
+    "title": "مواقيت اليوم",
+    "reminder": "تذكير {name}"
+  },
+  "cards": {
+    "welcomeBack": {
+      "title": "أهلًا بعودتك.",
+      "body": "لنبدأ بالصلاة القادمة: {name}، عند {time}.",
+      "action": "لنبدأ"
+    },
+    "stepOffer": {
+      "title": "خطوة جديدة بانتظارك، متى شئت.",
+      "body": "الخطوة التالية: {step}.",
+      "accept": "لنبدأ بها",
+      "notNow": "ليس الآن"
+    }
+  },
+  "noLocation": {
+    "title": "يلزم تحديد الموقع لتظهر مواقيت اليوم.",
+    "action": "اختيار مدينة"
+  },
+  "moved": {
+    "title": "يبدو أنك في {city}. هل نحدّث مواقيت الصلاة؟",
+    "update": "تحديث",
+    "keep": "ليس الآن"
+  },
+  "tools": {
+    "label": "أدوات",
+    "qibla": "القبلة",
+    "calendar": "التقويم الهجري"
+  }
+}

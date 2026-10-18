@@ -1,0 +1,48 @@
+{
+  "title": "Aujourd’hui",
+  "hero": {
+    "left": "encore <countdown></countdown>",
+    "in": "dans <countdown></countdown>",
+    "at": "à {time}",
+    "prayedToast": "C’est fait. Qu’Allah l’accepte.",
+    "undo": "Annuler"
+  },
+  "earlier": {
+    "link": "Prières précédentes",
+    "title": "Prières précédentes",
+    "description": "Enregistrez une prière de plus tôt aujourd’hui ou d’hier. Sans aucune question.",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier"
+  },
+  "list": {
+    "title": "Les prières du jour",
+    "reminder": "Rappel pour {name}"
+  },
+  "cards": {
+    "welcomeBack": {
+      "title": "Bon retour.",
+      "body": "Commençons par la prochaine prière : {name}, à {time}.",
+      "action": "Commençons"
+    },
+    "stepOffer": {
+      "title": "Une nouvelle étape vous attend, quand vous voulez.",
+      "body": "Étape suivante : {step}.",
+      "accept": "Je commence",
+      "notNow": "Pas maintenant"
+    }
+  },
+  "noLocation": {
+    "title": "Indiquez votre lieu pour voir les horaires du jour.",
+    "action": "Choisir une ville"
+  },
+  "moved": {
+    "title": "Vous semblez être à {city}. Mettre à jour les horaires ?",
+    "update": "Mettre à jour",
+    "keep": "Pas maintenant"
+  },
+  "tools": {
+    "label": "Outils",
+    "qibla": "Qibla",
+    "calendar": "Calendrier hégirien"
+  }
+}

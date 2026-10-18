@@ -8,5 +8,20 @@
     "isha": "Icha",
     "jumuah": "Joumou’a"
   },
-  "night": "Nuit"
+  "night": "Nuit",
+  "hijriMonths": {
+    "1": "Mouharram",
+    "2": "Safar",
+    "3": "Rabi‘ al-awwal",
+    "4": "Rabi‘ ath-thani",
+    "5": "Joumada al-oula",
+    "6": "Joumada al-akhira",
+    "7": "Rajab",
+    "8": "Cha‘bane",
+    "9": "Ramadan",
+    "10": "Chawwal",
+    "11": "Dhou al-qi‘da",
+    "12": "Dhou al-hijja"
+  },
+  "hijriDate": "{day} {month} {year} H"
 }

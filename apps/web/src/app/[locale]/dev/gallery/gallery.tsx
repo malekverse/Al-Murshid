@@ -54,7 +54,7 @@ export function Gallery({ sacred }: { sacred: SacredSamples }) {
       <header className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex max-w-reading flex-col gap-3">
           <Link
-            href="/"
+            href="/dev/tokens"
             className="inline-flex min-h-touch items-center gap-2 self-start text-lantern-ink"
           >
             <ArrowLeft size={18} aria-hidden className="rtl:-scale-x-100" />

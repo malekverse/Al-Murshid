@@ -19,5 +19,17 @@
   },
   "a11y": {
     "skipToContent": "Aller au contenu"
+  },
+  "actions": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "cancel": "Annuler",
+    "done": "Terminé",
+    "change": "Modifier",
+    "notNow": "Pas maintenant"
+  },
+  "soon": {
+    "quran": "Le lecteur du Coran arrive bientôt, si Dieu le veut.",
+    "remember": "Adhkar, invocations et tasbih arrivent bientôt, si Dieu le veut."
   }
 }

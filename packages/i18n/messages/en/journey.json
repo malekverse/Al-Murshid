@@ -1,0 +1,16 @@
+{
+  "focus": "Your focus: {step}",
+  "steps": {
+    "one-prayer": "{prayer}, every day",
+    "two-prayers": "Two prayers a day",
+    "five-prayers": "All five prayers",
+    "five-and-adhkar": "The five prayers, with morning and evening adhkar",
+    "rawatib": "The five prayers, with the Sunnah prayers",
+    "one-ayah": "One ayah a day",
+    "one-page": "One page a day",
+    "khatmah": "Your khatmah plan",
+    "morning-adhkar": "Morning adhkar",
+    "evening-adhkar": "Morning and evening adhkar",
+    "tasbih-after-prayer": "Tasbih after each prayer"
+  }
+}

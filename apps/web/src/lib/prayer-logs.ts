@@ -1,0 +1,40 @@
+'use client';
+
+import { addDays, isoDate, type CivilDate, type Prayer } from '@murshid/core';
+import { logKey, newLog, type LogSource, type PrayerLog } from '@murshid/data';
+import Dexie, { type EntityTable } from 'dexie';
+import { useLiveQuery } from 'dexie-react-hooks';
+
+// Prayer logs stay in this browser (SPEC 9): IndexedDB through Dexie. Un-logging keeps a
+// tombstone, so a later sync (Phase 8) can carry it to other devices.
+
+interface Row extends PrayerLog {
+  /** "2026-10-18:asr" */
+  key: string;
+}
+
+const db = new Dexie('murshid') as Dexie & { prayerLogs: EntityTable<Row, 'key'> };
+db.version(1).stores({ prayerLogs: 'key, date' });
+
+/** Logs from the last eight days (what Today and the Journey read), live. */
+export function useRecentLogs(today: CivilDate | null): PrayerLog[] | undefined {
+  const from = today ? isoDate(addDays(today, -7)) : null;
+  return useLiveQuery(
+    () => (from ? db.prayerLogs.where('date').aboveOrEqual(from).toArray() : []),
+    [from],
+  );
+}
+
+export async function setPrayerLogged(
+  date: CivilDate,
+  prayer: Prayer,
+  logged: boolean,
+  source: LogSource = 'app',
+) {
+  const key = logKey(date, prayer);
+  if (logged) {
+    await db.prayerLogs.put({ key, ...newLog(date, prayer, source) });
+  } else {
+    await db.prayerLogs.update(key, { deleted: true, loggedAt: new Date().toISOString() });
+  }
+}

@@ -23,14 +23,16 @@ import { PressDemo } from '@/components/press-demo';
 import { ShowcaseControls } from '@/components/showcase-controls';
 import { Text } from '@/components/ui/text';
 
-export async function generateMetadata({ params }: PageProps<'/[locale]'>): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/dev/tokens'>): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const t = await getTranslations({ locale, namespace: 'showcase.meta' });
   return { title: t('title'), description: t('description') };
 }
 
-// Phase 1 token showcase (SPEC 12). Today replaces this route in Phase 4.
+// Phase 1 token showcase (SPEC 12), a developer page.
 export default function ShowcasePage() {
   const t = useTranslations('showcase');
 

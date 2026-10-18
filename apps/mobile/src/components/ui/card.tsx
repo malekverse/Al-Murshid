@@ -2,6 +2,7 @@ import { colors, glassBlur } from '@murshid/tokens';
 import { BlurView } from 'expo-blur';
 import { useEffect, useState, type ReactNode } from 'react';
 import { AccessibilityInfo, Platform, View, type ViewProps } from 'react-native';
+import { GlassTone } from './tone';
 
 export interface CardProps extends ViewProps {
   className?: string;
@@ -69,7 +70,7 @@ export function GlassCard({
           style={{ position: 'absolute', inset: 0, backgroundColor: fill }}
         />
       )}
-      {children}
+      <GlassTone value={tone}>{children}</GlassTone>
     </View>
   );
 }

@@ -1,0 +1,49 @@
+{
+  "progress": "Étape {current} sur {total}",
+  "language": {
+    "title": "Langue de l’application",
+    "body": "Modifiable à tout moment dans « Vous »."
+  },
+  "location": {
+    "title": "Où êtes-vous ?",
+    "body": "Les horaires de prière suivent votre position. Elle reste sur votre appareil.",
+    "useLocation": "Utiliser ma position",
+    "chooseCity": "Choisir une ville",
+    "locating": "Recherche de votre position…",
+    "denied": "La localisation est désactivée, et ce n’est pas grave. Choisissez votre ville : tout fonctionne de la même façon.",
+    "failed": "Impossible de trouver votre position. Choisissez plutôt votre ville.",
+    "search": "Rechercher une ville",
+    "searchLabel": "Ville",
+    "noResults": "Aucune ville de ce nom. Essayez une autre orthographe.",
+    "place": "{city}, {country}",
+    "method": "Calcul : {method}",
+    "methodNote": "Choisi pour {country}. Modifiable à tout moment."
+  },
+  "start": {
+    "title": "Où en êtes-vous aujourd’hui ?",
+    "caption": "Cela reste sur votre appareil. Il n’y a pas de mauvaise réponse.",
+    "answers": {
+      "just-starting": "Je commence",
+      "sometimes": "Je prie parfois",
+      "most-days": "Je prie presque tous les jours",
+      "all-five": "Je fais les cinq prières"
+    }
+  },
+  "reminders": {
+    "title": "Un doux rappel à chaque prière",
+    "body": "Un rappel à l’entrée de chaque prière, avec le son de votre choix. Modifiable pour chaque prière.",
+    "styles": {
+      "adhan": "Adhan complet",
+      "soft": "Tonalité douce",
+      "silent": "Bannière silencieuse"
+    },
+    "allow": "Activer les rappels",
+    "denied": "Les rappels sont désactivés. Vous pourrez les activer plus tard dans les réglages du téléphone."
+  },
+  "simpleView": {
+    "title": "Plus grand et plus simple ?",
+    "body": "La vue simple affiche les horaires du jour et un seul grand bouton.",
+    "use": "Utiliser la vue simple",
+    "keep": "Garder la vue complète"
+  }
+}

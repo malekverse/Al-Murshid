@@ -1,0 +1,17 @@
+{
+  "title": "Qibla",
+  "bearing": "{degrees} depuis le nord",
+  "distance": "{distance} jusqu’à La Mecque",
+  "aligned": "Face à la Qibla",
+  "turnRight": "Tournez à droite",
+  "turnLeft": "Tournez à gauche",
+  "calibrate": "Précision faible. Faites un 8 avec votre téléphone.",
+  "noCompass": "Pas de boussole sur cet appareil. Orientez-vous à {degrees} du nord.",
+  "desktop": "Orientez-vous à {degrees} du nord, dans le sens des aiguilles d’une montre.",
+  "enableCompass": "Utiliser la boussole",
+  "needsLocation": "Indiquez votre lieu pour trouver la Qibla.",
+  "north": "N",
+  "kaaba": "Kaaba",
+  "from": "Depuis {city}",
+  "dial": "Boussole. La Qibla est {side, select, right {à {offset} sur la droite} left {à {offset} sur la gauche} other {droit devant}}."
+}

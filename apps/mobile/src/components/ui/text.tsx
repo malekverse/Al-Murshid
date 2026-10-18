@@ -1,6 +1,8 @@
-import type { UiRole } from '@murshid/tokens';
+import { colors, type ColorTokens, type UiRole } from '@murshid/tokens';
+import { use } from 'react';
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 import { useAppLocale } from '@/lib/locale';
+import { GlassTone } from './tone';
 
 type Script = 'latin' | 'arabic';
 type Role = UiRole | 'dhikr';
@@ -37,6 +39,14 @@ const tone = {
   inherit: '',
 } as const;
 
+/** The same tones as colors, for text inside glass whose tone differs from the app theme. */
+const toneColor: Record<Exclude<keyof typeof tone, 'inherit'>, keyof ColorTokens> = {
+  default: 'ink',
+  muted: 'inkMuted',
+  lantern: 'lanternInk',
+  onLantern: 'onLantern',
+};
+
 export interface TextProps extends Omit<RNTextProps, 'role'> {
   role?: Role;
   tone?: keyof typeof tone;
@@ -51,13 +61,18 @@ export function Text({
   tone: toneName = 'default',
   script,
   className,
+  style,
   ...rest
 }: TextProps) {
   const { locale } = useAppLocale();
+  const glass = use(GlassTone);
   const resolved: Script = script ?? (locale === 'ar' ? 'arabic' : 'latin');
+  const glassColor =
+    glass && toneName !== 'inherit' ? { color: colors[glass][toneColor[toneName]] } : undefined;
   return (
     <RNText
       className={[roleClass[resolved][role], tone[toneName], className].filter(Boolean).join(' ')}
+      style={glassColor ? [glassColor, style] : style}
       {...rest}
     />
   );
