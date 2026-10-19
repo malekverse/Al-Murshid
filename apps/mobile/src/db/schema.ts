@@ -20,6 +20,8 @@ export const quranBookmarks = sqliteTable('quran_bookmarks', {
   id: text('id').primaryKey(),
   surah: integer('surah').notNull(),
   ayah: integer('ayah').notNull(),
+  /** The last ayah of a marked passage (Phase 5b); null marks one ayah. */
+  ayahEnd: integer('ayah_end'),
   color: text('color', { enum: bookmarkColors }).notNull(),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),

@@ -11,7 +11,10 @@
 //   text/<n>.json         each ayah's words (QPC Hafs) and any separator that is not the default
 //   en/<n>.json fr/<n>.json   the translation with its footnotes, and word-by-word meanings
 //   translit/<n>.json     word-by-word transliteration
-//   mushaf-v2.json        the 1421H layout: 604 pages of 15 lines, and each word's V2 glyph
+//   mushaf/<edition>.json the printed layouts (Phase 5b): v1 1405H, v2 1421H and v4 1441H (604
+//                         pages of 15 lines, each word's glyph in its page's font) and indopak
+//                         (KFGQPC Nastaleeq, 610 pages, each word's Unicode text)
+//   tafsir/<lang>/<n>.json  Al-Mukhtasar's passages and the ayahs each explains
 //   search/<lang>.json    plain text per ayah to search in (never displayed)
 //   audio/reciters.json, audio/<reciter>/<n>.json   audio links, durations and word timestamps
 //   loaders.js (+ .d.ts)  one dynamic import per file, so bundlers split them
@@ -169,7 +172,7 @@ const meanings = {
 };
 const transliteration = read<Record<string, string>>('wbw/english-wbw-transliteration.json');
 
-// ---------- Mushaf layout (KFGQPC V2, 1421H) ----------
+// ---------- Mushaf layouts (Phase 5b: four editions) ----------
 
 interface LayoutRow {
   page_number: number;
@@ -180,49 +183,125 @@ interface LayoutRow {
   last_word_id: number | '';
   surah_number: number | '';
 }
-const layoutDb = new DatabaseSync(quranDir + 'source/qpc-v2-15-lines.db', { readOnly: true });
-const rows = layoutDb
-  .prepare('SELECT * FROM pages ORDER BY page_number, line_number')
-  .all() as unknown as LayoutRow[];
-layoutDb.close();
 
 /** A line: [0, first word, last word, centered] for text, [1, surah] for a name, [2] basmalah. */
 type Line = [0, number, number, 0 | 1] | [1, number] | [2];
-const pages: Line[][] = [];
-const pageWordStart: number[] = [];
-let nextWord = 1;
-for (const r of rows) {
-  const lines = (pages[r.page_number - 1] ??= []);
-  assert(
-    r.line_number === lines.length + 1,
-    `page ${r.page_number}: line ${r.line_number} out of order`,
-  );
-  if (r.line_type === 'ayah') {
-    const first = Number(r.first_word_id);
-    const last = Number(r.last_word_id);
-    assert(first === nextWord && last >= first, `page ${r.page_number}: words must follow on`);
-    if (pageWordStart[r.page_number - 1] === undefined) pageWordStart[r.page_number - 1] = first;
-    nextWord = last + 1;
-    lines.push([0, first, last, r.is_centered ? 1 : 0]);
-  } else if (r.line_type === 'surah_name') {
-    lines.push([1, Number(r.surah_number)]);
-  } else {
-    assert(r.line_type === 'basmallah', `page ${r.page_number}: unknown line type`);
-    lines.push([2]);
-  }
-}
-assert(pages.length === 604, 'expected 604 pages');
-assert(nextWord === rawWords.length + 1, 'the layout must place every word once');
-pageWordStart.push(rawWords.length + 1);
 
-const glyphRows = Object.values(
-  read<Record<string, { id: number; text: string }>>('qpc-v2.json'),
-).sort((a, b) => a.id - b.id);
-assert(glyphRows.length === rawWords.length, 'every word needs its V2 glyph');
-const glyphs = glyphRows.map((g, i) => {
-  assert(g.id === i + 1, 'glyph ids must be contiguous');
-  return g.text;
-});
+/** The surah an id's word opens, if it is the first word of a surah. */
+const surahOpenedBy = new Map<number, number>();
+for (let s = 1; s <= 114; s++) surahOpenedBy.set(wordStart[surahStart[s - 1]!]!, s);
+
+/**
+ * Reads a layout: its pages of lines and the first word of each page. `headers` adds the surah
+ * names and basmalahs a layout leaves out (the Indopak one lists text lines only): before each
+ * line opening a surah, its name, then the basmalah unless the surah has none (At-Tawbah) or opens
+ * with it as its first ayah (Al-Fatihah).
+ */
+function readLayout(
+  file: string,
+  pageCount: number,
+  options: { headers?: boolean; fix?: (r: LayoutRow) => LayoutRow[] } = {},
+) {
+  const db = new DatabaseSync(quranDir + 'source/' + file, { readOnly: true });
+  const raw = db
+    .prepare('SELECT * FROM pages ORDER BY page_number, line_number')
+    .all() as unknown as LayoutRow[];
+  db.close();
+  // The source's own numbering first, before any fix splits a line.
+  let page = 0;
+  let line = 0;
+  for (const r of raw) {
+    if (r.page_number !== page) [page, line] = [r.page_number, 0];
+    line += 1;
+    assert(r.line_number === line, `${file}, page ${r.page_number}: line out of order`);
+  }
+  const pages: Line[][] = [];
+  const pageWordStart: number[] = [];
+  let nextWord = 1;
+  for (const r of options.fix ? raw.flatMap(options.fix) : raw) {
+    const lines = (pages[r.page_number - 1] ??= []);
+    if (r.line_type === 'ayah') {
+      const first = Number(r.first_word_id);
+      const last = Number(r.last_word_id);
+      assert(
+        first === nextWord && last >= first,
+        `${file}, page ${r.page_number}: words must follow on`,
+      );
+      const opens = surahOpenedBy.get(first);
+      if (options.headers && opens && opens !== 1) {
+        lines.push([1, opens]);
+        if (opens !== 9) lines.push([2]);
+      }
+      if (pageWordStart[r.page_number - 1] === undefined) pageWordStart[r.page_number - 1] = first;
+      nextWord = last + 1;
+      lines.push([0, first, last, r.is_centered ? 1 : 0]);
+    } else if (r.line_type === 'surah_name') {
+      lines.push([1, Number(r.surah_number)]);
+    } else {
+      assert(r.line_type === 'basmallah', `${file}, page ${r.page_number}: unknown line type`);
+      lines.push([2]);
+    }
+  }
+  assert(pages.length === pageCount, `${file}: expected ${pageCount} pages`);
+  assert(nextWord === rawWords.length + 1, `${file}: the layout must place every word once`);
+  for (const [i, lines] of pages.entries())
+    assert(lines.length <= 15, `${file}, page ${i + 1}: over 15 lines`);
+  pageWordStart.push(rawWords.length + 1);
+  return { pages, pageWordStart };
+}
+
+/** Each word's text in a script (by word id - 1): glyph codes for page fonts, or Unicode text. */
+function readScript(file: string) {
+  const rows = Object.values(
+    read<Record<string, { id: number; location: string; text: string }>>(file),
+  ).sort((a, b) => a.id - b.id);
+  assert(rows.length === rawWords.length, `${file}: every word needs its text`);
+  return rows.map((g, i) => {
+    assert(g.id === i + 1, `${file}: ids must be contiguous`);
+    const w = rawWords[i]!;
+    assert(g.location === `${w.surah}:${w.ayah}:${w.word}`, `${file}: word ${g.id} is elsewhere`);
+    return g.text;
+  });
+}
+
+/**
+ * Two lines of QUL's Indopak layout are wrong; only their boundaries move, no word changes, and if
+ * QUL fixes its file these fail and can go.
+ * - Page 304, line 3 starts at word 41,217, though line 2 ends at 41,221: five words ("وَعْدُ رَبِّيْ
+ *   جَعَلَهٗ دَكَّآءَ وَكَانَ") would print twice. It starts at 41,222, giving it 11 words like its
+ *   neighbours.
+ * - Page 261, line 12 runs 17 words from Ibrahim 52 into Al-Hijr 1, though a surah never opens
+ *   mid-line. It ends with Ibrahim (10 words); Al-Hijr 1 takes its own line after the surah's name
+ *   and basmalah, which fills the page's 15 lines like every other page opening a surah.
+ */
+const indopakFix = (r: LayoutRow): LayoutRow[] => {
+  if (r.page_number === 304 && r.line_number === 3) {
+    assert(r.first_word_id === 41217, 'the Indopak page 304 fix no longer applies: remove it');
+    return [{ ...r, first_word_id: 41222 }];
+  }
+  if (r.page_number === 261 && r.line_number === 12) {
+    const hijr = wordStart[surahStart[14]!]!;
+    assert(
+      r.first_word_id === 35284 && r.last_word_id === 35300 && hijr === 35294,
+      'the Indopak page 261 fix no longer applies: remove it',
+    );
+    return [
+      { ...r, last_word_id: hijr - 1 },
+      { ...r, first_word_id: hijr },
+    ];
+  }
+  return [r];
+};
+
+const editions = {
+  v1: { ...readLayout('qpc-v1-15-lines.db', 604), glyphs: readScript('qpc-v1.json') },
+  v2: { ...readLayout('qpc-v2-15-lines.db', 604), glyphs: readScript('qpc-v2.json') },
+  v4: { ...readLayout('qpc-v4-15-lines.db', 604), glyphs: readScript('qpc-v4.json') },
+  indopak: {
+    ...readLayout('qpc-nastaleeq-15-lines.db', 610, { headers: true, fix: indopakFix }),
+    words: readScript('qpc-nastaleeq.json'),
+  },
+};
 
 // ---------- Juz, hizb, rub, sajdah ----------
 
@@ -242,16 +321,95 @@ const sajda = Object.values(
   .sort((a, b) => a.sajdah_number - b.sajdah_number)
   .map((s) => [ayahIndex(s.verse_key), s.sajdah_type] as const);
 
+// ---------- Tafsir (Phase 5b: Al-Mukhtasar) ----------
+
+/**
+ * A tafsir file: each ayah key holds its passage ({ text }), or the key of the ayah whose passage
+ * covers it. Passages keep their published text; markup is reduced to <b> and <i>, and paragraphs
+ * become blank lines.
+ */
+const tafsirSources = {
+  ar: 'tafsir/ar-mukhtasar.json',
+  en: 'tafsir/en-mukhtasar.json',
+  fr: 'tafsir/fr-mukhtasar.json',
+} as const;
+function cleanTafsir(text: string, key: string): string {
+  const clean = text
+    .replace(/<\/p>\s*<p[^>]*>/g, '\n\n')
+    .replace(/<\/?p[^>]*>/g, '')
+    .replace(/<br\s*\/?>/g, '\n')
+    .trim();
+  const left = clean.replace(/<\/?(b|i)>/g, '');
+  assert(!/[<>]/.test(left), `tafsir ${key}: unexpected markup`);
+  assert(clean.length > 0, `tafsir ${key}: empty passage`);
+  return clean;
+}
+/** Per surah, its passages: [first ayah, last ayah, text]. */
+function readTafsir(file: string) {
+  const raw = read<Record<string, { text: string } | string>>(file);
+  const bySurah: [number, number, string][][] = Array.from({ length: 114 }, () => []);
+  for (let s = 1; s <= 114; s++) {
+    for (let a = 1; a <= ayahCount(s); a++) {
+      const key = `${s}:${a}`;
+      const entry = raw[key];
+      assert(entry !== undefined, `${file}: nothing for ${key}`);
+      const list = bySurah[s - 1]!;
+      if (typeof entry === 'string') {
+        // Covered by an earlier ayah's passage, which must be the one just before in this surah.
+        const [ps, pa] = entry.split(':').map(Number) as [number, number];
+        const last = list.at(-1);
+        assert(
+          ps === s && last && last[0] === pa && last[1] === a - 1,
+          `${file}: ${key} points to ${entry}`,
+        );
+        last[1] = a;
+      } else {
+        list.push([a, a, cleanTafsir(entry.text, key)]);
+      }
+    }
+  }
+  return bySurah;
+}
+const tafsir = {
+  ar: readTafsir(tafsirSources.ar),
+  en: readTafsir(tafsirSources.en),
+  fr: readTafsir(tafsirSources.fr),
+};
+
 // ---------- Recitations ----------
 
-/** The five launch reciters (SPEC 5.5), each surah by surah with word timestamps. */
+/**
+ * The reciters (SPEC 5.5, Phase 5b), surah by surah with timestamps: by word for most, by ayah for
+ * a few (QUL has no word timings for them). Style is how they recite: murattal (measured),
+ * mujawwad (melodic) or teaching (for memorizing).
+ */
 const reciters = [
-  { id: 'afasy', slug: 'mishari-rashid-al-afasy-streaming' },
-  { id: 'husary', slug: 'mahmoud-husary-murattal' },
-  { id: 'abdulbasit', slug: 'abdul-basit-abd-us-samad-murattal' },
-  { id: 'minshawi', slug: 'muhammad-siddiq-al-minshawy-murattal' },
-  { id: 'ghamdi', slug: 'saad-ghamadi' },
+  { id: 'afasy', slug: 'mishari-rashid-al-afasy-streaming', style: 'murattal' },
+  { id: 'husary', slug: 'mahmoud-husary-murattal', style: 'murattal' },
+  { id: 'abdulbasit', slug: 'abdul-basit-abd-us-samad-murattal', style: 'murattal' },
+  { id: 'minshawi', slug: 'muhammad-siddiq-al-minshawy-murattal', style: 'murattal' },
+  { id: 'ghamdi', slug: 'saad-ghamadi', style: 'murattal' },
+  { id: 'sudais', slug: 'abdur-rahman-as-sudais', style: 'murattal' },
+  { id: 'shuraym', slug: 'saud-ash-shuraym', style: 'murattal' },
+  { id: 'muaiqly', slug: 'maher-al-muaiqly', style: 'murattal' },
+  { id: 'dussary', slug: 'yasser-ad-dussary', style: 'murattal' },
+  { id: 'shatri', slug: 'abu-bakr-al-shatri', style: 'murattal' },
+  { id: 'rifai', slug: 'hani-ar-rifai', style: 'murattal' },
+  { id: 'qatami', slug: 'nasser-al-qatami', style: 'murattal' },
+  { id: 'abbad', slug: 'fares-abbad', style: 'murattal' },
+  { id: 'jibreel', slug: 'muhammad-jibreel', style: 'murattal' },
+  { id: 'jalil', slug: 'khalid-al-jalil', style: 'murattal' },
+  { id: 'basfar', slug: 'abdullah-basfar', style: 'murattal' },
+  { id: 'minshawiMujawwad', slug: 'muhammad-siddiq-al-minshawi-mujawwad', style: 'mujawwad' },
+  { id: 'husaryMuallim', slug: 'mahmoud-husary-muallim', style: 'teaching' },
 ] as const;
+/**
+ * Ayahs a reciter's file has no timestamps for, pinned so a new download is noticed. Playback
+ * places such an ayah between its neighbours (@murshid/core playbackSpans).
+ */
+const missingTimings: Partial<Record<(typeof reciters)[number]['id'], string[]>> = {
+  minshawiMujawwad: ['32:24'],
+};
 interface RawSegments {
   segments: [number, number, number][];
   timestamp_from: number;
@@ -263,7 +421,16 @@ interface RawSegments {
 const files = new Map<string, string>();
 const put = (path: string, value: unknown) => files.set(path, JSON.stringify(value) + '\n');
 
-put('index.json', { wordStart, pageWordStart, juz, hizb, rub, sajda });
+put('index.json', {
+  wordStart,
+  pageWordStart: Object.fromEntries(
+    Object.entries(editions).map(([id, e]) => [id, e.pageWordStart]),
+  ),
+  juz,
+  hizb,
+  rub,
+  sajda,
+});
 
 for (let s = 1; s <= 114; s++) {
   const first = surahStart[s - 1]!;
@@ -295,9 +462,15 @@ for (let s = 1; s <= 114; s++) {
   put(`en/${s}.json`, lang.en);
   put(`fr/${s}.json`, lang.fr);
   put(`translit/${s}.json`, translit);
+  for (const l of ['ar', 'en', 'fr'] as const) put(`tafsir/${l}/${s}.json`, tafsir[l][s - 1]);
 }
 
-put('mushaf-v2.json', { pages, glyphs });
+for (const [id, e] of Object.entries(editions)) {
+  put(
+    `mushaf/${id}.json`,
+    'glyphs' in e ? { pages: e.pages, glyphs: e.glyphs } : { pages: e.pages, words: e.words },
+  );
+}
 
 const search = { ar: [] as string[], en: [] as string[], fr: [] as string[] };
 for (let i = 0; i < total; i++) search.ar.push(normalizeArabic(words[i]!.slice(0, -1).join(' ')));
@@ -312,7 +485,7 @@ for (let s = 1; s <= 114; s++) {
 }
 for (const l of ['ar', 'en', 'fr'] as const) put(`search/${l}.json`, search[l]);
 
-const reciterIndex = reciters.map(({ id, slug }) => {
+const reciterIndex = reciters.map(({ id, slug, style }) => {
   const surahFile = read<Record<string, { audio_url: string; duration: number }>>(
     `recitations/${slug}/surah.json`,
   );
@@ -321,6 +494,7 @@ const reciterIndex = reciters.map(({ id, slug }) => {
   const [, base, digits] = /^(.*\/)(\d+)\.mp3$/.exec(surahFile['1']!.audio_url)!;
   const pad = digits!.startsWith('0') ? digits!.length : 0;
   const durations: number[] = [];
+  let wordTimings = 0;
   for (let s = 1; s <= 114; s++) {
     const entry = surahFile[String(s)];
     const url = `${base}${String(s).padStart(pad, '0')}.mp3`;
@@ -328,13 +502,21 @@ const reciterIndex = reciters.map(({ id, slug }) => {
     durations.push(entry.duration);
     const timings = [];
     for (let a = 1; a <= ayahCount(s); a++) {
-      const seg = segments[`${s}:${a}`];
-      assert(seg, `${id}: no timestamps for ${s}:${a}`);
+      const key = `${s}:${a}`;
+      const missing = missingTimings[id]?.includes(key) ?? false;
+      const seg =
+        segments[key] ?? (missing ? { timestamp_from: 0, timestamp_to: 0, segments: [] } : null);
+      assert(seg, `${id}: no timestamps for ${key}`);
+      assert(!missing || !segments[key], `${id}: ${key} has timestamps now; unpin it`);
+      wordTimings += seg.segments.length;
       timings.push([seg.timestamp_from, seg.timestamp_to, seg.segments]);
     }
     put(`audio/${id}/${s}.json`, timings);
   }
-  return { id, base, pad, durations };
+  // Word timings for nearly every word, or none at all (ayah by ayah only).
+  const words = wordTimings > 0;
+  assert(!words || wordTimings > rawWords.length * 0.9, `${id}: word timings are partial`);
+  return { id, base, pad, durations, style, words };
 });
 put('audio/reciters.json', reciterIndex);
 
@@ -349,10 +531,15 @@ files.set(
     `export const en = ${list('en')};`,
     `export const fr = ${list('fr')};`,
     `export const translit = ${list('translit')};`,
+    `export const tafsir = {`,
+    ...(['ar', 'en', 'fr'] as const).map((l) => `  ${l}: ${list(`tafsir/${l}`)},`),
+    `};`,
     `export const audio = {`,
     ...reciters.map(({ id }) => `  ${id}: ${list(`audio/${id}`)},`),
     `};`,
-    `export const mushafV2 = () => import('./mushaf-v2.json');`,
+    `export const mushaf = {`,
+    ...Object.keys(editions).map((id) => `  ${id}: () => import('./mushaf/${id}.json'),`),
+    `};`,
     `export const search = {`,
     ...(['ar', 'en', 'fr'] as const).map((l) => `  ${l}: () => import('./search/${l}.json'),`),
     `};`,

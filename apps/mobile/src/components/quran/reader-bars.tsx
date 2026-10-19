@@ -3,6 +3,7 @@ import { colors, space } from '@murshid/tokens';
 import { router } from 'expo-router';
 import { ArrowLeft } from 'phosphor-react-native/src/icons/ArrowLeft';
 import { BookOpen } from 'phosphor-react-native/src/icons/BookOpen';
+import { EyeSlash } from 'phosphor-react-native/src/icons/EyeSlash';
 import { Pause } from 'phosphor-react-native/src/icons/Pause';
 import { Play } from 'phosphor-react-native/src/icons/Play';
 import { Rows } from 'phosphor-react-native/src/icons/Rows';
@@ -19,21 +20,29 @@ import { Text } from '@/components/ui/text';
 import { useReaderTheme, useSurahName } from './common';
 import { useRecitation } from './recitation';
 
-/** The reader's top bar: back, where you are, and the reading controls. */
+/**
+ * The reader's top bar: back, where you are, and the reading controls. The view button turns
+ * between the mushaf and the scrolling reader (its layout is chosen in the reading settings).
+ */
 export function ReaderBar({
   title,
   subtitle,
   view,
   onToggleView,
   onSettings,
+  memorizing,
+  onMemorize,
   playing,
   onPlay,
 }: {
   title: string;
   subtitle?: string;
-  view: 'verses' | 'mushaf';
+  view: 'mushaf' | 'text' | 'translation';
   onToggleView: () => void;
   onSettings: () => void;
+  /** Words or markers are hidden for memorizing. */
+  memorizing: boolean;
+  onMemorize: () => void;
   playing: boolean;
   onPlay: () => void;
 }) {
@@ -61,9 +70,15 @@ export function ReaderBar({
         )}
       </View>
       <IconButton
-        icon={view === 'verses' ? BookOpen : Rows}
-        label={view === 'verses' ? t('quran.reader.page') : t('quran.reader.verses')}
+        icon={view === 'mushaf' ? Rows : BookOpen}
+        label={view === 'mushaf' ? t('quran.reader.verses') : t('quran.reader.page')}
         onPress={onToggleView}
+      />
+      <IconButton
+        icon={EyeSlash}
+        label={t('quran.memorize.title')}
+        selected={memorizing}
+        onPress={onMemorize}
       />
       <IconButton icon={TextAa} label={t('quran.reader.settings')} onPress={onSettings} />
       <IconButton
@@ -121,7 +136,16 @@ export function AudioBar() {
               ? t('audio.error')
               : r.loading
                 ? t('audio.loading')
-                : t(`reciters.${r.reciter}`)}
+                : r.turn
+                  ? t('audio.yourTurn')
+                  : r.passage
+                    ? t('audio.range', {
+                        from: format.number(r.passage.from),
+                        to: format.number(r.passage.to),
+                        pass: format.number(r.passage.pass),
+                        times: format.number(r.passage.times),
+                      })
+                    : t(`reciters.${r.reciter}`)}
           </Text>
         </Pressable>
         {r.loading && <ActivityIndicator color={colors[theme].lantern} />}

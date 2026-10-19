@@ -1,4 +1,4 @@
-import { PAGE_COUNT } from '@murshid/content/quran';
+import { editionPages } from '@murshid/content/quran';
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { MushafReader } from '@/components/quran/mushaf-reader';
@@ -15,7 +15,8 @@ async function PageReader({
 }) {
   const { page } = await params;
   const n = Number(page);
-  if (!Number.isInteger(n) || n < 1 || n > PAGE_COUNT) notFound();
+  // Any edition's page: the reader keeps it within the chosen edition (604, or 610 in Indopak).
+  if (!Number.isInteger(n) || n < 1 || n > Math.max(...Object.values(editionPages))) notFound();
   return <MushafReader startPage={n} />;
 }
 

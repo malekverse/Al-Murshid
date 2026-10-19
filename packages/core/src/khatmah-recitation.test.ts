@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { khatmahDay, MUSHAF_PAGES, readThrough, startKhatmah } from './khatmah';
-import { ayahAtTime, playbackSpans, wordAtTime, type AyahTiming } from './recitation';
+import {
+  ayahAtTime,
+  playbackSpans,
+  withRecordingEnd,
+  wordAtTime,
+  type AyahTiming,
+} from './recitation';
 import { addDays, isoDate } from './time';
 
 const day1 = { year: 2026, month: 10, day: 18 };
@@ -106,6 +112,30 @@ describe('recitation spans', () => {
       [500, 500, []],
     ]);
     expect(spans[1]).toEqual({ start: 1000, end: 1000, words: [] });
+  });
+
+  // Abdullah Basfar's files end each surah's last ayah at the listed length, rounded down and
+  // shorter than the recording: its start stands, and it runs to the recording's real end.
+  it('runs a last ayah without a usable end to the end of the recording', () => {
+    const spans = playbackSpans([
+      [0, 1000, []],
+      [1000, 900, [[1, 1000, 1500]]],
+    ]);
+    expect(spans[1]).toEqual({ start: 1000, end: Infinity, words: [[1, 1000, 1500]] });
+    expect(ayahAtTime(spans, 50_000)).toBe(1);
+    expect(withRecordingEnd(spans, 2400)[1]).toEqual({
+      start: 1000,
+      end: 2400,
+      words: [[1, 1000, 1500]],
+    });
+    // A length shorter than the ayah's start leaves it empty rather than backwards.
+    expect(withRecordingEnd(spans, 500)[1]!.end).toBe(1000);
+    // Spans that already end are kept as they are.
+    const closed = playbackSpans([[0, 1000, []]]);
+    expect(withRecordingEnd(closed, 5000)).toEqual(closed);
+    expect(withRecordingEnd([], 5000)).toEqual([]);
+    // A one-ayah recording with no usable end plays from its start.
+    expect(playbackSpans([[500, 400, []]])).toEqual([{ start: 500, end: Infinity, words: [] }]);
   });
 
   it('finds the ayah and the word at any moment', () => {

@@ -134,7 +134,7 @@ The app has four destinations, identical on web and mobile: **Today, Quran, Reme
   - Your Sky (history calendar)
   - Journey (current steps, change focus)
   - Night reflection (private journal)
-  - Settings: language, location and calculation method, adhan and reminders, appearance (theme, comfort size, simple view), Quran (reciter, translation, script), privacy and data (export, delete), back up and sync, about and sources
+  - Settings: language, location and calculation method, adhan and reminders, appearance (theme, comfort size, simple view), Quran (view, edition, tajweed, reciter, translation, tafsir, downloads), privacy and data (export, delete), back up and sync, about and sources
 
 **Navigation rules**
 
@@ -194,13 +194,18 @@ v1 ships Today, reminders, Qibla, Hijri calendar, Quran, Remember, You, seasonal
 ### 5.5 Quran
 
 - **Home.** Continue reading (one tap to last position), Surah list (number, calligraphic Arabic name, translated name, ayah count, Meccan or Medinan), Juz list, search.
+- **Views.** The same text three ways: the mushaf (the book), the Arabic text alone, and verse by verse with translation.
 - **Verse-by-verse view.** Uthmani Arabic in a proper Quran font, translation below (toggle). Tapping an ayah opens an action bar: play from here, short tafsir, word by word, bookmark, note, copy, share as an image card.
 - **Word by word.** Tapping a word shows its meaning and transliteration in a small popover.
-- **Mushaf view.** The 604-page Madani layout with page-accurate fonts. Page turning matches a physical mushaf in every UI language.
-- **Audio.** 3 to 5 reciters at launch. Ayah highlighting synced to audio, background playback with lock-screen controls, repeat an ayah N times, playback speed, download surahs for offline.
-- **Reading settings.** Arabic size, translation on or off and choice per language, light, sepia and dark themes.
+- **Mushaf view.** Four editions, each in its own printed layout with page-accurate fonts: the Madani mushaf of 1405H, 1421H and 1441H (King Fahd Complex, 604 pages) and the 15-line Indopak mushaf (King Fahd Complex Nastaleeq, 610 pages). Page turning matches a physical mushaf in every UI language.
+- **Tajweed.** A toggle colors the text by tajweed rule in every view, using the 1441H edition's color fonts; a legend names each color.
+- **Audio.** A catalog of reciters with word timestamps (about 30 to start, as rights are confirmed), grouped as murattal, mujawwad and teaching. Word highlighting synced to audio, background playback with lock-screen controls, repeat an ayah or a range N times, playback speed, download a whole reciter or chosen surahs for offline, and a storage screen to free space.
+- **Tafsir.** A short tafsir in each language (Al-Mukhtasar in Arabic, English and French), one tap from any ayah.
+- **Memorization.** Hide all words, all but each ayah's first word, or only the ayah markers, and reveal by tap. Hidden words keep their place, so nothing reflows.
+- **Recitation check.** Recite a range and the app marks the published words as recited, skipped or different. It runs on the device only, keeps no audio, shows no score, and says plainly that it does not judge vowels or tajweed. It ships only if a prototype proves reliable: the Phase 5b one marked too many correct words and stays out (DECISIONS.md), and the next attempt aligns the audio against the expected words.
+- **Reading settings.** View, edition, tajweed, Arabic size, translation on or off and choice per language, light, sepia and dark themes.
 - **Khatmah plan.** Pick a finish date or pages per day. Shows today's portion and a progress ring. If the user falls behind, the plan quietly recalculates; it never shows "debt".
-- **Bookmarks and notes.** Several colored bookmarks, automatic last-read position, private notes per ayah.
+- **Bookmarks and notes.** Several colored bookmarks for one ayah or a range, shown in every view and edition, automatic last-read position, private notes per ayah.
 - **Text integrity.** Never apply letter-spacing, synthetic bold or italic, or text transforms to Quran text. Ayah numbers use the traditional end-of-ayah marker.
 
 ### 5.6 Remember
@@ -425,6 +430,7 @@ Rules: `core`, `content`, `i18n`, `tokens` and `data` never import React, Next.j
 | Local state | Zustand | UI state only |
 | Offline data | Dexie (IndexedDB) | Prayer logs, bookmarks, last read when signed out |
 | PWA | Serwist | Offline Quran reading for visited surahs, install prompt |
+| Speech recognition | Transformers.js with an open Quran model, in the browser | Recitation check (Phase 5b); audio never leaves the device |
 | Icons | Phosphor (same set on mobile) | Regular and light weights only |
 | Fonts | `next/font` for Readex Pro and Amiri; self-hosted Quran fonts | Subset and preload; no layout shift |
 | Hosting | Vercel Hobby or Cloudflare (free tiers) | Static and incremental rendering for city and surah pages |
@@ -447,6 +453,7 @@ Public pages (`/prayer-times/...`, `/quran/...`, `/adhkar/...`, `/duas/...`) are
 | Notifications | `expo-notifications` | Local scheduling, actionable "I prayed" |
 | Location and heading | `expo-location` (true heading) | Manual city fallback |
 | Audio | `expo-audio` if it covers background play and lock-screen controls in the current SDK; else `react-native-track-player` | Downloads to app storage |
+| Speech recognition | `whisper.rn` (whisper.cpp) with an open Quran model | Recitation check (Phase 5b); on the device only |
 | Haptics | `expo-haptics` | Mapped in section 6.5 |
 | Widgets | Expo iOS widgets (stable since SDK 56); `react-native-android-widget` for Android | Read from shared app-group storage |
 | Other | `expo-image`, `expo-font`, `expo-localization`, `expo-keep-awake`, `expo-local-authentication`, `expo-secure-store`, `expo-glass-effect` (iOS) |  |
@@ -473,6 +480,7 @@ Personal data lives on the device first. Supabase adds optional accounts, backup
 - Auth: email one-time code, Sign in with Apple and Google, via Supabase Auth.
 - Host the Supabase project in an EU region (close to Tunisia and France, and GDPR-friendly).
 - Row Level Security on every table (`user_id = auth.uid()`), with RLS tests in CI.
+- The recitation check processes audio in memory on the device; it is never stored or sent.
 - Data minimization: precise coordinates stay on the device. The server stores the city label and coordinates rounded to 2 decimals (about 1 km).
 - Clients use only the publishable key. The service role key lives only in edge functions and CI secrets.
 
@@ -486,7 +494,7 @@ Personal data lives on the device first. Supabase adds optional accounts, backup
 | `fasting_logs` | `user_id, date` | fasted, deleted | Union; idempotent |
 | `journey_state` | `user_id, track` | current step, step history (jsonb) | Last write wins |
 | `reading_progress` | `user_id` | last surah, ayah and page | Last write wins |
-| `quran_bookmarks` | `id` (uuid) | surah, ayah, color, deleted | Last write wins per row |
+| `quran_bookmarks` | `id` (uuid) | surah, ayah, ayah\_end (a range), color, deleted | Last write wins per row |
 | `khatmah_plans` | `id` (uuid) | start date, target date, pages per day, current page, status | Last write wins per row |
 | `tasbih_daily` | `user_id, date, phrase, device_id` | count | Per-device rows, summed on read |
 
@@ -518,9 +526,10 @@ Trust is the product: one wrong diacritic in the Quran or one fabricated hadith 
 | Content | Source | Requirement |
 | --- | --- | --- |
 | Quran text (Uthmani, Hafs) | Tanzil or the King Fahd Complex text | Never modified; a CI test compares a hash of the bundled text with the source |
-| Quran fonts, mushaf layouts, surah-name font, word by word, transliteration, recitation timestamps | [Quranic Universal Library (QUL)](https://qul.tarteel.ai/resources) | QUL resources are meant to be downloaded and packaged with your app (no API); check and record each resource's license and credit |
+| Quran fonts, mushaf layouts (Madani 1405H, 1421H and 1441H; Indopak), surah-name font, word by word, transliteration, tafsir, recitation timestamps | [Quranic Universal Library (QUL)](https://qul.tarteel.ai/resources) | QUL resources are meant to be downloaded and packaged with your app (no API); check and record each resource's license and credit |
 | Translations | Per language, chosen from licensed options (for example a short Arabic tafsir such as Al-Muyassar; established English and French translations) | Each translation's copyright checked; written permission where required; license recorded in the content manifest |
 | Recitation audio | Reciters available with timestamps through QUL or the reciter's publisher | Redistribution rights confirmed per reciter before hosting on our CDN |
+| Recitation check model | [`tarteel-ai/whisper-base-ar-quran`](https://huggingface.co/tarteel-ai/whisper-base-ar-quran) (Apache-2.0) | Runs on the device; its output only marks published words and is never shown as Quran text |
 | Adhkar and duas | Authentic hadith (sahih or hasan) with collection, number and grading | Translations written in-house or licensed, then reviewed |
 | 99 Names of Allah | The commonly cited list, with a note that the enumeration is scholarly discussion | Meanings and reflections written in-house, then reviewed |
 | Prayer calculation | `adhan` methods plus a reviewed country-to-method map | Defaults follow each country's official practice; users can change method and adjust minutes per prayer |
@@ -569,7 +578,7 @@ These budgets are release blockers, not goals. Measure them on real mid-range de
 
 ## 12. Build phases and definition of done
 
-Build in nine phases, one at a time. A phase is done only when its gate passes; never start the next phase with the previous gate open.
+Build in nine phases, plus Phase 5b (added by the owner on 2026-10-19), one at a time. A phase is done only when its gate passes; never start the next phase with the previous gate open.
 
 1. **Foundation.** Monorepo, shared configs, CI, `tokens` generating the theme for both apps, `i18n` with all three locales, fonts, Supabase project with migrations and RLS tests.
    - Gate: both apps boot to a token showcase screen in `ar`, `en`, `fr`, light and dark; CI is green.
@@ -581,6 +590,8 @@ Build in nine phases, one at a time. A phase is done only when its gate passes; 
    - Gate: the full daily loop works offline and passes the polish checklist.
 5. **Quran.** Content import pipeline, both reader views, word by word, audio with sync and downloads, bookmarks, khatmah plan.
    - Gate: Quran text hash test passes; audio highlight stays in sync; downloads work offline.
+5b. **Quran depth.** Reading views, the 1405H, 1441H and Indopak editions, tajweed colors, a reciter catalog with whole-reciter downloads, tafsir, range bookmarks, memorization tools and a recitation-check prototype. Plan and source list: `docs/PHASE-5B.md`.
+   - Gate: every edition's text and layout tests pass; tajweed renders in light, dark and sepia on web and Android; hiding never reflows a line; downloaded reciters play offline; the recitation check has a recorded go or no-go from measurements on a mid-range Android phone.
 6. **Public web pages.** Server-rendered prayer-time, surah, ayah, adhkar and dua pages with SEO metadata and Open Graph images. Deploy these early, because search indexing takes months.
    - Gate: Lighthouse budgets met; pages indexed in a search console.
 7. **Remember, You and seasons.** Adhkar, duas by feeling, tasbih, 99 Names, Your Sky, Journey, night reflection, Ramadan, Dhul Hijjah and Jumu'ah modes, widgets.
@@ -604,7 +615,7 @@ Section 5 is the core of v1, and Claude Code may add small creative touches that
 | Family circles | Private groups of up to 8 for a shared khatmah and gentle nudges. Nobody's prayer data is visible unless each member opts in. |
 | Masjid finder and Zakat calculator | Tools reachable from Today's tools row |
 | Discreet icon | Optional neutral alternate app icon for users who need privacy |
-| Hifz mode | Memorization plans with repeat and self-test |
+| Hifz plans | Memorization schedules and review cycles. Hiding words, repeating a range and the recitation check arrive earlier, in Phase 5b |
 | Platform extras | Apple Watch and Wear OS, Live Activities, Siri and Shortcuts actions ("log my prayer") |
 | Web reminders | Web push for prayer times |
 | More languages | Turkish, Indonesian, Urdu, Bengali |

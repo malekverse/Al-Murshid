@@ -19,6 +19,8 @@ export interface IconButtonProps {
   /** Directional icons (back, chevrons) flip in RTL; clocks, checks and media controls never do. */
   mirror?: boolean;
   disabled?: boolean;
+  /** A toggle that is on: tinted with the lantern. */
+  selected?: boolean;
 }
 
 /** A 48 x 48 round button holding one icon (SPEC 6.3 touch targets). */
@@ -29,6 +31,7 @@ export function IconButton({
   variant = 'plain',
   mirror = false,
   disabled = false,
+  selected,
 }: IconButtonProps) {
   const color = useColors();
   const { direction } = useAppLocale();
@@ -36,15 +39,15 @@ export function IconButton({
     <PressableScale
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled, selected }}
       disabled={disabled}
       onPress={onPress}
       hitSlop={4}
-      className={`size-touch items-center justify-center rounded-full ${variants[variant]} ${disabled ? 'opacity-40' : ''}`}
+      className={`size-touch items-center justify-center rounded-full ${selected ? 'bg-lantern/15' : variants[variant]} ${disabled ? 'opacity-40' : ''}`}
     >
       <IconComponent
         size={22}
-        color={color.ink}
+        color={selected ? color.lanternInk : color.ink}
         style={mirror && direction === 'rtl' ? { transform: [{ scaleX: -1 }] } : undefined}
       />
     </PressableScale>

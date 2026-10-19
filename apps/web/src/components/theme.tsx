@@ -64,3 +64,18 @@ export function useThemePreference() {
 
   return [pref, update] as const;
 }
+
+function subscribeResolved(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  return () => observer.disconnect();
+}
+
+/** The theme on screen now, light or dark, as <html data-theme> says. */
+export function useResolvedTheme(): 'light' | 'dark' {
+  return useSyncExternalStore(
+    subscribeResolved,
+    () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
+    () => 'light',
+  );
+}

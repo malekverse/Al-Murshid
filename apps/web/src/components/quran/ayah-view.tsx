@@ -2,14 +2,16 @@
 
 import { DotsThree } from '@phosphor-icons/react';
 import type { TranslationSegment, Word } from '@murshid/content/quran';
-import type { BookmarkColor } from '@murshid/data';
+import type { QuranBookmark } from '@murshid/data';
 import { typeScale } from '@murshid/tokens';
 import { useFormatter, useTranslations } from 'next-intl';
-import type { Ref } from 'react';
+import type { ReactNode, Ref } from 'react';
 import { IconButton } from '@/components/ui/icon-button';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
+import { Veil, type Memorize } from './memorize';
 import { markClass } from './quran-home';
+import { useNearViewport, useTajweedWords, type Tajweed } from './tajweed';
 
 export interface AyahViewProps {
   ref?: Ref<HTMLElement>;
@@ -26,8 +28,14 @@ export interface AyahViewProps {
   /** The recitation is on this ayah, and on this word. */
   playing: boolean;
   playingWord: number | null;
-  bookmark: BookmarkColor | null;
+  /** The bookmark marking this ayah, alone or as part of a passage. */
+  bookmark: QuranBookmark | null;
   sajda: boolean;
+  /** What memorizing hides, and the id of the ayah's first word (ids name revealed words). */
+  memorize: Memorize;
+  firstWordId: number;
+  /** Draws the words in their 1441H tajweed glyphs, when on. */
+  tajweed: Tajweed | null;
   onWord: (index: number, target: HTMLElement) => void;
   onFootnote: (mark: string, text: string) => void;
   onActions: () => void;
@@ -52,11 +60,30 @@ export function AyahView({
   playingWord,
   bookmark,
   sajda,
+  memorize,
+  firstWordId,
+  tajweed,
   onWord,
   onFootnote,
   onActions,
   ref,
 }: AyahViewProps) {
+  const [observe, near] = useNearViewport();
+  const glyphOf = useTajweedWords(tajweed, firstWordId, firstWordId + words.length - 1, near);
+  /**
+   * A word as drawn: its tajweed glyph when on and ready, otherwise as published. Glyphs mean
+   * nothing aloud: screen readers get the published text, kept apart below.
+   */
+  const drawn = (i: number, text: string) => {
+    const g = glyphOf?.(firstWordId + i);
+    return g ? (
+      <span aria-hidden style={g.style}>
+        {g.glyph}
+      </span>
+    ) : (
+      text
+    );
+  };
   const t = useTranslations('quran');
   const tAyah = useTranslations('components.ayah');
   const format = useFormatter();
@@ -67,6 +94,19 @@ export function AyahView({
       'cursor-pointer rounded-control',
       playing && playingWord === i + 1 ? 'bg-lantern/25' : 'hover:bg-ink/5',
     );
+  const key = `${surah}:${ayah}`;
+  const hidden = (i: number) => memorize.hidden(firstWordId + i, i, i === words.length - 1, key);
+  const veil = (i: number, word: ReactNode) => (
+    <Veil
+      hidden={hidden(i)}
+      marker={i === words.length - 1}
+      ayahKey={key}
+      memorize={memorize}
+      id={firstWordId + i}
+    >
+      {word}
+    </Veil>
+  );
 
   return (
     <article
@@ -75,23 +115,38 @@ export function AyahView({
       data-ayah={ayah}
       aria-label={tAyah('label', { surah: surahName, number: ayah })}
       className={cn(
-        'flex scroll-mt-24 flex-col gap-4 border-b border-hairline px-2 py-6',
+        'relative flex scroll-mt-24 flex-col gap-4 border-b border-hairline px-2 py-6',
         playing && 'rounded-card bg-lantern/5',
       )}
     >
+      {/* A bookmarked ayah, or each ayah of a marked passage, carries its color along its edge. */}
+      {bookmark && (
+        <span
+          aria-hidden
+          className={cn('absolute inset-y-0 -start-2 w-1 rounded-full', markClass[bookmark.color])}
+        />
+      )}
       {stacked ? (
-        <div lang="ar" dir="rtl" className="flex flex-wrap items-start gap-x-4 gap-y-6">
+        <div
+          ref={observe}
+          lang="ar"
+          dir="rtl"
+          className="flex flex-wrap items-start gap-x-4 gap-y-6"
+        >
           {words.map((w, i) => {
             const number = i === words.length - 1;
             return (
               <div key={i} className="flex flex-col items-center gap-1">
-                <span
-                  className={cn('font-quran text-ink', !number && wordClass(i))}
-                  style={{ fontSize: size, lineHeight }}
-                  onClick={number ? undefined : (e) => onWord(i, e.currentTarget)}
-                >
-                  {w.text}
-                </span>
+                {veil(
+                  i,
+                  <span
+                    className={cn('font-quran text-ink', !number && wordClass(i))}
+                    style={{ fontSize: size, lineHeight }}
+                    onClick={number ? undefined : (e) => onWord(i, e.currentTarget)}
+                  >
+                    {drawn(i, w.text)}
+                  </span>,
+                )}
                 {!number && meanings && (
                   <Text
                     as="span"
@@ -104,7 +159,14 @@ export function AyahView({
                   </Text>
                 )}
                 {!number && transliteration && (
-                  <Text as="span" role="caption" tone="lantern" dir="ltr" className="text-center">
+                  // Hidden with its word: the sound would give the word away.
+                  <Text
+                    as="span"
+                    role="caption"
+                    tone="lantern"
+                    dir="ltr"
+                    className={cn('text-center', hidden(i) && 'invisible')}
+                  >
                     {transliteration[i] ?? ''}
                   </Text>
                 )}
@@ -114,6 +176,7 @@ export function AyahView({
         </div>
       ) : (
         <p
+          ref={observe}
           lang="ar"
           dir="rtl"
           className="font-quran text-ink"
@@ -121,16 +184,24 @@ export function AyahView({
         >
           {words.map((w, i) =>
             i === words.length - 1 ? (
-              <span key={i}>{w.text}</span>
+              <span key={i}>{veil(i, drawn(i, w.text))}</span>
             ) : (
               <span key={i}>
-                <span className={wordClass(i)} onClick={(e) => onWord(i, e.currentTarget)}>
-                  {w.text}
-                </span>
+                {veil(
+                  i,
+                  <span className={wordClass(i)} onClick={(e) => onWord(i, e.currentTarget)}>
+                    {drawn(i, w.text)}
+                  </span>,
+                )}
                 {w.after}
               </span>
             ),
           )}
+        </p>
+      )}
+      {glyphOf && (
+        <p lang="ar" className="sr-only">
+          {words.map((w) => w.text + w.after).join('')}
         </p>
       )}
 
@@ -167,8 +238,8 @@ export function AyahView({
         {bookmark && (
           <span
             role="img"
-            aria-label={t(`bookmarks.colors.${bookmark}`)}
-            className={cn('size-3 rounded-full', markClass[bookmark])}
+            aria-label={t(`bookmarks.colors.${bookmark.color}`)}
+            className={cn('size-3 rounded-full', markClass[bookmark.color])}
           />
         )}
         <span className="flex-1" />

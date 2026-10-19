@@ -47,6 +47,7 @@
   --font-sacred: var(--font-amiri), serif;
   --font-quran: var(--font-qpc-hafs), var(--font-amiri), serif;
   --font-surah: var(--font-surah-name);
+  --font-indopak: var(--font-indopak);
   --default-font-family: var(--font-ui);
 
   --text-display: 2.5rem;

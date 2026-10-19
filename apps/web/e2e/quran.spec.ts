@@ -53,6 +53,93 @@ test('search, read, look up a word and bookmark an ayah', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Al-Baqarah 255/ })).toBeVisible();
 });
 
+test('read the Arabic text and memorize it', async ({ page }) => {
+  await seed(page);
+  await page.goto('/en/quran/112');
+  await page.getByRole('button', { name: 'Reading settings' }).click();
+  await page.getByRole('radio', { name: 'Arabic text' }).click();
+  // The surah flows as one text, with the mushaf page it is on.
+  await expect(page.getByText('Page 604', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Ayah 112:4' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Memorize' }).click();
+  await page.getByRole('radio', { name: 'Hide the words' }).click();
+  const hidden = page.getByRole('button', { name: 'Hidden word, tap to reveal' });
+  // Al-Ikhlas has 15 words; the ayah numbers stay.
+  await expect(hidden).toHaveCount(15);
+  await hidden.first().click();
+  await expect(hidden).toHaveCount(14);
+  await expect(page.getByRole('dialog', { name: 'Meaning' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Memorize' }).click();
+  await page.getByRole('radio', { name: 'Show everything' }).click();
+  await expect(hidden).toHaveCount(0);
+});
+
+test('mark a passage and repeat one', async ({ page }) => {
+  await seed(page);
+  await page.goto('/en/quran/18');
+  await page.getByRole('button', { name: 'Ayah 18:1', exact: true }).click();
+  await page.getByRole('button', { name: 'Mark a passage' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Mark a passage' });
+  await expect(sheet).toContainText('From ayah 1');
+  await sheet.getByRole('slider', { name: 'To ayah' }).focus();
+  await page.keyboard.press('ArrowUp');
+  await expect(sheet).toContainText('To ayah 3');
+  await sheet.getByRole('radio', { name: 'Blue' }).click();
+  await sheet.getByRole('button', { name: 'Save' }).click();
+
+  // Ayah 2 is part of the passage.
+  await page.getByRole('button', { name: 'Ayah 18:2', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Al-Kahf 2' })).toContainText(
+    'Marked as part of Al-Kahf 1–3',
+  );
+  await page.keyboard.press('Escape');
+  await page.goto('/en/quran');
+  await page.getByRole('radio', { name: 'Bookmarks' }).click();
+  await expect(page.getByRole('link', { name: /Al-Kahf 1–3/ })).toBeVisible();
+
+  await page.goto('/en/quran/18');
+  await page.getByRole('button', { name: 'Ayah 18:1', exact: true }).click();
+  await page.getByRole('button', { name: 'Repeat a passage' }).click();
+  const repeat = page.getByRole('dialog', { name: 'Repeat a passage' });
+  // The passage marked here is offered for repeating.
+  await expect(repeat).toContainText('To ayah 3');
+  await repeat.getByRole('button', { name: 'Start' }).click();
+  await expect(page.getByRole('region', { name: /Al-Kahf/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Stop' }).click();
+});
+
+test('choose a mushaf, color its tajweed, read a tafsir and pick a reciter', async ({ page }) => {
+  await seed(page);
+  await page.goto('/en/quran/page/2');
+  await expect(page.getByRole('heading', { name: 'Page 2', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Reading settings' }).click();
+  await page.getByRole('switch', { name: 'Tajweed colors' }).click();
+  // The colors are the 1441H mushaf's own: choosing them chooses it.
+  await expect(page.getByRole('radio', { name: 'Madani mushaf · 1441H' })).toBeChecked();
+  await page.getByRole('searchbox', { name: 'Search reciters' }).fill('basfar');
+  await expect(page.getByRole('radio', { name: /Mishary/ })).toHaveCount(0);
+  await page.getByRole('radio', { name: /Abdullah Basfar/ }).click();
+  await expect(page.getByRole('radio', { name: /Abdullah Basfar/ })).toBeChecked();
+  await page.keyboard.press('Escape');
+  // The page is drawn in its 1441H font.
+  await expect(page.locator('[style*="qcf-v4-p2"]').first()).toBeVisible();
+
+  // The verse view keeps the colors: each word in its glyph, the published text for screen readers.
+  await page.getByRole('button', { name: 'Verse view' }).click();
+  const ayah = page.getByRole('article', { name: 'Al-Baqarah, verse 2' });
+  await expect(ayah.locator('[style*="qcf-v4-p2"]').first()).toBeVisible();
+  await expect(ayah.locator('p.sr-only')).toBeAttached();
+
+  // An ayah's tafsir.
+  await ayah.getByRole('button', { name: 'Ayah 2:2', exact: true }).click();
+  await page.getByRole('button', { name: 'Tafsir' }).click();
+  await expect(page.getByRole('dialog', { name: /Tafsir · Al-Baqarah 2/ })).toContainText(
+    'Al-Mukhtasar',
+  );
+});
+
 test('read the mushaf and plan a khatmah', async ({ page }) => {
   await seed(page);
   await page.goto('/en/quran/page/2');

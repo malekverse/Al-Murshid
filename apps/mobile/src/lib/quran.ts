@@ -33,8 +33,16 @@ export function useBookmarks(): QuranBookmark[] | undefined {
   return [...data].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-/** Bookmarks an ayah in a color, or removes its bookmark (null). */
-export function setBookmark(surah: number, ayah: number, color: BookmarkColor | null) {
+/**
+ * Marks an ayah, or a passage up to `ayahEnd`, in a color; or removes the bookmark starting at
+ * that ayah (null). A bookmark already starting there keeps its passage unless a new end is given.
+ */
+export function setBookmark(
+  surah: number,
+  ayah: number,
+  color: BookmarkColor | null,
+  ayahEnd?: number | null,
+) {
   const existing = db
     .select()
     .from(quranBookmarks)
@@ -55,13 +63,14 @@ export function setBookmark(surah: number, ayah: number, color: BookmarkColor | 
         .run();
     }
   } else if (existing) {
+    const end = ayahEnd === undefined ? existing.ayahEnd : ayahEnd;
     db.update(quranBookmarks)
-      .set({ color, updatedAt: now })
+      .set({ color, ayahEnd: end !== null && end > ayah ? end : null, updatedAt: now })
       .where(eq(quranBookmarks.id, existing.id))
       .run();
   } else {
     db.insert(quranBookmarks)
-      .values(newBookmark(surah, ayah, color))
+      .values(newBookmark(surah, ayah, color, ayahEnd ?? null))
       .run();
   }
 }

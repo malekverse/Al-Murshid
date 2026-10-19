@@ -4,9 +4,35 @@
 import { MUSHAF_PAGES, type KhatmahPlan } from '@murshid/core';
 import { z } from 'zod';
 
-/** The launch reciters, as @murshid/content names them. */
-export const reciterIds = ['afasy', 'husary', 'abdulbasit', 'minshawi', 'ghamdi'] as const;
+/** The reciters, as @murshid/content names them (Phase 5b: 18). */
+export const reciterIds = [
+  'afasy',
+  'husary',
+  'abdulbasit',
+  'minshawi',
+  'ghamdi',
+  'sudais',
+  'shuraym',
+  'muaiqly',
+  'dussary',
+  'shatri',
+  'rifai',
+  'qatami',
+  'abbad',
+  'jibreel',
+  'jalil',
+  'basfar',
+  'minshawiMujawwad',
+  'husaryMuallim',
+] as const;
 export type ReciterChoice = (typeof reciterIds)[number];
+
+/**
+ * The printed mushafs, as @murshid/content names them (Phase 5b): Madani 1421H (v2), 1405H (v1),
+ * 1441H with tajweed colors (v4), and the 15-line Indopak.
+ */
+export const editionIds = ['v2', 'v1', 'v4', 'indopak'] as const;
+export type EditionChoice = (typeof editionIds)[number];
 
 /** Translations bundled in @murshid/content: Saheeh International (en), Hamidullah (fr). */
 export const translationIds = ['sahih', 'hamidullah'] as const;
@@ -23,10 +49,33 @@ export type ReadingTheme = (typeof readingThemes)[number];
 export const bookmarkColors = ['lantern', 'sage', 'sky', 'plum', 'clay'] as const;
 export type BookmarkColor = (typeof bookmarkColors)[number];
 
+/**
+ * What memorizing hides (Phase 5b): nothing, every word, every word but each ayah's first, or
+ * only the ayah markers. A hidden word keeps its place, and a tap reveals it.
+ */
+export const hideModes = ['off', 'words', 'firstWord', 'markers'] as const;
+export type HideMode = (typeof hideModes)[number];
+
+/** Whether a word is hidden: `index` from 0 in its ayah, `marker` for the ayah's number. */
+export function hiddenWord(mode: HideMode, index: number, marker: boolean): boolean {
+  if (mode === 'markers') return marker;
+  if (marker) return false;
+  return mode === 'words' || (mode === 'firstWord' && index > 0);
+}
+
 const translationChoice = z.enum(translationIds).nullable();
 
 export const quranPrefsSchema = z.object({
+  /** Where reading opens: the scrolling reader ("verses") or the mushaf's pages. */
   view: z.enum(['verses', 'mushaf']).catch('verses'),
+  /** The scrolling reader: verse by verse with translation, or the Arabic text flowing. */
+  layout: z.enum(['translation', 'text']).catch('translation'),
+  /** What memorizing hides (Phase 5b). */
+  hide: z.enum(hideModes).catch('off'),
+  /** The printed mushaf the pages follow (Phase 5b). */
+  edition: z.enum(editionIds).catch('v2'),
+  /** Tajweed colors, which only the 1441H mushaf's fonts carry. */
+  tajweed: z.boolean().catch(false),
   /** Arabic size in px (SPEC 6.2 allows 20 to 48); null keeps the default. */
   arabicSize: z.number().min(20).max(48).nullable().catch(null),
   /** The translation shown under each ayah, chosen per app language; null shows none. */
@@ -60,6 +109,7 @@ export const readingPositionSchema = z
   .object({
     surah: z.number().int().min(1).max(114),
     ayah: z.number().int().min(1),
+    /** The page in the 1421H mushaf; other editions find theirs from the ayah. */
     page: z.number().int().min(1).max(MUSHAF_PAGES),
     at: z.string(),
   })
@@ -76,7 +126,10 @@ export function parseReadingPosition(raw: unknown): ReadingPosition | null {
 export interface QuranBookmark {
   id: string;
   surah: number;
+  /** The first ayah marked. */
   ayah: number;
+  /** The last ayah of a range in the same surah; null marks one ayah (older rows lack it). */
+  ayahEnd?: number | null;
   color: BookmarkColor;
   createdAt: string;
   updatedAt: string;
@@ -100,10 +153,36 @@ export function newBookmark(
   surah: number,
   ayah: number,
   color: BookmarkColor,
+  ayahEnd: number | null = null,
   now = new Date(),
 ): QuranBookmark {
   const at = now.toISOString();
-  return { id: uuid(), surah, ayah, color, createdAt: at, updatedAt: at, deleted: false };
+  return {
+    id: uuid(),
+    surah,
+    ayah,
+    ayahEnd: ayahEnd !== null && ayahEnd > ayah ? ayahEnd : null,
+    color,
+    createdAt: at,
+    updatedAt: at,
+    deleted: false,
+  };
+}
+
+/** The last ayah a bookmark marks. */
+export const bookmarkEnd = (b: QuranBookmark): number => b.ayahEnd ?? b.ayah;
+
+/** The bookmark marking an ayah, if any: the first in the list (the most recent) that covers it. */
+export function bookmarkCovering(
+  bookmarks: readonly QuranBookmark[] | undefined,
+  surah: number,
+  ayah: number,
+): QuranBookmark | null {
+  return (
+    bookmarks?.find(
+      (b) => !b.deleted && b.surah === surah && b.ayah <= ayah && ayah <= bookmarkEnd(b),
+    ) ?? null
+  );
 }
 
 // ---------- Khatmah plan (SPEC 9's khatmah_plans) ----------

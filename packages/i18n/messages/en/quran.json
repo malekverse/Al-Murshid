@@ -40,7 +40,8 @@
       "sky": "Blue",
       "plum": "Purple",
       "clay": "Clay"
-    }
+    },
+    "inRange": "Marked as part of {range}"
   },
   "khatmah": {
     "title": "Khatmah",
@@ -82,7 +83,8 @@
     "sajda": "Ayah of prostration",
     "footnote": "Note {mark}",
     "closeFootnote": "Close the note",
-    "translationBy": "Translation: {name}"
+    "translationBy": "Translation: {name}",
+    "text": "Text view"
   },
   "actions": {
     "label": "Ayah {surah}:{ayah}",
@@ -93,7 +95,8 @@
     "copy": "Copy",
     "copied": "Copied",
     "share": "Share",
-    "close": "Close"
+    "close": "Close",
+    "tafsir": "Tafsir"
   },
   "word": {
     "meaning": "Meaning",
@@ -129,7 +132,19 @@
     "removeDownload": "Remove the download",
     "downloads": "Downloads",
     "downloadsEmpty": "Surahs you download play without a connection.",
-    "size": "{size} on this device"
+    "size": "{size} on this device",
+    "range": "Ayahs {from}–{to} · {pass} of {times}",
+    "yourTurn": "Your turn to recite",
+    "downloadAll": "Download all surahs",
+    "downloadAllHint": "{reciter} · all {total} surahs, often a gigabyte or more. Best on Wi-Fi.",
+    "allProgress": "{done} of {total} surahs",
+    "queued": "Waiting · {done} of {total}",
+    "pauseDownload": "Pause the download",
+    "resume": "Resume the download",
+    "stalled": "Stopped at {done} of {total}. Tap to carry on.",
+    "storage": "Storage",
+    "storageHint": "Recitations and mushaf pages on this device",
+    "allProgressSurah": "{done} of {total} surahs · {surah} {percent}"
   },
   "reciters": {
     "label": "Reciter",
@@ -137,7 +152,29 @@
     "husary": "Mahmoud Khalil al-Husary (teaching pace)",
     "abdulbasit": "Abdul Basit Abdul Samad",
     "minshawi": "Muhammad Siddiq al-Minshawi",
-    "ghamdi": "Saad al-Ghamdi"
+    "ghamdi": "Saad al-Ghamdi",
+    "sudais": "Abdur-Rahman as-Sudais",
+    "shuraym": "Sa'ud ash-Shuraym",
+    "muaiqly": "Maher al-Muaiqly",
+    "dussary": "Yasser ad-Dussary",
+    "shatri": "Abu Bakr al-Shatri",
+    "rifai": "Hani ar-Rifai",
+    "qatami": "Nasser al-Qatami",
+    "abbad": "Fares Abbad",
+    "jibreel": "Muhammad Jibreel",
+    "jalil": "Khalid al-Jalil",
+    "basfar": "Abdullah Basfar",
+    "minshawiMujawwad": "Muhammad Siddiq al-Minshawi (mujawwad)",
+    "husaryMuallim": "Mahmoud Khalil al-Husary (muallim, for learning)",
+    "styles": {
+      "murattal": "Murattal",
+      "mujawwad": "Mujawwad",
+      "teaching": "For learning"
+    },
+    "byAyah": "Follows each ayah, not each word",
+    "search": "Search reciters",
+    "none": "No reciter by that name.",
+    "choose": "Choose a reciter"
   },
   "settings": {
     "title": "Reading settings",
@@ -155,6 +192,66 @@
       "sepia": "Sepia",
       "dark": "Dark"
     },
-    "sample": "The size of Quran text"
+    "sample": "The size of Quran text",
+    "view": "View",
+    "views": {
+      "mushaf": "Mushaf",
+      "text": "Arabic text",
+      "translation": "With translation"
+    },
+    "edition": "Mushaf",
+    "editions": {
+      "madani": "Madani mushaf · {year}H",
+      "indopak": "Indopak mushaf · {lines} lines"
+    },
+    "tajweed": "Tajweed colors",
+    "tajweedHint": "The {year}H Madani mushaf’s own colors"
+  },
+  "memorize": {
+    "title": "Memorize",
+    "modes": {
+      "off": "Show everything",
+      "words": "Hide the words",
+      "firstWord": "Show each ayah’s first word",
+      "markers": "Hide the ayah numbers"
+    },
+    "hint": "Tap a hidden word to reveal it. Hold it to see the whole ayah.",
+    "hidden": "Hidden word, tap to reveal",
+    "hiddenMarker": "Hidden ayah number, tap to reveal",
+    "hiddenAyah": "{label}, hidden while memorizing",
+    "hideAgain": "Hide the revealed words again",
+    "on": "Memorizing"
+  },
+  "range": {
+    "bookmark": "Mark a passage",
+    "repeat": "Repeat a passage",
+    "from": "From ayah {ayah}",
+    "to": "To ayah",
+    "times": "Times",
+    "gap": "Pause after each ayah",
+    "gapHint": "As long as the ayah, to recite it back",
+    "start": "Start",
+    "save": "Save",
+    "label": "{surah} {from}–{to}"
+  },
+  "tafsir": {
+    "title": "Tafsir",
+    "source": "Al-Mukhtasar in interpreting the Noble Quran",
+    "covers": "Explains ayahs {from}–{to}",
+    "error": "The tafsir could not be opened."
+  },
+  "storage": {
+    "title": "Storage",
+    "recitations": "Recitations",
+    "pages": "Mushaf pages",
+    "none": "Nothing downloaded yet.",
+    "surahs": "{count, plural, one {# surah} other {# surahs}} · {size}",
+    "pageCount": "{count, plural, one {# page} other {# pages}} · {size}",
+    "remove": "Remove {name}",
+    "total": "{size} in all",
+    "pagesHint": "Pages download again when opened.",
+    "removeConfirm": "Remove {name}? This frees {size}; you can download it again.",
+    "removeAction": "Remove",
+    "list": "The surahs downloaded"
   }
 }

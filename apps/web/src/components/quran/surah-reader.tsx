@@ -2,15 +2,18 @@
 
 import {
   ayahWords,
+  isGlyphMushaf,
+  loadMushaf,
   loadSurahText,
   loadTranslation,
   loadTransliteration,
   pageOf,
   sajdaOf,
   surah as surahInfo,
+  wordId,
   type SurahTranslation,
 } from '@murshid/content/quran';
-import { translationFor, translationLanguage, type QuranBookmark } from '@murshid/data';
+import { bookmarkCovering, translationFor, translationLanguage } from '@murshid/data';
 import { typeScale } from '@murshid/tokens';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
@@ -29,11 +32,14 @@ import {
   type WordTarget,
 } from './ayah-overlays';
 import { AyahView } from './ayah-view';
-import { SurahCalligraphy, useSurahName } from './common';
+import { SurahCalligraphy, useReaderTheme, useSurahName } from './common';
+import { MemorizeSheet, useMemorize } from './memorize';
 import { ReaderBar } from './reader-bar';
-import { ReadingSettings, setQuranPrefs } from './reading-settings';
+import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { ReadingSurface } from './reading-surface';
 import { useRecitation } from './recitation';
+import { SurahText } from './surah-text';
+import type { Tajweed } from './tajweed';
 
 /** The basmalah that opens a surah: the words of Al-Fatihah 1 as published, without its number. */
 export function Basmalah({ size }: { size: number }) {
@@ -56,7 +62,10 @@ function plainTranslation(tr: SurahTranslation | undefined, ayah: number) {
   return tr?.t[ayah - 1]?.filter((s): s is string => typeof s === 'string').join('') ?? null;
 }
 
-/** The verse-by-verse reader (SPEC 5.5). */
+/**
+ * The scrolling reader (SPEC 5.5, Phase 5b): verse by verse with translation, or the Arabic text
+ * flowing, as the reading settings choose. Memorizing hides words or markers in either.
+ */
 export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah?: number }) {
   const format = useFormatter();
   const t = useTranslations('quran');
@@ -75,8 +84,16 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
   const extra = useLoad(() => loadTranslation(lang, surah), `${lang}/${surah}`);
   const translit = useLoad(() => loadTransliteration(surah), `translit/${surah}`);
   const bookmarks = useBookmarks();
+  // Tajweed colors here too, with the 1441H mushaf (its glyphs load only then).
+  const theme = useReaderTheme(prefs?.theme);
+  const tajweedOn = Boolean(prefs?.tajweed && prefs.edition === 'v4');
+  const v4 = useLoad(tajweedOn ? () => loadMushaf('v4') : null, tajweedOn ? 'mushaf/v4' : '');
+  const tajweed: Tajweed | null =
+    tajweedOn && v4.data && isGlyphMushaf(v4.data) ? { glyphs: v4.data.glyphs, theme } : null;
 
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [memorizeOpen, setMemorizeOpen] = useState(false);
+  const memorize = useMemorize(prefs?.hide ?? 'off');
   const [word, setWord] = useState<WordTarget | null>(null);
   const [actions, setActions] = useState<ActionsTarget | null>(null);
   const [note, setNote] = useState<{ mark: string; text: string } | null>(null);
@@ -129,8 +146,8 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
 
   if (!prefs) return null;
 
-  const bookmarkOf = (ayah: number): QuranBookmark | undefined =>
-    bookmarks?.find((b) => b.surah === surah && b.ayah === ayah);
+  const layout = prefs.layout;
+  const bookmarkOf = (ayah: number) => bookmarkCovering(bookmarks, surah, ayah);
   const play = () => {
     if (playingHere && recitation.playing) recitation.pause();
     else if (playingHere && recitation.surah !== null) recitation.resume();
@@ -139,7 +156,26 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
   const toggleView = () => {
     setQuranPrefs({ view: 'mushaf' });
     const position = recitation.surah === surah && recitation.ayah ? recitation.ayah : startAyah;
-    router.push(`/quran/page/${pageOf(surah, position)}`);
+    router.push(`/quran/page/${pageOf(surah, position, prefs.edition)}`);
+  };
+  const onView = (v: ReaderView) => {
+    if (v === 'mushaf') toggleView();
+    else setQuranPrefs({ view: 'verses', layout: v });
+  };
+  const openActions = (ayah: number) => {
+    const words = ayahWords(text.data!, ayah);
+    setActions({
+      surah,
+      ayah,
+      title: `${name(info)} ${format.number(ayah)}`,
+      surahName: name(info),
+      text: words.map((w) => w.text + w.after).join(''),
+      translation: translation ? plainTranslation(extra.data, ayah) : null,
+      words,
+      meanings: extra.data?.m[ayah - 1] ?? null,
+      transliteration: translit.data?.[ayah - 1] ?? null,
+      bookmark: bookmarkOf(ayah),
+    });
   };
 
   return (
@@ -147,9 +183,11 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
       <ReaderBar
         title={name(info)}
         subtitle={`${t(`surah.${info.revelationPlace}`)} · ${t('surah.ayahs', { count: info.ayahCount })}`}
-        view="verses"
+        view={layout}
         onToggleView={toggleView}
         onSettings={() => setSettingsOpen(true)}
+        memorizing={memorize.mode !== 'off'}
+        onMemorize={() => setMemorizeOpen(true)}
         playing={playingHere && recitation.playing}
         onPlay={play}
       />
@@ -181,13 +219,37 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
               <Skeleton key={i} className="h-24 w-full" />
             ))}
           </div>
+        ) : layout === 'text' ? (
+          <SurahText
+            surah={surah}
+            text={text.data}
+            size={size}
+            bookmarks={bookmarks}
+            memorize={memorize}
+            tajweed={tajweed}
+            playing={
+              playingHere && recitation.ayah
+                ? { ayah: recitation.ayah, word: recitation.word }
+                : null
+            }
+            ayahRefs={ayahRefs}
+            onWord={(ayah, w, el) => {
+              const words = ayahWords(text.data!, ayah);
+              setWord({
+                word: words[w]!,
+                meaning: extra.data?.m[ayah - 1]?.[w] ?? null,
+                transliteration: translit.data?.[ayah - 1]?.[w] ?? null,
+                rect: el.getBoundingClientRect(),
+              });
+            }}
+            onActions={openActions}
+          />
         ) : (
           text.data.w.map((_, i) => {
             const ayah = i + 1;
             const words = ayahWords(text.data!, ayah);
             const meanings = extra.data?.m[i] ?? null;
             const tl = translit.data?.[i] ?? null;
-            const bookmark = bookmarkOf(ayah)?.color ?? null;
             return (
               <AyahView
                 key={ayah}
@@ -206,8 +268,11 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
                 size={size}
                 playing={playingHere && recitation.ayah === ayah}
                 playingWord={playingHere && recitation.ayah === ayah ? recitation.word : null}
-                bookmark={bookmark}
+                bookmark={bookmarkOf(ayah)}
                 sajda={sajdaOf(surah, ayah) !== null}
+                memorize={memorize}
+                firstWordId={wordId(surah, ayah, 1)}
+                tajweed={tajweed}
                 onWord={(w, el) =>
                   setWord({
                     word: words[w]!,
@@ -217,19 +282,7 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
                   })
                 }
                 onFootnote={(mark, noteText) => setNote({ mark, text: noteText })}
-                onActions={() =>
-                  setActions({
-                    surah,
-                    ayah,
-                    title: `${name(info)} ${format.number(ayah)}`,
-                    text: words.map((w) => w.text + w.after).join(''),
-                    translation: translation ? plainTranslation(extra.data, ayah) : null,
-                    words,
-                    meanings,
-                    transliteration: tl,
-                    bookmark,
-                  })
-                }
+                onActions={() => openActions(ayah)}
               />
             );
           })
@@ -262,10 +315,18 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
         target={actions}
         onClose={() => setActions(null)}
         onPlay={(s, a) => recitation.play(s, a)}
+        onRepeat={(s, a, plan) => recitation.play(s, a, plan)}
         shareUrl={(s, a) => `${window.location.origin}/${locale}/quran/${s}/${a}`}
       />
       <FootnoteSheet note={note} onClose={() => setNote(null)} />
-      <ReadingSettings open={settingsOpen} onOpenChange={setSettingsOpen} prefs={prefs} />
+      <ReadingSettings
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        prefs={prefs}
+        view={layout}
+        onView={onView}
+      />
+      <MemorizeSheet open={memorizeOpen} onOpenChange={setMemorizeOpen} memorize={memorize} />
     </ReadingSurface>
   );
 }

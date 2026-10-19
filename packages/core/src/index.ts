@@ -11,3 +11,4 @@ export * from './reminders';
 export * from './sun';
 export * from './time';
 export * from './today';
+export * from './recitation-check';

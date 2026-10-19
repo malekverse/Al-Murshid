@@ -1,10 +1,19 @@
 'use client';
 
-import { Copy, Play, ShareNetwork, Translate, X } from '@phosphor-icons/react';
+import {
+  BookmarkSimple,
+  BookOpenText,
+  Copy,
+  Play,
+  Repeat,
+  ShareNetwork,
+  Translate,
+  X,
+} from '@phosphor-icons/react';
 import type { Word } from '@murshid/content/quran';
-import { bookmarkColors, type BookmarkColor } from '@murshid/data';
+import { bookmarkColors, bookmarkEnd, type QuranBookmark } from '@murshid/data';
 import { typeScale } from '@murshid/tokens';
-import { useTranslations } from 'next-intl';
+import { useFormatter, useTranslations } from 'next-intl';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
@@ -13,7 +22,10 @@ import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { cn } from '@/lib/cn';
 import { setBookmark } from '@/lib/quran';
+import { PassageSheet, type PassageTarget } from './passage-sheet';
 import { markClass } from './quran-home';
+import type { PassagePlan } from './recitation';
+import { TafsirSheet } from './tafsir-sheet';
 
 export interface WordTarget {
   word: Word;
@@ -115,27 +127,68 @@ export interface ActionsTarget {
   words: Word[];
   meanings: (string | null)[] | null;
   transliteration: (string | null)[] | null;
-  bookmark: BookmarkColor | null;
+  /** The bookmark marking this ayah, alone or as part of a passage. */
+  bookmark: QuranBookmark | null;
+  /** The surah's name, to name a passage. */
+  surahName: string;
 }
 
-/** What an ayah offers (SPEC 5.5): play from here, word by word, bookmark, copy, share. */
+/**
+ * What an ayah offers (SPEC 5.5, Phase 5b): play from here, repeat a passage, word by word, a
+ * bookmark for the ayah or a passage, copy, share.
+ */
 export function AyahActions({
   target,
   onClose,
   onPlay,
+  onRepeat,
   shareUrl,
 }: {
   target: ActionsTarget | null;
   onClose: () => void;
   onPlay: (surah: number, ayah: number) => void;
+  onRepeat: (surah: number, from: number, plan: PassagePlan) => void;
   shareUrl: (surah: number, ayah: number) => string;
 }) {
   const t = useTranslations('quran');
+  const format = useFormatter();
   const toast = useToast();
   const [words, setWords] = useState(false);
+  const [passage, setPassage] = useState<PassageTarget | null>(null);
+  const [tafsir, setTafsir] = useState<{ surah: number; ayah: number; title: string } | null>(null);
   const open = target !== null;
+  // These sheets outlive the actions, which close as one opens.
+  const later = (
+    <>
+      <PassageSheet target={passage} onClose={() => setPassage(null)} onRepeat={onRepeat} />
+      <TafsirSheet target={tafsir} onClose={() => setTafsir(null)} />
+    </>
+  );
 
-  if (!target) return <Sheet open={false} onOpenChange={onClose} title="" />;
+  if (!target) {
+    return (
+      <>
+        <Sheet open={false} onOpenChange={onClose} title="" />
+        {later}
+      </>
+    );
+  }
+
+  const mark = target.bookmark;
+  // A passage starting at an earlier ayah is shown, and changed, as a whole.
+  const partOf =
+    mark && mark.ayah !== target.ayah
+      ? t('range.label', {
+          surah: target.surahName,
+          from: format.number(mark.ayah),
+          to: format.number(bookmarkEnd(mark)),
+        })
+      : null;
+  const openPassage = (mode: PassageTarget['mode']) => {
+    const from = mode === 'bookmark' && mark ? mark.ayah : target.ayah;
+    setPassage({ surah: target.surah, ayah: from, mode, bookmark: mark });
+    onClose();
+  };
 
   const quote = [target.text, target.translation, `— ${target.title}`].filter(Boolean).join('\n');
   const copy = async () => {
@@ -171,6 +224,19 @@ export function AyahActions({
                 onClose();
               }}
             />
+            <ListRow
+              icon={Repeat}
+              title={t('range.repeat')}
+              onPress={() => openPassage('repeat')}
+            />
+            <ListRow
+              icon={BookOpenText}
+              title={t('actions.tafsir')}
+              onPress={() => {
+                setTafsir({ surah: target.surah, ayah: target.ayah, title: target.title });
+                onClose();
+              }}
+            />
             <ListRow icon={Translate} title={t('actions.words')} onPress={() => setWords(true)} />
             <ListRow icon={Copy} title={t('actions.copy')} onPress={copy} />
             <ListRow icon={ShareNetwork} title={t('actions.share')} onPress={share} />
@@ -179,36 +245,48 @@ export function AyahActions({
             <Text as="h3" role="callout" tone="muted">
               {t('bookmarks.colors.label')}
             </Text>
+            {partOf && (
+              <Text role="callout" tone="muted">
+                {t('bookmarks.inRange', { range: partOf })}
+              </Text>
+            )}
             <div className="flex flex-wrap items-center gap-3">
               {bookmarkColors.map((c) => (
                 <button
                   key={c}
                   type="button"
-                  aria-pressed={target.bookmark === c}
+                  aria-pressed={mark?.color === c}
                   aria-label={`${t('actions.bookmark')}: ${t(`bookmarks.colors.${c}`)}`}
                   onClick={() => {
-                    void setBookmark(target.surah, target.ayah, c);
+                    void setBookmark(mark?.surah ?? target.surah, mark?.ayah ?? target.ayah, c);
                     onClose();
                   }}
                   className={cn(
                     'flex size-touch items-center justify-center rounded-full',
-                    target.bookmark === c && 'ring-2 ring-focus ring-offset-2 ring-offset-surface',
+                    mark?.color === c && 'ring-2 ring-focus ring-offset-2 ring-offset-surface',
                   )}
                 >
                   <span className={cn('size-6 rounded-full', markClass[c])} />
                 </button>
               ))}
-              {target.bookmark && (
+              {mark && (
                 <IconButton
                   icon={X}
                   label={t('actions.unbookmark')}
                   onClick={() => {
-                    void setBookmark(target.surah, target.ayah, null);
+                    void setBookmark(mark.surah, mark.ayah, null);
                     onClose();
                   }}
                 />
               )}
             </div>
+            <ListGroup>
+              <ListRow
+                icon={BookmarkSimple}
+                title={t('range.bookmark')}
+                onPress={() => openPassage('bookmark')}
+              />
+            </ListGroup>
           </section>
         </div>
       </Sheet>
@@ -250,6 +328,7 @@ export function AyahActions({
           ))}
         </ol>
       </Sheet>
+      {later}
     </>
   );
 }

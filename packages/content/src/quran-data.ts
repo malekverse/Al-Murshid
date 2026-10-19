@@ -7,9 +7,12 @@ import reciterTable from '../quran/generated/audio/reciters.json';
 import * as load from '../quran/generated/loaders.js';
 import type {
   AyahTiming,
-  MushafV2,
+  Mushaf,
+  MushafEdition,
+  MushafGlyphs,
   ReciterEntry,
   ReciterId,
+  SurahTafsir,
   SurahText,
   SurahTranslation,
   SurahTransliteration,
@@ -20,7 +23,15 @@ export * from './quran-types';
 export * from './surahs';
 export { normalizeArabic, normalizeLatin } from './search';
 
+/** Pages in the Madani mushaf (all three Madani editions have 604). */
 export const PAGE_COUNT = 604;
+/** Pages in each edition: the Indopak mushaf has 610. */
+export const editionPages: Record<MushafEdition, number> = {
+  v1: 604,
+  v2: 604,
+  v4: 604,
+  indopak: 610,
+};
 export const JUZ_COUNT = 30;
 export const WORD_COUNT = index.wordStart[AYAH_COUNT]! - 1;
 
@@ -66,6 +77,12 @@ export function wordId(surahNumber: number, ayahNumber: number, word: number): n
   return index.wordStart[ayahIndex(surahNumber, ayahNumber)]! + word - 1;
 }
 
+/** How many words an ayah has, its number (the last) included. */
+export function ayahLength(surahNumber: number, ayahNumber: number): number {
+  const i = ayahIndex(surahNumber, ayahNumber);
+  return index.wordStart[i + 1]! - index.wordStart[i]!;
+}
+
 export function wordAt(id: number): AyahRef & { word: number } {
   const position = lastAtOrBelow(index.wordStart, id);
   return {
@@ -74,20 +91,39 @@ export function wordAt(id: number): AyahRef & { word: number } {
   };
 }
 
-/** The mushaf page (1 to 604) a word sits on. */
-export function pageOfWord(id: number): number {
-  return lastAtOrBelow(index.pageWordStart, id) + 1;
+const pageStarts = index.pageWordStart as Record<MushafEdition, number[]>;
+
+/** The page a word sits on, in an edition (the 1421H mushaf by default). */
+export function pageOfWord(id: number, edition: MushafEdition = 'v2'): number {
+  return lastAtOrBelow(pageStarts[edition], id) + 1;
 }
 
 /** The page an ayah starts on. */
-export function pageOf(surahNumber: number, ayahNumber: number): number {
-  return pageOfWord(wordId(surahNumber, ayahNumber, 1));
+export function pageOf(
+  surahNumber: number,
+  ayahNumber: number,
+  edition: MushafEdition = 'v2',
+): number {
+  return pageOfWord(wordId(surahNumber, ayahNumber, 1), edition);
+}
+
+/** The first and last word ids on a page of an edition. */
+export function pageWords(
+  page: number,
+  edition: MushafEdition = 'v2',
+): [first: number, last: number] {
+  const first = pageStarts[edition][page - 1];
+  const next = pageStarts[edition][page];
+  if (first === undefined || next === undefined) throw new RangeError(`There is no page ${page}`);
+  return [first, next - 1];
 }
 
 /** The first ayah that starts on a page (or the one running onto it). */
-export function firstAyahOfPage(page: number): AyahRef {
-  const id = index.pageWordStart[page - 1];
-  if (id === undefined || page > PAGE_COUNT) throw new RangeError(`There is no page ${page}`);
+export function firstAyahOfPage(page: number, edition: MushafEdition = 'v2'): AyahRef {
+  const id = pageStarts[edition][page - 1];
+  if (id === undefined || page > editionPages[edition]) {
+    throw new RangeError(`There is no page ${page}`);
+  }
   const w = wordAt(id);
   return { surah: w.surah, ayah: w.ayah };
 }
@@ -159,7 +195,43 @@ export const loadTranslation = (lang: TranslationLanguage, n: number) =>
   once<SurahTranslation>(`${lang}/${n}`, load[lang][n]);
 export const loadTransliteration = (n: number) =>
   once<SurahTransliteration>(`translit/${n}`, load.translit[n]);
-export const loadMushafV2 = () => once<MushafV2>('mushaf-v2', load.mushafV2);
+export const loadMushaf = (edition: MushafEdition) =>
+  once<Mushaf>(`mushaf/${edition}`, load.mushaf[edition]);
+/** The 1421H mushaf. */
+export const loadMushafV2 = () => loadMushaf('v2') as Promise<MushafGlyphs>;
+/** Whether an edition is drawn with page fonts (glyphs) or one Unicode font (words). */
+export const isGlyphMushaf = (m: Mushaf): m is MushafGlyphs => 'glyphs' in m;
+export type TafsirLanguage = 'ar' | 'en' | 'fr';
+export const loadTafsir = (lang: TafsirLanguage, n: number) =>
+  once<SurahTafsir>(`tafsir/${lang}/${n}`, load.tafsir[lang][n]);
+/** A run of tafsir text, bold or italic as published (the only markup kept). */
+export interface TafsirRun {
+  text: string;
+  bold: boolean;
+  italic: boolean;
+}
+
+/** A passage's text as runs, so it is drawn without ever parsing HTML in the apps. */
+export function tafsirRuns(text: string): TafsirRun[] {
+  const runs: TafsirRun[] = [];
+  let bold = false;
+  let italic = false;
+  for (const part of text.split(/(<\/?[bi]>)/)) {
+    if (part === '<b>' || part === '</b>') bold = part === '<b>';
+    else if (part === '<i>' || part === '</i>') italic = part === '<i>';
+    else if (part) runs.push({ text: part, bold, italic });
+  }
+  return runs;
+}
+
+/** The tafsir passage explaining an ayah, with the ayahs it covers. */
+export function tafsirOf(
+  t: SurahTafsir,
+  ayah: number,
+): { from: number; to: number; text: string } | null {
+  const found = t.find(([from, to]) => from <= ayah && ayah <= to);
+  return found ? { from: found[0], to: found[1], text: found[2] } : null;
+}
 export const loadTimings = (reciter: ReciterId, n: number) =>
   once<AyahTiming[]>(`audio/${reciter}/${n}`, load.audio[reciter][n]);
 /** Plain text of every ayah in mushaf order, to search in (never shown). */

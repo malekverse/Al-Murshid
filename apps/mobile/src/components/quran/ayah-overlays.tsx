@@ -1,10 +1,13 @@
 import type { Word } from '@murshid/content/quran';
-import { bookmarkColors, type BookmarkColor } from '@murshid/data';
+import { bookmarkColors, bookmarkEnd, type QuranBookmark } from '@murshid/data';
 import { space, typeScale } from '@murshid/tokens';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
+import { BookmarkSimple } from 'phosphor-react-native/src/icons/BookmarkSimple';
+import { BookOpenText } from 'phosphor-react-native/src/icons/BookOpenText';
 import { Copy } from 'phosphor-react-native/src/icons/Copy';
 import { Play } from 'phosphor-react-native/src/icons/Play';
+import { Repeat } from 'phosphor-react-native/src/icons/Repeat';
 import { ShareNetwork } from 'phosphor-react-native/src/icons/ShareNetwork';
 import { Translate } from 'phosphor-react-native/src/icons/Translate';
 import { X } from 'phosphor-react-native/src/icons/X';
@@ -17,7 +20,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { useTranslations } from 'use-intl';
+import { useFormatter, useTranslations } from 'use-intl';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
 import { Sheet } from '@/components/ui/sheet';
@@ -25,6 +28,9 @@ import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { setBookmark } from '@/lib/quran';
 import { markColor, useReaderTheme } from './common';
+import { PassageSheet, type PassageTarget } from './passage-sheet';
+import type { PassagePlan } from './recitation';
+import { TafsirSheet } from './tafsir-sheet';
 
 export interface WordTarget {
   word: Word;
@@ -103,31 +109,65 @@ export interface ActionsTarget {
   words: Word[];
   meanings: (string | null)[] | null;
   transliteration: (string | null)[] | null;
-  bookmark: BookmarkColor | null;
+  /** The bookmark marking this ayah, alone or as part of a passage. */
+  bookmark: QuranBookmark | null;
+  /** The surah's name, to name a passage. */
+  surahName: string;
 }
 
-/** What an ayah offers (SPEC 5.5): play from here, word by word, bookmark, copy, share. */
+/**
+ * What an ayah offers (SPEC 5.5, Phase 5b): play from here, repeat a passage, word by word, a
+ * bookmark for the ayah or a passage, copy, share.
+ */
 export function AyahActions({
   target,
   onClose,
   onPlay,
+  onRepeat,
   shareUrl,
 }: {
   target: ActionsTarget | null;
   onClose: () => void;
   onPlay: (surah: number, ayah: number) => void;
+  onRepeat: (surah: number, from: number, plan: PassagePlan) => void;
   shareUrl: (surah: number, ayah: number) => string | null;
 }) {
   const t = useTranslations('quran');
+  const format = useFormatter();
   const toast = useToast();
   const theme = useReaderTheme();
   const [words, setWords] = useState(false);
-  if (!target) return null;
+  // These sheets outlive the actions, which close as one opens.
+  const [passage, setPassage] = useState<PassageTarget | null>(null);
+  const [tafsir, setTafsir] = useState<{ surah: number; ayah: number; title: string } | null>(null);
+  const passageSheet = (
+    <>
+      <PassageSheet target={passage} onClose={() => setPassage(null)} onRepeat={onRepeat} />
+      <TafsirSheet target={tafsir} onClose={() => setTafsir(null)} />
+    </>
+  );
+  if (!target) return passageSheet;
+
+  const mark = target.bookmark;
+  // A passage starting at an earlier ayah is shown, and changed, as a whole.
+  const partOf =
+    mark && mark.ayah !== target.ayah
+      ? t('range.label', {
+          surah: target.surahName,
+          from: format.number(mark.ayah),
+          to: format.number(bookmarkEnd(mark)),
+        })
+      : null;
 
   const quote = [target.text, target.translation, `— ${target.title}`].filter(Boolean).join('\n');
   const close = () => {
     setWords(false);
     onClose();
+  };
+  const openPassage = (mode: PassageTarget['mode']) => {
+    const from = mode === 'bookmark' && mark ? mark.ayah : target.ayah;
+    setPassage({ surah: target.surah, ayah: from, mode, bookmark: mark });
+    close();
   };
 
   return (
@@ -140,6 +180,19 @@ export function AyahActions({
               title={t('actions.play')}
               onPress={() => {
                 onPlay(target.surah, target.ayah);
+                close();
+              }}
+            />
+            <ListRow
+              icon={Repeat}
+              title={t('range.repeat')}
+              onPress={() => openPassage('repeat')}
+            />
+            <ListRow
+              icon={BookOpenText}
+              title={t('actions.tafsir')}
+              onPress={() => {
+                setTafsir({ surah: target.surah, ayah: target.ayah, title: target.title });
                 close();
               }}
             />
@@ -167,19 +220,24 @@ export function AyahActions({
             <Text role="callout" tone="muted">
               {t('bookmarks.colors.label')}
             </Text>
+            {partOf && (
+              <Text role="callout" tone="muted">
+                {t('bookmarks.inRange', { range: partOf })}
+              </Text>
+            )}
             <View className="flex-row flex-wrap items-center gap-3">
               {bookmarkColors.map((c) => (
                 <Pressable
                   key={c}
                   accessibilityRole="button"
-                  accessibilityState={{ selected: target.bookmark === c }}
+                  accessibilityState={{ selected: mark?.color === c }}
                   accessibilityLabel={`${t('actions.bookmark')}: ${t(`bookmarks.colors.${c}`)}`}
                   onPress={() => {
-                    setBookmark(target.surah, target.ayah, c);
+                    setBookmark(mark?.surah ?? target.surah, mark?.ayah ?? target.ayah, c);
                     void Haptics.selectionAsync();
                     close();
                   }}
-                  className={`size-touch items-center justify-center rounded-full ${target.bookmark === c ? 'border-2 border-focus' : ''}`}
+                  className={`size-touch items-center justify-center rounded-full ${mark?.color === c ? 'border-2 border-focus' : ''}`}
                 >
                   <View
                     className="size-6 rounded-full"
@@ -187,17 +245,24 @@ export function AyahActions({
                   />
                 </Pressable>
               ))}
-              {target.bookmark && (
+              {mark && (
                 <IconButton
                   icon={X}
                   label={t('actions.unbookmark')}
                   onPress={() => {
-                    setBookmark(target.surah, target.ayah, null);
+                    setBookmark(mark.surah, mark.ayah, null);
                     close();
                   }}
                 />
               )}
             </View>
+            <ListGroup>
+              <ListRow
+                icon={BookmarkSimple}
+                title={t('range.bookmark')}
+                onPress={() => openPassage('bookmark')}
+              />
+            </ListGroup>
           </View>
         </View>
       </Sheet>
@@ -228,6 +293,7 @@ export function AyahActions({
           ))}
         </ScrollView>
       </Sheet>
+      {passageSheet}
     </>
   );
 }

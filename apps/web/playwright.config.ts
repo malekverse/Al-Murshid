@@ -13,6 +13,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'retain-on-failure',
+    // Full Chromium in its new headless mode: the old headless shell crashes on the 1441H color
+    // fonts after a few page loads, where Chrome and Edge do not (docs/DECISIONS.md, Phase 5b).
+    channel: 'chromium',
   },
   projects: [
     {

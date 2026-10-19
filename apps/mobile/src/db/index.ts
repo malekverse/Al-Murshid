@@ -25,6 +25,8 @@ const migrations = [
      deleted INTEGER NOT NULL DEFAULT 0
    );
    CREATE INDEX IF NOT EXISTS quran_bookmarks_ayah ON quran_bookmarks (surah, ayah);`,
+  // Phase 5b: a bookmark may mark a passage, up to ayah_end.
+  `ALTER TABLE quran_bookmarks ADD COLUMN ayah_end INTEGER;`,
 ];
 
 const sqlite = openDatabaseSync('murshid.db', { enableChangeListener: true });

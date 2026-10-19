@@ -20,7 +20,13 @@ import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 import { readingPosition, useBookmarks } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
-import { readerHref, SurahCalligraphy, useSurahName } from './common';
+import {
+  readerHref,
+  readerPlace,
+  SurahCalligraphy,
+  useSurahName,
+  type ReaderPlace,
+} from './common';
 import { KhatmahCard } from './khatmah';
 import { QuranSearch } from './quran-search';
 
@@ -32,15 +38,24 @@ export const markClass: Record<BookmarkColor, string> = {
   clay: 'bg-mark-clay',
 };
 
+/** A bookmark's color as a soft tint, behind a marked ayah's number in the text. */
+export const markTint: Record<BookmarkColor, string> = {
+  lantern: 'bg-lantern/25',
+  sage: 'bg-mark-sage/25',
+  sky: 'bg-mark-sky/25',
+  plum: 'bg-mark-plum/25',
+  clay: 'bg-mark-clay/25',
+};
+
 type Tab = 'surahs' | 'juz' | 'bookmarks';
 
-function ContinueCard({ view }: { view: 'verses' | 'mushaf' }) {
+function ContinueCard({ place }: { place: ReaderPlace }) {
   const t = useTranslations('quran.home');
   const format = useFormatter();
   const name = useSurahName();
   const position = readingPosition.useValue();
   if (position === undefined) return <Skeleton className="h-24 w-full rounded-card" />;
-  const href = position ? readerHref(position.surah, position.ayah, view) : readerHref(1);
+  const href = position ? readerHref(position.surah, position.ayah, place) : readerHref(1);
   return (
     <Link href={href} className="group block rounded-card">
       <Card className="flex items-center gap-4 p-6 transition-colors group-hover:bg-ink/5">
@@ -66,23 +81,23 @@ function ContinueCard({ view }: { view: 'verses' | 'mushaf' }) {
   );
 }
 
-function SurahList({ view }: { view: 'verses' | 'mushaf' }) {
+function SurahList({ place }: { place: ReaderPlace }) {
   const t = useTranslations('quran.surah');
   const format = useFormatter();
   const name = useSurahName();
   return (
     <ul className="flex flex-col">
       {surahs.map((s) => {
-        const place = t(s.revelationPlace);
+        const origin = t(s.revelationPlace);
         const ayahs = t('ayahs', { count: s.ayahCount });
         return (
           <li key={s.number}>
             <Link
-              href={readerHref(s.number, 1, view)}
+              href={readerHref(s.number, 1, place)}
               aria-label={t('row', {
                 number: format.number(s.number),
                 name: name(s),
-                place,
+                place: origin,
                 ayahs,
               })}
               className="flex min-h-touch items-center gap-4 rounded-card px-3 py-3 hover:bg-ink/5"
@@ -95,7 +110,7 @@ function SurahList({ view }: { view: 'verses' | 'mushaf' }) {
                   {name(s)}
                 </Text>
                 <Text as="span" role="caption" tone="muted">
-                  {`${place} · ${ayahs}`}
+                  {`${origin} · ${ayahs}`}
                 </Text>
               </span>
               <SurahCalligraphy number={s.number} />
@@ -107,7 +122,7 @@ function SurahList({ view }: { view: 'verses' | 'mushaf' }) {
   );
 }
 
-function JuzList({ view }: { view: 'verses' | 'mushaf' }) {
+function JuzList({ place }: { place: ReaderPlace }) {
   const t = useTranslations('quran.juz');
   const format = useFormatter();
   const name = useSurahName();
@@ -118,7 +133,7 @@ function JuzList({ view }: { view: 'verses' | 'mushaf' }) {
         return (
           <li key={i}>
             <Link
-              href={readerHref(start.surah, start.ayah, view)}
+              href={readerHref(start.surah, start.ayah, place)}
               className="flex min-h-touch items-center gap-4 rounded-card px-3 py-3 hover:bg-ink/5"
             >
               <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-hairline text-caption text-ink-muted">
@@ -132,7 +147,7 @@ function JuzList({ view }: { view: 'verses' | 'mushaf' }) {
                   {t('starts', {
                     surah: name(surahInfo(start.surah)),
                     ayah: format.number(start.ayah),
-                    page: format.number(pageOf(start.surah, start.ayah)),
+                    page: format.number(pageOf(start.surah, start.ayah, place.edition)),
                   })}
                 </Text>
               </span>
@@ -144,7 +159,7 @@ function JuzList({ view }: { view: 'verses' | 'mushaf' }) {
   );
 }
 
-function BookmarkList({ view }: { view: 'verses' | 'mushaf' }) {
+function BookmarkList({ place }: { place: ReaderPlace }) {
   const t = useTranslations('quran');
   const format = useFormatter();
   const name = useSurahName();
@@ -158,7 +173,7 @@ function BookmarkList({ view }: { view: 'verses' | 'mushaf' }) {
       {bookmarks.map((b) => (
         <li key={b.id}>
           <Link
-            href={readerHref(b.surah, b.ayah, view)}
+            href={readerHref(b.surah, b.ayah, place)}
             className="flex min-h-touch items-center gap-4 rounded-card px-3 py-3 hover:bg-ink/5"
           >
             <span
@@ -168,10 +183,16 @@ function BookmarkList({ view }: { view: 'verses' | 'mushaf' }) {
             />
             <span className="flex min-w-0 flex-1 flex-col">
               <Text as="span" role="body">
-                {`${name(surahInfo(b.surah))} ${format.number(b.ayah)}`}
+                {b.ayahEnd
+                  ? t('range.label', {
+                      surah: name(surahInfo(b.surah)),
+                      from: format.number(b.ayah),
+                      to: format.number(b.ayahEnd),
+                    })
+                  : `${name(surahInfo(b.surah))} ${format.number(b.ayah)}`}
               </Text>
               <Text as="span" role="caption" tone="muted">
-                {t('mushaf.page', { page: format.number(pageOf(b.surah, b.ayah)) })}
+                {t('mushaf.page', { page: format.number(pageOf(b.surah, b.ayah, place.edition)) })}
               </Text>
             </span>
           </Link>
@@ -187,7 +208,7 @@ export function QuranHome() {
   const settings = useSettings();
   const [tab, setTab] = useState<Tab>('surahs');
   const [query, setQuery] = useState('');
-  const view = settings?.quran.view ?? 'verses';
+  const place = readerPlace(settings?.quran);
 
   return (
     <main
@@ -200,7 +221,7 @@ export function QuranHome() {
       <QuranSearch query={query} onQuery={setQuery} />
       {!query.trim() && (
         <>
-          <ContinueCard view={view} />
+          <ContinueCard place={place} />
           <KhatmahCard />
           <div className="flex justify-center">
             <Segmented
@@ -214,9 +235,9 @@ export function QuranHome() {
               ]}
             />
           </div>
-          {tab === 'surahs' && <SurahList view={view} />}
-          {tab === 'juz' && <JuzList view={view} />}
-          {tab === 'bookmarks' && <BookmarkList view={view} />}
+          {tab === 'surahs' && <SurahList place={place} />}
+          {tab === 'juz' && <JuzList place={place} />}
+          {tab === 'bookmarks' && <BookmarkList place={place} />}
         </>
       )}
     </main>

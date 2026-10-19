@@ -33,24 +33,29 @@ export function useBookmarks(): QuranBookmark[] | undefined {
   });
 }
 
-/** One ayah's bookmark; null when there is none, undefined while loading. */
-export function useBookmark(surah: number, ayah: number): QuranBookmark | null | undefined {
-  return useLiveQuery(async () => {
-    const rows = await db.bookmarks.where({ surah, ayah }).toArray();
-    return rows.find((b) => !b.deleted) ?? null;
-  }, [surah, ayah]);
-}
-
-/** Bookmarks an ayah in a color, or removes its bookmark (null). */
-export async function setBookmark(surah: number, ayah: number, color: BookmarkColor | null) {
+/**
+ * Marks an ayah, or a passage up to `ayahEnd`, in a color; or removes the bookmark starting at
+ * that ayah (null). A bookmark already starting there keeps its passage unless a new end is given.
+ */
+export async function setBookmark(
+  surah: number,
+  ayah: number,
+  color: BookmarkColor | null,
+  ayahEnd?: number | null,
+) {
   const existing = (await db.bookmarks.where({ surah, ayah }).toArray()).find((b) => !b.deleted);
   const now = new Date().toISOString();
   if (color === null) {
     if (existing) await db.bookmarks.update(existing.id, { deleted: true, updatedAt: now });
   } else if (existing) {
-    await db.bookmarks.update(existing.id, { color, updatedAt: now });
+    const end = ayahEnd === undefined ? (existing.ayahEnd ?? null) : ayahEnd;
+    await db.bookmarks.update(existing.id, {
+      color,
+      ayahEnd: end !== null && end > ayah ? end : null,
+      updatedAt: now,
+    });
   } else {
-    await db.bookmarks.put(newBookmark(surah, ayah, color));
+    await db.bookmarks.put(newBookmark(surah, ayah, color, ayahEnd ?? null));
   }
 }
 

@@ -58,7 +58,16 @@ export function AudioBar({ className }: { className?: string }) {
                   ? t('audio.error')
                   : r.loading
                     ? t('audio.loading')
-                    : t(`reciters.${r.reciter}`)}
+                    : r.turn
+                      ? t('audio.yourTurn')
+                      : r.passage
+                        ? t('audio.range', {
+                            from: format.number(r.passage.from),
+                            to: format.number(r.passage.to),
+                            pass: format.number(r.passage.pass),
+                            times: format.number(r.passage.times),
+                          })
+                        : t(`reciters.${r.reciter}`)}
               </Text>
             </Link>
             {r.loading && <LoadingDots />}

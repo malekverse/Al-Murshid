@@ -1,7 +1,16 @@
 'use client';
 
 import { audioUrl, loadTimings, surah as surahInfo } from '@murshid/content/quran';
-import { ayahAtTime, playbackSpans, wordAtTime, type AyahSpan } from '@murshid/core';
+import {
+  ayahAtTime,
+  playbackSpans,
+  playbackStep,
+  startCursor,
+  withRecordingEnd,
+  wordAtTime,
+  type AyahSpan,
+  type PlaybackCursor,
+} from '@murshid/core';
 import type { ReciterChoice } from '@murshid/data';
 import { useTranslations } from 'next-intl';
 import { createContext, use, useEffect, useRef, useState, type ReactNode } from 'react';
@@ -9,7 +18,16 @@ import { useSettings } from '@/lib/settings';
 
 // Recitation on web (SPEC 5.5): one audio element for the whole app, so listening carries on
 // while browsing. It follows the recording ayah by ayah and word by word from QUL's timestamps,
-// repeats each ayah as often as asked, and shows in the system's media controls.
+// repeats each ayah as often as asked, repeats a passage as a whole and can pause after each ayah
+// for memorizing (Phase 5b, rules in @murshid/core), and shows in the system's media controls.
+
+/** A passage played several times while memorizing: ayahs `from` to `to`, `times` times. */
+export interface PassagePlan {
+  to: number;
+  times: number;
+  /** Pause after each ayah, as long as the ayah, to recite it back. */
+  gap: boolean;
+}
 
 export interface RecitationState {
   surah: number | null;
@@ -20,11 +38,15 @@ export interface RecitationState {
   playing: boolean;
   loading: boolean;
   error: boolean;
+  /** The passage being repeated, and which time through it this is. */
+  passage: { from: number; to: number; times: number; pass: number } | null;
+  /** Paused after an ayah for the listener to recite it back. */
+  turn: boolean;
 }
 
 interface Recitation extends RecitationState {
   reciter: ReciterChoice;
-  play: (surah: number, fromAyah?: number) => void;
+  play: (surah: number, fromAyah?: number, passage?: PassagePlan) => void;
   pause: () => void;
   resume: () => void;
   stop: () => void;
@@ -38,7 +60,12 @@ const idle: RecitationState = {
   playing: false,
   loading: false,
   error: false,
+  passage: null,
+  turn: false,
 };
+
+/** How early an ayah's end counts as reached: the frame loop looks every 16 ms or so. */
+const MARGIN_MS = 40;
 
 const RecitationContext = createContext<Recitation | null>(null);
 
@@ -58,7 +85,15 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
 
   const audio = useRef<HTMLAudioElement | null>(null);
   const spans = useRef<AyahSpan[]>([]);
-  const repeats = useRef({ ayah: -1, left: 0 });
+  const cursor = useRef<PlaybackCursor>(startCursor());
+  const plan = useRef<PassagePlan & { from: number }>(null);
+  const turnTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // During the listener's turn the audio is paused but the recitation is still on.
+  const inTurn = useRef(false);
+  const endTurn = () => {
+    clearTimeout(turnTimer.current);
+    inTurn.current = false;
+  };
   const [state, setState] = useState<RecitationState>(idle);
   // The system's media handlers outlive a render; they read the latest state from here.
   const current = useRef(state);
@@ -82,25 +117,50 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     return audio.current;
   };
 
-  // Follow the recording: the ayah and word at the current time, and each ayah's repeats.
+  // Follow the recording: the ayah and word at the current time, and what repeating asks for.
   useEffect(() => {
     if (!state.playing) return;
     let frame = 0;
     const tick = () => {
       const el = audio.current;
-      if (el) {
+      if (el && !inTurn.current) {
         const ms = el.currentTime * 1000;
-        const index = ayahAtTime(spans.current, ms);
-        const span = spans.current[index];
-        if (span && index !== repeats.current.ayah)
-          repeats.current = { ayah: index, left: repeat - 1 };
-        const next = spans.current[index + 1];
-        // At the end of an ayah that still has repeats, go back to its start.
-        if (span && repeats.current.left > 0 && ms >= (next ? next.start : span.end) - 40) {
-          repeats.current.left -= 1;
-          el.currentTime = span.start / 1000;
+        const p = plan.current;
+        const rules = {
+          repeat,
+          range: p ? { from: p.from, to: p.to, times: p.times } : null,
+          gap: p?.gap ?? false,
+        };
+        const result = playbackStep(spans.current, ms, cursor.current, rules, MARGIN_MS);
+        cursor.current = result.cursor;
+        const { step } = result;
+        if (step.kind === 'seek') el.currentTime = step.ms / 1000;
+        if (step.kind === 'stop') {
+          el.pause();
+          plan.current = null;
+          update({ passage: null });
+          return;
         }
-        update({ ayah: index < 0 ? null : index + 1, word: span ? wordAtTime(span, ms) : null });
+        if (step.kind === 'gap') {
+          // The listener's turn: wait as long as the ayah took at this speed, then go on.
+          inTurn.current = true;
+          el.pause();
+          update({ turn: true });
+          turnTimer.current = setTimeout(() => {
+            inTurn.current = false;
+            update({ turn: false });
+            void el.play();
+          }, step.ms / el.playbackRate);
+          frame = requestAnimationFrame(tick);
+          return;
+        }
+        const index = ayahAtTime(spans.current, el.currentTime * 1000);
+        const span = spans.current[index];
+        update({
+          ayah: index < 0 ? null : index + 1,
+          word: span ? wordAtTime(span, el.currentTime * 1000) : null,
+          passage: p ? { from: p.from, to: p.to, times: p.times, pass: cursor.current.pass } : null,
+        });
       }
       frame = requestAnimationFrame(tick);
     };
@@ -112,10 +172,20 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     if (audio.current) audio.current.playbackRate = speed;
   }, [speed]);
 
-  const play = (surah: number, fromAyah = 1) => {
+  const play = (surah: number, fromAyah = 1, passage?: PassagePlan) => {
     const el = element();
-    update({ surah, ayah: fromAyah, word: null, loading: true, error: false });
-    repeats.current = { ayah: -1, left: 0 };
+    endTurn();
+    plan.current = passage ? { ...passage, from: fromAyah } : null;
+    cursor.current = startCursor();
+    update({
+      surah,
+      ayah: fromAyah,
+      word: null,
+      loading: true,
+      error: false,
+      turn: false,
+      passage: passage ? { from: fromAyah, to: passage.to, times: passage.times, pass: 1 } : null,
+    });
     loadTimings(reciter, surah)
       .then((timings) => {
         spans.current = playbackSpans(timings);
@@ -123,6 +193,10 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
         if (el.src !== src) el.src = src;
         el.playbackRate = speed;
         const start = () => {
+          // A last ayah without a usable end runs to the recording's real end.
+          if (Number.isFinite(el.duration)) {
+            spans.current = withRecordingEnd(spans.current, el.duration * 1000);
+          }
           const span = spans.current[fromAyah - 1];
           el.currentTime = fromAyah > 1 && span ? span.start / 1000 : 0;
           return el.play();
@@ -141,19 +215,24 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
   };
 
   const pause = () => {
+    endTurn();
     audio.current?.pause();
-    update({ playing: false });
+    update({ playing: false, turn: false });
   };
   const resume = () => {
     const el = audio.current;
     if (!el || current.current.surah === null) return;
+    endTurn();
+    update({ turn: false });
     el.play().then(
       () => update({ playing: true, error: false }),
       () => update({ error: true }),
     );
   };
   const stop = () => {
+    endTurn();
     audio.current?.pause();
+    plan.current = null;
     setState(idle);
   };
   const step = (by: 1 | -1) => {
@@ -162,17 +241,25 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     const target = Math.min(surahInfo(surah).ayahCount, Math.max(1, (ayah ?? 1) + by));
     const span = spans.current[target - 1];
     if (span && audio.current) {
-      repeats.current = { ayah: target - 1, left: repeat - 1 };
+      // Stepping out of a passage ends it.
+      const p = plan.current;
+      if (p && (target < p.from || target > p.to)) plan.current = null;
+      cursor.current = { ...cursor.current, ayah: target - 1, left: repeat - 1, gapped: -1 };
       audio.current.currentTime = span.start / 1000;
-      update({ ayah: target, word: null });
+      update({ ayah: target, word: null, ...(plan.current ? {} : { passage: null }) });
     }
   };
 
   // The end of the surah, and pauses from outside (headphones, the system).
   useEffect(() => {
     const el = element();
-    const onEnded = () => update({ playing: false });
-    const onPause = () => update({ playing: false });
+    const onEnded = () => {
+      plan.current = null;
+      update({ playing: false, passage: null });
+    };
+    const onPause = () => {
+      if (!inTurn.current) update({ playing: false });
+    };
     const onPlay = () => update({ playing: true });
     el.addEventListener('ended', onEnded);
     el.addEventListener('pause', onPause);

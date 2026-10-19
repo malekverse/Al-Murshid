@@ -18,10 +18,10 @@ import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 import { useLoad } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
-import { readerHref, useSurahName } from './common';
+import { readerHref, readerPlace, useSurahName, type ReaderPlace } from './common';
 
 /** One found ayah: its reference and its published text, clamped to two lines. */
-function AyahResult({ at, view }: { at: AyahRef; view: 'verses' | 'mushaf' }) {
+function AyahResult({ at, place }: { at: AyahRef; place: ReaderPlace }) {
   const name = useSurahName();
   const format = useFormatter();
   const text = useLoad(() => loadSurahText(at.surah), `text/${at.surah}`);
@@ -29,7 +29,7 @@ function AyahResult({ at, view }: { at: AyahRef; view: 'verses' | 'mushaf' }) {
   return (
     <li>
       <Link
-        href={readerHref(at.surah, at.ayah, view)}
+        href={readerHref(at.surah, at.ayah, place)}
         className="flex flex-col gap-2 rounded-card px-4 py-3 hover:bg-ink/5"
       >
         <Text as="span" role="caption" tone="lantern">
@@ -65,7 +65,7 @@ export function QuranSearch({
   const settings = useSettings();
   const inputId = useId();
   const [result, setResult] = useState<QuranSearchResult | null>(null);
-  const view = settings?.quran.view ?? 'verses';
+  const place = readerPlace(settings?.quran);
   // Latin queries search the translation shown in this language (English when there is none).
   const translation = settings ? translationFor(settings.quran, locale) : null;
   const lang = translation ? translationLanguage[translation] : locale === 'fr' ? 'fr' : 'en';
@@ -114,7 +114,7 @@ export function QuranSearch({
         <div aria-live="polite" className="flex flex-col gap-4">
           {shown.reference && shown.surahs.length === 0 && (
             <Link
-              href={readerHref(shown.reference.surah, shown.reference.ayah, view)}
+              href={readerHref(shown.reference.surah, shown.reference.ayah, place)}
               className="rounded-card bg-lantern/10 px-4 py-3"
             >
               <Text as="span" role="callout" tone="lantern">
@@ -134,7 +134,7 @@ export function QuranSearch({
                 {shown.surahs.map((s) => (
                   <li key={s.number}>
                     <Link
-                      href={readerHref(s.number, 1, view)}
+                      href={readerHref(s.number, 1, place)}
                       className="flex min-h-touch items-center justify-between gap-4 rounded-card px-4 py-2 hover:bg-ink/5"
                     >
                       <Text as="span" role="body">
@@ -156,7 +156,7 @@ export function QuranSearch({
               </Text>
               <ul className="flex flex-col">
                 {shown.ayahs.map((a) => (
-                  <AyahResult key={`${a.surah}:${a.ayah}`} at={a} view={view} />
+                  <AyahResult key={`${a.surah}:${a.ayah}`} at={a} place={place} />
                 ))}
               </ul>
               {shown.total > shown.ayahs.length && (

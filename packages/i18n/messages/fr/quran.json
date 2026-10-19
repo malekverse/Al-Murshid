@@ -40,7 +40,8 @@
       "sky": "Bleu",
       "plum": "Violet",
       "clay": "Argile"
-    }
+    },
+    "inRange": "Fait partie du passage {range}"
   },
   "khatmah": {
     "title": "Khatma",
@@ -82,7 +83,8 @@
     "sajda": "Verset de prosternation",
     "footnote": "Note {mark}",
     "closeFootnote": "Fermer la note",
-    "translationBy": "Traduction : {name}"
+    "translationBy": "Traduction : {name}",
+    "text": "Vue texte"
   },
   "actions": {
     "label": "Verset {surah}:{ayah}",
@@ -93,7 +95,8 @@
     "copy": "Copier",
     "copied": "Copié",
     "share": "Partager",
-    "close": "Fermer"
+    "close": "Fermer",
+    "tafsir": "Tafsir"
   },
   "word": {
     "meaning": "Sens",
@@ -129,7 +132,19 @@
     "removeDownload": "Supprimer le téléchargement",
     "downloads": "Téléchargements",
     "downloadsEmpty": "Les sourates téléchargées s’écoutent sans connexion.",
-    "size": "{size} sur cet appareil"
+    "size": "{size} sur cet appareil",
+    "range": "Versets {from} à {to} · {pass} sur {times}",
+    "yourTurn": "À vous de réciter",
+    "downloadAll": "Télécharger toutes les sourates",
+    "downloadAllHint": "{reciter} · les {total} sourates, souvent un gigaoctet ou plus. De préférence en Wi-Fi.",
+    "allProgress": "{done} sur {total} sourates",
+    "queued": "En attente · {done} sur {total}",
+    "pauseDownload": "Mettre le téléchargement en pause",
+    "resume": "Reprendre le téléchargement",
+    "stalled": "Arrêté à {done} sur {total}. Touchez pour reprendre.",
+    "storage": "Stockage",
+    "storageHint": "Récitations et pages du mushaf sur cet appareil",
+    "allProgressSurah": "{done} sur {total} sourates · {surah} {percent}"
   },
   "reciters": {
     "label": "Récitateur",
@@ -137,7 +152,29 @@
     "husary": "Mahmoud Khalil al-Husary (rythme d’apprentissage)",
     "abdulbasit": "Abdul Basit Abdul Samad",
     "minshawi": "Muhammad Siddiq al-Minshawi",
-    "ghamdi": "Saad al-Ghamdi"
+    "ghamdi": "Saad al-Ghamdi",
+    "sudais": "Abdur-Rahman as-Sudais",
+    "shuraym": "Sa'ud ash-Shuraym",
+    "muaiqly": "Maher al-Muaiqly",
+    "dussary": "Yasser ad-Dussary",
+    "shatri": "Abu Bakr al-Shatri",
+    "rifai": "Hani ar-Rifai",
+    "qatami": "Nasser al-Qatami",
+    "abbad": "Fares Abbad",
+    "jibreel": "Muhammad Jibreel",
+    "jalil": "Khalid al-Jalil",
+    "basfar": "Abdullah Basfar",
+    "minshawiMujawwad": "Muhammad Siddiq al-Minshawi (mujawwad)",
+    "husaryMuallim": "Mahmoud Khalil al-Husary (muallim, pour apprendre)",
+    "styles": {
+      "murattal": "Murattal",
+      "mujawwad": "Mujawwad",
+      "teaching": "Pour apprendre"
+    },
+    "byAyah": "Suit chaque verset, pas chaque mot",
+    "search": "Chercher un récitant",
+    "none": "Aucun récitant de ce nom.",
+    "choose": "Choisir un récitant"
   },
   "settings": {
     "title": "Réglages de lecture",
@@ -155,6 +192,66 @@
       "sepia": "Sépia",
       "dark": "Sombre"
     },
-    "sample": "Taille du texte coranique"
+    "sample": "Taille du texte coranique",
+    "view": "Affichage",
+    "views": {
+      "mushaf": "Mushaf",
+      "text": "Texte arabe",
+      "translation": "Avec traduction"
+    },
+    "edition": "Mushaf",
+    "editions": {
+      "madani": "Mushaf de Médine · {year}H",
+      "indopak": "Mushaf indo-pakistanais · {lines} lignes"
+    },
+    "tajweed": "Couleurs du tajwid",
+    "tajweedHint": "Les couleurs du mushaf de Médine de {year}H"
+  },
+  "memorize": {
+    "title": "Mémoriser",
+    "modes": {
+      "off": "Tout afficher",
+      "words": "Masquer les mots",
+      "firstWord": "Afficher le premier mot de chaque verset",
+      "markers": "Masquer les numéros des versets"
+    },
+    "hint": "Touchez un mot masqué pour le révéler. Maintenez-le pour voir tout le verset.",
+    "hidden": "Mot masqué, touchez pour le révéler",
+    "hiddenMarker": "Numéro de verset masqué, touchez pour le révéler",
+    "hiddenAyah": "{label}, masqué pour la mémorisation",
+    "hideAgain": "Masquer à nouveau les mots révélés",
+    "on": "Mémorisation"
+  },
+  "range": {
+    "bookmark": "Marquer un passage",
+    "repeat": "Répéter un passage",
+    "from": "Du verset {ayah}",
+    "to": "Au verset",
+    "times": "Nombre de fois",
+    "gap": "Pause après chaque verset",
+    "gapHint": "Aussi longue que le verset, pour le réciter à votre tour",
+    "start": "Commencer",
+    "save": "Enregistrer",
+    "label": "{surah} {from}–{to}"
+  },
+  "tafsir": {
+    "title": "Tafsir",
+    "source": "Al-Mukhtasar, abrégé de l’explication du Coran",
+    "covers": "Explique les versets {from} à {to}",
+    "error": "Impossible d’ouvrir le tafsir."
+  },
+  "storage": {
+    "title": "Stockage",
+    "recitations": "Récitations",
+    "pages": "Pages du mushaf",
+    "none": "Rien n’est encore téléchargé.",
+    "surahs": "{count, plural, one {# sourate} many {# sourates} other {# sourates}} · {size}",
+    "pageCount": "{count, plural, one {# page} many {# pages} other {# pages}} · {size}",
+    "remove": "Supprimer {name}",
+    "total": "{size} au total",
+    "pagesHint": "Les pages se retéléchargent à l’ouverture.",
+    "removeConfirm": "Supprimer {name} ? {size} seront libérés ; vous pourrez le retélécharger.",
+    "removeAction": "Supprimer",
+    "list": "Les sourates téléchargées"
   }
 }

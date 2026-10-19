@@ -1,27 +1,36 @@
 'use client';
 
-import { BookOpen, CaretLeft, Pause, Play, Rows, TextAa } from '@phosphor-icons/react';
+import { BookOpen, CaretLeft, EyeSlash, Pause, Play, Rows, TextAa } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { IconButton } from '@/components/ui/icon-button';
 import { Text } from '@/components/ui/text';
 import { Link } from '@/i18n/navigation';
 
-/** The reader's top bar: back to the Quran, where you are, and the reading controls. */
+/**
+ * The reader's top bar: back to the Quran, where you are, and the reading controls. The view
+ * button turns between the mushaf and the scrolling reader (its layout, text or translation, is
+ * chosen in the reading settings).
+ */
 export function ReaderBar({
   title,
   subtitle,
   view,
   onToggleView,
   onSettings,
+  memorizing,
+  onMemorize,
   playing,
   onPlay,
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
-  view: 'verses' | 'mushaf';
+  view: 'mushaf' | 'text' | 'translation';
   onToggleView: () => void;
   onSettings: () => void;
+  /** Words or markers are hidden for memorizing. */
+  memorizing: boolean;
+  onMemorize: () => void;
   playing: boolean;
   onPlay: () => void;
 }) {
@@ -47,9 +56,16 @@ export function ReaderBar({
           )}
         </div>
         <IconButton
-          icon={view === 'verses' ? BookOpen : Rows}
-          label={view === 'verses' ? t('reader.page') : t('reader.verses')}
+          icon={view === 'mushaf' ? Rows : BookOpen}
+          label={view === 'mushaf' ? t('reader.verses') : t('reader.page')}
           onClick={onToggleView}
+        />
+        <IconButton
+          icon={EyeSlash}
+          label={t('memorize.title')}
+          aria-pressed={memorizing}
+          className={memorizing ? 'bg-lantern/15 text-lantern-ink hover:bg-lantern/20' : undefined}
+          onClick={onMemorize}
         />
         <IconButton icon={TextAa} label={t('reader.settings')} onClick={onSettings} />
         <IconButton

@@ -4,17 +4,19 @@ import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import {
   ayahWords,
   divisionOf,
+  editionPages,
   firstAyahOfPage,
-  loadMushafV2,
+  loadMushaf,
   loadSurahText,
   loadTranslation,
   loadTransliteration,
-  PAGE_COUNT,
   pageOf,
+  pageOfWord,
+  pageWords,
   surah as surahInfo,
 } from '@murshid/content/quran';
 import { khatmahDay, readThrough } from '@murshid/core';
-import { translationFor, translationLanguage } from '@murshid/data';
+import { bookmarkCovering, translationFor, translationLanguage } from '@murshid/data';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -25,19 +27,23 @@ import { useRouter } from '@/i18n/navigation';
 import { khatmahStore, saveReadingPosition, useBookmarks, useLoad } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
 import { AyahActions, type ActionsTarget } from './ayah-overlays';
-import { useSurahName, useToday } from './common';
+import { useReaderTheme, useSurahName, useToday } from './common';
+import { MemorizeSheet, useMemorize } from './memorize';
 import { MushafPage } from './mushaf-page';
 import { ReaderBar } from './reader-bar';
-import { ReadingSettings, setQuranPrefs } from './reading-settings';
+import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { ReadingSurface } from './reading-surface';
 import { useRecitation } from './recitation';
 
-/** Opens the actions for an ayah tapped on a page, once its words are loaded. */
+/**
+ * The actions for an ayah tapped on a page, once its words are loaded. It stays mounted, so a
+ * passage sheet opened from it outlives the actions sheet.
+ */
 function PageAyahActions({
   at,
   onClose,
 }: {
-  at: { surah: number; ayah: number };
+  at: { surah: number; ayah: number } | null;
   onClose: () => void;
 }) {
   const locale = useLocale();
@@ -48,15 +54,17 @@ function PageAyahActions({
   const bookmarks = useBookmarks();
   const translation = settings ? translationFor(settings.quran, locale) : null;
   const lang = translation ? translationLanguage[translation] : locale === 'fr' ? 'fr' : 'en';
-  const text = useLoad(() => loadSurahText(at.surah), `text/${at.surah}`);
-  const extra = useLoad(() => loadTranslation(lang, at.surah), `${lang}/${at.surah}`);
-  const translit = useLoad(() => loadTransliteration(at.surah), `translit/${at.surah}`);
+  const s = at?.surah ?? 1;
+  const text = useLoad(at ? () => loadSurahText(s) : null, `text/${s}`);
+  const extra = useLoad(at ? () => loadTranslation(lang, s) : null, `${lang}/${s}`);
+  const translit = useLoad(at ? () => loadTransliteration(s) : null, `translit/${s}`);
   let target: ActionsTarget | null = null;
-  if (text.data) {
+  if (at && text.data) {
     const words = ayahWords(text.data, at.ayah);
     target = {
       ...at,
       title: `${name(surahInfo(at.surah))} ${format.number(at.ayah)}`,
+      surahName: name(surahInfo(at.surah)),
       text: words.map((w) => w.text + w.after).join(''),
       translation: translation
         ? (extra.data?.t[at.ayah - 1]?.filter((s): s is string => typeof s === 'string').join('') ??
@@ -65,23 +73,25 @@ function PageAyahActions({
       words,
       meanings: extra.data?.m[at.ayah - 1] ?? null,
       transliteration: translit.data?.[at.ayah - 1] ?? null,
-      bookmark: bookmarks?.find((b) => b.surah === at.surah && b.ayah === at.ayah)?.color ?? null,
+      bookmark: bookmarkCovering(bookmarks, at.surah, at.ayah),
     };
   }
   return (
     <AyahActions
       target={target}
       onClose={onClose}
-      onPlay={(s, a) => recitation.play(s, a)}
-      shareUrl={(s, a) => `${window.location.origin}/${locale}/quran/${s}/${a}`}
+      onPlay={(n, a) => recitation.play(n, a)}
+      onRepeat={(n, a, plan) => recitation.play(n, a, plan)}
+      shareUrl={(n, a) => `${window.location.origin}/${locale}/quran/${n}/${a}`}
     />
   );
 }
 
 /**
- * The mushaf view (SPEC 5.5): the 604 printed pages. Turning pages matches a physical mushaf in
- * every app language: the next page lies to the left (swipe toward the right, or press ←). Pages
- * change in place; the Quran text itself never animates.
+ * The mushaf view (SPEC 5.5, Phase 5b): the printed pages of the chosen edition (604, or 610 in the
+ * Indopak mushaf). Turning pages matches a physical mushaf in every app language: the next page
+ * lies to the left (swipe toward the right, or press ←). Pages change in place; the Quran text
+ * itself never animates. Changing the edition keeps the ayah at the top of the page.
  */
 export function MushafReader({ startPage }: { startPage: number }) {
   const t = useTranslations('quran');
@@ -93,9 +103,26 @@ export function MushafReader({ startPage }: { startPage: number }) {
   const name = useSurahName();
   const today = useToday();
   const plan = khatmahStore.useValue();
-  const mushaf = useLoad(loadMushafV2, 'mushaf-v2');
-  const [page, setPage] = useState(startPage);
+  const edition = settings?.quran.edition ?? 'v2';
+  const pageCount = editionPages[edition];
+  const theme = useReaderTheme(settings?.quran.theme);
+  const mushaf = useLoad(() => loadMushaf(edition), `mushaf/${edition}`);
+  const bookmarks = useBookmarks();
+  const [wanted, setPage] = useState(startPage);
+  const page = Math.min(wanted, pageCount);
+  // Another edition: stay with the ayah that opened the page. The first edition known (once the
+  // settings are read) is simply taken.
+  const [shownEdition, setShownEdition] = useState<typeof edition | null>(null);
+  if (settings && shownEdition !== edition) {
+    setShownEdition(edition);
+    if (shownEdition !== null) {
+      const anchor = firstAyahOfPage(Math.min(page, editionPages[shownEdition]), shownEdition);
+      setPage(pageOf(anchor.surah, anchor.ayah, edition));
+    }
+  }
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [memorizeOpen, setMemorizeOpen] = useState(false);
+  const memorize = useMemorize(settings?.quran.hide ?? 'off');
   const [selected, setSelected] = useState<{ surah: number; ayah: number } | null>(null);
   const [wide, setWide] = useState(false);
   const swipe = useRef<{ x: number; y: number } | null>(null);
@@ -109,22 +136,25 @@ export function MushafReader({ startPage }: { startPage: number }) {
     return () => media.removeEventListener('change', update);
   }, []);
   const spreadStart = wide ? page - ((page + 1) % 2) : page;
-  const shown = wide ? [spreadStart, spreadStart + 1].filter((p) => p <= PAGE_COUNT) : [page];
+  const shown = wide ? [spreadStart, spreadStart + 1].filter((p) => p <= pageCount) : [page];
   const step = wide ? 2 : 1;
 
-  const go = (next: number) => setPage(Math.min(PAGE_COUNT, Math.max(1, next)));
+  const go = (next: number) => setPage(Math.min(pageCount, Math.max(1, next)));
 
   // Keep the address and the last position on the page shown.
+  const ready = Boolean(settings);
   useEffect(() => {
+    if (!ready) return;
     window.history.replaceState(null, '', `/${locale}/quran/page/${page}`);
-    const first = firstAyahOfPage(page);
-    saveReadingPosition(first.surah, first.ayah, page);
-  }, [page, locale]);
+    // The position keeps the ayah (and its 1421H page); every edition finds its page from it.
+    const first = firstAyahOfPage(page, edition);
+    saveReadingPosition(first.surah, first.ayah);
+  }, [ready, page, locale, edition]);
 
   // Follow the recitation onto its page.
   const playingPage =
     recitation.surah !== null && recitation.ayah !== null
-      ? pageOf(recitation.surah, recitation.ayah)
+      ? pageOf(recitation.surah, recitation.ayah, edition)
       : null;
   const [followed, setFollowed] = useState(playingPage);
   if (playingPage !== followed) {
@@ -147,12 +177,19 @@ export function MushafReader({ startPage }: { startPage: number }) {
 
   if (!settings) return null;
   const prefs = settings.quran;
-  const first = firstAyahOfPage(page);
+  const first = firstAyahOfPage(page, edition);
   const juz = divisionOf('juz', first.surah, first.ayah);
 
+  // A khatmah keeps its pace in 1421H pages; here its portion ends on the page holding the last
+  // word of its last page.
   const day = plan && today ? khatmahDay(plan, today) : null;
+  const portionEnd = day ? pageOfWord(pageWords(day.to)[1], edition) : null;
   const endsPortion =
-    day && !day.done && day.readToday < day.to - day.from + 1 && shown.includes(day.to);
+    day &&
+    !day.done &&
+    day.readToday < day.to - day.from + 1 &&
+    portionEnd !== null &&
+    shown.includes(portionEnd);
 
   const play = () => {
     if (recitation.playing) recitation.pause();
@@ -161,6 +198,11 @@ export function MushafReader({ startPage }: { startPage: number }) {
   };
   const toggleView = () => {
     setQuranPrefs({ view: 'verses' });
+    router.push(first.ayah > 1 ? `/quran/${first.surah}/${first.ayah}` : `/quran/${first.surah}`);
+  };
+  const onView = (v: ReaderView) => {
+    if (v === 'mushaf') return;
+    setQuranPrefs({ view: 'verses', layout: v });
     router.push(first.ayah > 1 ? `/quran/${first.surah}/${first.ayah}` : `/quran/${first.surah}`);
   };
 
@@ -177,6 +219,8 @@ export function MushafReader({ startPage }: { startPage: number }) {
         view="mushaf"
         onToggleView={toggleView}
         onSettings={() => setSettingsOpen(true)}
+        memorizing={memorize.mode !== 'off'}
+        onMemorize={() => setMemorizeOpen(true)}
         playing={recitation.playing}
         onPlay={play}
       />
@@ -213,7 +257,7 @@ export function MushafReader({ startPage }: { startPage: number }) {
           <button
             type="button"
             onClick={() => go(page + step)}
-            disabled={shown.at(-1)! >= PAGE_COUNT}
+            disabled={shown.at(-1)! >= pageCount}
             aria-label={t('mushaf.next')}
             className="mt-24 hidden size-touch shrink-0 items-center justify-center rounded-full text-ink hover:bg-ink/5 disabled:opacity-30 md:flex"
           >
@@ -234,7 +278,12 @@ export function MushafReader({ startPage }: { startPage: number }) {
                 <MushafPage
                   page={p}
                   mushaf={mushaf.data!}
+                  edition={edition}
+                  tajweed={prefs.tajweed}
+                  theme={theme}
                   playing={playing}
+                  memorize={memorize}
+                  bookmarks={bookmarks}
                   onWord={(surah, ayah) => setSelected({ surah, ayah })}
                 />
               </div>
@@ -256,7 +305,7 @@ export function MushafReader({ startPage }: { startPage: number }) {
             variant="ghost"
             className="whitespace-nowrap"
             onClick={() => go(page + 1)}
-            disabled={page >= PAGE_COUNT}
+            disabled={page >= pageCount}
           >
             {t('mushaf.next')}
           </Button>
@@ -271,8 +320,15 @@ export function MushafReader({ startPage }: { startPage: number }) {
         </div>
       </main>
 
-      {selected && <PageAyahActions at={selected} onClose={() => setSelected(null)} />}
-      <ReadingSettings open={settingsOpen} onOpenChange={setSettingsOpen} prefs={prefs} />
+      <PageAyahActions at={selected} onClose={() => setSelected(null)} />
+      <ReadingSettings
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        prefs={prefs}
+        view="mushaf"
+        onView={onView}
+      />
+      <MemorizeSheet open={memorizeOpen} onOpenChange={setMemorizeOpen} memorize={memorize} />
     </ReadingSurface>
   );
 }

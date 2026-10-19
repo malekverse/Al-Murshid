@@ -44,6 +44,15 @@ const surahNames = localFont({
   adjustFontFallback: false,
 });
 
+// The King Fahd Complex's Nastaleeq font, for the Indopak mushaf (Phase 5b): loaded only there.
+const indopak = localFont({
+  src: '../fonts/KFGQPCNastaleeq-Regular.woff2',
+  variable: '--font-indopak',
+  display: 'block',
+  preload: false,
+  adjustFontFallback: false,
+});
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -74,7 +83,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
     <html
       lang={locale}
       dir={direction(locale)}
-      className={`${readex.variable} ${amiri.variable} ${qpcHafs.variable} ${surahNames.variable}`}
+      className={`${readex.variable} ${amiri.variable} ${qpcHafs.variable} ${surahNames.variable} ${indopak.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -1,5 +1,14 @@
 import { loadTimings, surah as surahInfo } from '@murshid/content/quran';
-import { ayahAtTime, playbackSpans, wordAtTime, type AyahSpan } from '@murshid/core';
+import {
+  ayahAtTime,
+  playbackSpans,
+  playbackStep,
+  startCursor,
+  withRecordingEnd,
+  wordAtTime,
+  type AyahSpan,
+  type PlaybackCursor,
+} from '@murshid/core';
 import type { ReciterChoice } from '@murshid/data';
 import {
   createAudioPlayer,
@@ -15,7 +24,16 @@ import { useSettings } from '@/lib/settings';
 // Recitation on the phone (SPEC 5.5): one player for the whole app, so listening carries on
 // across screens, in the background and on the lock screen. It plays a downloaded surah from the
 // phone when there is one, follows the recording ayah by ayah and word by word from QUL's
-// timestamps, and repeats each ayah as often as asked.
+// timestamps, repeats each ayah as often as asked, and repeats a passage as a whole with an
+// optional pause after each ayah for memorizing (Phase 5b, rules in @murshid/core).
+
+/** A passage played several times while memorizing: from the ayah played up to `to`. */
+export interface PassagePlan {
+  to: number;
+  times: number;
+  /** Pause after each ayah, as long as the ayah, to recite it back. */
+  gap: boolean;
+}
 
 export interface RecitationState {
   surah: number | null;
@@ -26,11 +44,15 @@ export interface RecitationState {
   playing: boolean;
   loading: boolean;
   error: boolean;
+  /** The passage being repeated, and which time through it this is. */
+  passage: { from: number; to: number; times: number; pass: number } | null;
+  /** Paused after an ayah for the listener to recite it back. */
+  turn: boolean;
 }
 
 interface Recitation extends RecitationState {
   reciter: ReciterChoice;
-  play: (surah: number, fromAyah?: number) => void;
+  play: (surah: number, fromAyah?: number, passage?: PassagePlan) => void;
   pause: () => void;
   resume: () => void;
   stop: () => void;
@@ -44,7 +66,12 @@ const idle: RecitationState = {
   playing: false,
   loading: false,
   error: false,
+  passage: null,
+  turn: false,
 };
+
+/** How early an ayah's end counts as reached: the player reports ten times a second. */
+const MARGIN_MS = 120;
 
 const RecitationContext = createContext<Recitation | null>(null);
 
@@ -61,8 +88,16 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
 
   const player = useRef<AudioPlayer | null>(null);
   const spans = useRef<AyahSpan[]>([]);
-  const repeats = useRef({ ayah: -1, left: 0 });
+  const cursor = useRef<PlaybackCursor>(startCursor());
+  const plan = useRef<(PassagePlan & { from: number }) | null>(null);
   const pending = useRef<{ seek: number } | null>(null);
+  // During the listener's turn the audio is paused but the recitation is still on.
+  const inTurn = useRef(false);
+  const turnTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const endTurn = () => {
+    clearTimeout(turnTimer.current);
+    inTurn.current = false;
+  };
   const [state, setState] = useState<RecitationState>(idle);
   // Status callbacks outlive a render; they read the latest values from here.
   const latest = useRef({ state, repeat, speed });
@@ -84,31 +119,64 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     if (status.isLoaded && pending.current) {
       const { seek } = pending.current;
       pending.current = null;
+      // A last ayah without a usable end runs to the recording's real end.
+      if (status.duration > 0) {
+        spans.current = withRecordingEnd(spans.current, status.duration * 1000);
+      }
       void p.seekTo(seek).then(() => p.play());
       update({ loading: false, playing: true });
       return;
     }
     if (status.didJustFinish) {
-      update({ playing: false });
+      plan.current = null;
+      update({ playing: false, passage: null });
       return;
     }
+    if (inTurn.current) return;
     const ms = status.currentTime * 1000;
+    const passage = plan.current;
+    const result = playbackStep(
+      spans.current,
+      ms,
+      cursor.current,
+      {
+        repeat: latest.current.repeat,
+        range: passage ? { from: passage.from, to: passage.to, times: passage.times } : null,
+        gap: passage?.gap ?? false,
+      },
+      MARGIN_MS,
+    );
+    cursor.current = result.cursor;
+    const { step } = result;
+    if (step.kind === 'seek') void p.seekTo(step.ms / 1000);
+    if (step.kind === 'stop') {
+      p.pause();
+      plan.current = null;
+      update({ playing: false, passage: null });
+      return;
+    }
+    if (step.kind === 'gap') {
+      // The listener's turn: wait as long as the ayah took at this speed, then go on.
+      inTurn.current = true;
+      p.pause();
+      update({ turn: true });
+      turnTimer.current = setTimeout(() => {
+        inTurn.current = false;
+        update({ turn: false });
+        p.play();
+      }, step.ms / latest.current.speed);
+      return;
+    }
     const index = ayahAtTime(spans.current, ms);
     const span = spans.current[index];
-    if (span && index !== repeats.current.ayah) {
-      repeats.current = { ayah: index, left: latest.current.repeat - 1 };
-    }
-    const next = spans.current[index + 1];
-    // At the end of an ayah that still has repeats, go back to its start.
-    if (span && repeats.current.left > 0 && ms >= (next ? next.start : span.end) - 120) {
-      repeats.current.left -= 1;
-      void p.seekTo(span.start / 1000);
-    }
     update({
       ayah: index < 0 ? null : index + 1,
       word: span ? wordAtTime(span, ms) : null,
       playing: status.playing,
       loading: status.isBuffering && status.playing,
+      passage: passage
+        ? { from: passage.from, to: passage.to, times: passage.times, pass: cursor.current.pass }
+        : null,
     });
   };
 
@@ -139,10 +207,21 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     player.current?.setPlaybackRate(speed);
   }, [speed]);
 
-  const play = (surah: number, fromAyah = 1) => {
+  const play = (surah: number, fromAyah = 1, passage?: PassagePlan) => {
     const p = ensurePlayer();
-    update({ surah, ayah: fromAyah, word: null, loading: true, error: false, playing: false });
-    repeats.current = { ayah: -1, left: 0 };
+    endTurn();
+    plan.current = passage ? { ...passage, from: fromAyah } : null;
+    cursor.current = startCursor();
+    update({
+      surah,
+      ayah: fromAyah,
+      word: null,
+      loading: true,
+      error: false,
+      playing: false,
+      turn: false,
+      passage: passage ? { from: fromAyah, to: passage.to, times: passage.times, pass: 1 } : null,
+    });
     loadTimings(reciter, surah)
       .then((timings) => {
         spans.current = playbackSpans(timings);
@@ -165,15 +244,19 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
   };
 
   const pause = () => {
+    endTurn();
     player.current?.pause();
-    update({ playing: false });
+    update({ playing: false, turn: false });
   };
   const resume = () => {
     if (!player.current || latest.current.state.surah === null) return;
+    endTurn();
     player.current.play();
-    update({ playing: true, error: false });
+    update({ playing: true, error: false, turn: false });
   };
   const stop = () => {
+    endTurn();
+    plan.current = null;
     player.current?.pause();
     player.current?.setActiveForLockScreen(false);
     setState(idle);
@@ -184,9 +267,17 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     const target = Math.min(surahInfo(surah).ayahCount, Math.max(1, (ayah ?? 1) + by));
     const span = spans.current[target - 1];
     if (!span) return;
-    repeats.current = { ayah: target - 1, left: latest.current.repeat - 1 };
+    // Stepping out of a passage ends it.
+    const passage = plan.current;
+    if (passage && (target < passage.from || target > passage.to)) plan.current = null;
+    cursor.current = {
+      ...cursor.current,
+      ayah: target - 1,
+      left: latest.current.repeat - 1,
+      gapped: -1,
+    };
     void player.current.seekTo(span.start / 1000);
-    update({ ayah: target, word: null });
+    update({ ayah: target, word: null, ...(plan.current ? {} : { passage: null }) });
   };
 
   return (

@@ -40,7 +40,8 @@
       "sky": "أزرق",
       "plum": "بنفسجي",
       "clay": "طيني"
-    }
+    },
+    "inRange": "ضمن المقطع {range}"
   },
   "khatmah": {
     "title": "الختمة",
@@ -82,7 +83,8 @@
     "sajda": "آية سجدة",
     "footnote": "حاشية {mark}",
     "closeFootnote": "أغلق الحاشية",
-    "translationBy": "الترجمة: {name}"
+    "translationBy": "الترجمة: {name}",
+    "text": "عرض النص"
   },
   "actions": {
     "label": "الآية {surah}:{ayah}",
@@ -93,7 +95,8 @@
     "copy": "انسخ",
     "copied": "نُسخ",
     "share": "شارك",
-    "close": "أغلق"
+    "close": "أغلق",
+    "tafsir": "التفسير"
   },
   "word": {
     "meaning": "المعنى",
@@ -129,7 +132,19 @@
     "removeDownload": "احذف التنزيل",
     "downloads": "التنزيلات",
     "downloadsEmpty": "السور التي تنزّلها تُسمع دون اتصال.",
-    "size": "{size} على هذا الجهاز"
+    "size": "{size} على هذا الجهاز",
+    "range": "الآيات {from}–{to} · {pass} من {times}",
+    "yourTurn": "دورك في التلاوة",
+    "downloadAll": "تنزيل كل السور",
+    "downloadAllHint": "{reciter} · السور كلها ({total})، وكثيرًا ما تبلغ غيغابايت أو أكثر؛ والأفضل عبر شبكة لاسلكية.",
+    "allProgress": "السور: {done} من {total}",
+    "queued": "في الانتظار · {done} من {total}",
+    "pauseDownload": "إيقاف التنزيل مؤقتًا",
+    "resume": "متابعة التنزيل",
+    "stalled": "توقّف عند {done} من {total}. اضغط للمتابعة.",
+    "storage": "التخزين",
+    "storageHint": "التلاوات وصفحات المصحف على هذا الجهاز",
+    "allProgressSurah": "السور: {done} من {total} · {surah} {percent}"
   },
   "reciters": {
     "label": "القارئ",
@@ -137,7 +152,29 @@
     "husary": "محمود خليل الحصري (المصحف المعلّم)",
     "abdulbasit": "عبد الباسط عبد الصمد",
     "minshawi": "محمد صديق المنشاوي",
-    "ghamdi": "سعد الغامدي"
+    "ghamdi": "سعد الغامدي",
+    "sudais": "عبد الرحمن السديس",
+    "shuraym": "سعود الشريم",
+    "muaiqly": "ماهر المعيقلي",
+    "dussary": "ياسر الدوسري",
+    "shatri": "أبو بكر الشاطري",
+    "rifai": "هاني الرفاعي",
+    "qatami": "ناصر القطامي",
+    "abbad": "فارس عباد",
+    "jibreel": "محمد جبريل",
+    "jalil": "خالد الجليل",
+    "basfar": "عبد الله بصفر",
+    "minshawiMujawwad": "محمد صديق المنشاوي (مجوّد)",
+    "husaryMuallim": "محمود خليل الحصري (المعلّم)",
+    "styles": {
+      "murattal": "مرتّل",
+      "mujawwad": "مجوّد",
+      "teaching": "للتعليم"
+    },
+    "byAyah": "يتابع الآيات لا الكلمات",
+    "search": "ابحث عن قارئ",
+    "none": "لا قارئ بهذا الاسم.",
+    "choose": "اختر قارئًا"
   },
   "settings": {
     "title": "إعدادات القراءة",
@@ -155,6 +192,66 @@
       "sepia": "ورقي",
       "dark": "داكن"
     },
-    "sample": "حجم نص القرآن"
+    "sample": "حجم نص القرآن",
+    "view": "العرض",
+    "views": {
+      "mushaf": "المصحف",
+      "text": "النص العربي",
+      "translation": "مع الترجمة"
+    },
+    "edition": "المصحف",
+    "editions": {
+      "madani": "مصحف المدينة · طبعة {year}هـ",
+      "indopak": "المصحف الهندي · {lines} سطرًا"
+    },
+    "tajweed": "ألوان التجويد",
+    "tajweedHint": "بألوان مصحف المدينة طبعة {year}هـ"
+  },
+  "memorize": {
+    "title": "الحفظ",
+    "modes": {
+      "off": "أظهر كل شيء",
+      "words": "أخفِ الكلمات",
+      "firstWord": "أظهر أول كلمة من كل آية",
+      "markers": "أخفِ أرقام الآيات"
+    },
+    "hint": "المس كلمة مخفية لتظهر، واضغط عليها مطولًا لترى الآية كاملة.",
+    "hidden": "كلمة مخفية، المسها لتظهر",
+    "hiddenMarker": "رقم آية مخفي، المسه ليظهر",
+    "hiddenAyah": "{label}، مخفية للحفظ",
+    "hideAgain": "أعد إخفاء ما ظهر",
+    "on": "وضع الحفظ"
+  },
+  "range": {
+    "bookmark": "حدّد مقطعًا",
+    "repeat": "كرّر مقطعًا",
+    "from": "من الآية {ayah}",
+    "to": "إلى الآية",
+    "times": "عدد المرات",
+    "gap": "توقّف بعد كل آية",
+    "gapHint": "بقدر طول الآية، لتردّدها بعده",
+    "start": "ابدأ",
+    "save": "احفظ",
+    "label": "{surah} {from}–{to}"
+  },
+  "tafsir": {
+    "title": "التفسير",
+    "source": "المختصر في تفسير القرآن الكريم",
+    "covers": "يفسّر الآيات {from}–{to}",
+    "error": "تعذّر فتح التفسير."
+  },
+  "storage": {
+    "title": "التخزين",
+    "recitations": "التلاوات",
+    "pages": "صفحات المصحف",
+    "none": "لم يُنزَّل شيء بعد.",
+    "surahs": "{count, plural, zero {لا سور} one {سورة واحدة} two {سورتان} few {# سور} many {# سورة} other {# سورة}} · {size}",
+    "pageCount": "{count, plural, zero {لا صفحات} one {صفحة واحدة} two {صفحتان} few {# صفحات} many {# صفحة} other {# صفحة}} · {size}",
+    "remove": "حذف {name}",
+    "total": "{size} إجمالًا",
+    "pagesHint": "تُنزَّل الصفحات من جديد عند فتحها.",
+    "removeConfirm": "حذف {name}؟ ستُحرَّر {size}، ويمكن تنزيلها من جديد.",
+    "removeAction": "حذف",
+    "list": "السور المنزّلة"
   }
 }

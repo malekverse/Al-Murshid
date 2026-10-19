@@ -29,6 +29,7 @@ import {
   rescheduleReminders,
   wasOpened,
 } from '@/lib/reminders';
+import { resumeDownloads } from '@/lib/quran-files';
 import { useSettings } from '@/lib/settings';
 import { restoreTheme } from '@/lib/theme';
 import '../global.css';
@@ -103,6 +104,8 @@ function ReminderSync() {
 function Root() {
   const { direction } = useAppLocale();
   const { theme } = useUniwind();
+  // A whole reciter's download stopped by closing the app carries on.
+  useEffect(() => resumeDownloads(), []);
 
   return (
     // Content direction switches at runtime from the root; navigation follows LocaleProvider.

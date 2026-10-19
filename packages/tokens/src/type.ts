@@ -88,6 +88,21 @@ export const mushafPage = {
   lineHeight: 1.85,
   /** The basmalah line, drawn in page 1's font, is set a little smaller so it fits one line. */
   basmalah: 0.8,
+  /**
+   * The Indopak mushaf (Phase 5b) is set in one Unicode font (KFGQPC Nastaleeq), its tall script
+   * needing more room between lines; each line is justified to the page's width.
+   */
+  indopak: { fontPerWidth: 0.06, lineHeight: 2 },
+} as const;
+
+/**
+ * A word hidden while memorizing (Phase 5b): a thin rounded bar as wide as the word, near the
+ * line's base, in em of the Quran text's size, so it scales with the text in every view.
+ */
+export const memorizeBar = {
+  height: 0.16,
+  /** From the bottom of the word's box. */
+  offset: 0.32,
 } as const;
 
 /** In-app comfort size multiplies on top of the system text size, up to 200%. */
@@ -105,11 +120,14 @@ export const fonts = {
     quran: 'var(--font-qpc-hafs), var(--font-amiri), serif',
     // QUL's surah name font: ligatures turn "surah002" into its calligraphy.
     surah: 'var(--font-surah-name)',
+    // The King Fahd Complex's Nastaleeq font, for the Indopak mushaf (Phase 5b).
+    indopak: 'var(--font-indopak)',
   },
   native: {
     ui: { 400: 'ReadexPro-Regular', 500: 'ReadexPro-Medium', 600: 'ReadexPro-SemiBold' },
     sacred: 'Amiri-Regular',
     quran: 'QPC-Hafs',
     surah: 'SurahName-V2',
+    indopak: 'KFGQPC-Nastaleeq',
   },
 } as const;

@@ -1,12 +1,14 @@
 'use client';
 
-import { pageOf, surahNameGlyph, type Surah } from '@murshid/content/quran';
+import { pageOf, surahNameGlyph, type MushafEdition, type Surah } from '@murshid/content/quran';
 import { civilDate, type CivilDate } from '@murshid/core';
-import { surahNameSize } from '@murshid/tokens';
+import type { ReadingTheme } from '@murshid/data';
+import { surahNameSize, type ThemeName } from '@murshid/tokens';
 import { useLocale } from 'next-intl';
 import { cn } from '@/lib/cn';
 import { useNow } from '@/lib/use-now';
 import { useSettings } from '@/lib/settings';
+import { useResolvedTheme } from '../theme';
 
 /** A surah's calligraphic name (QUL's surah name font). Decorative: the name is shown beside it. */
 export function SurahCalligraphy({
@@ -36,9 +38,21 @@ export function useSurahName() {
   return (s: Surah) => (locale === 'ar' ? s.nameArabic : s.nameSimple);
 }
 
-/** Where to read an ayah: its place in the verse view, or its page in the mushaf. */
-export function readerHref(surah: number, ayah = 1, view: 'verses' | 'mushaf' = 'verses') {
-  if (view === 'mushaf') return `/quran/page/${pageOf(surah, ayah)}`;
+/** Where reading opens: the scrolling reader, or the pages of the chosen mushaf. */
+export interface ReaderPlace {
+  view: 'verses' | 'mushaf';
+  edition: MushafEdition;
+}
+export const readerPlace = (
+  prefs: { view: 'verses' | 'mushaf'; edition: MushafEdition } | undefined,
+): ReaderPlace => ({
+  view: prefs?.view ?? 'verses',
+  edition: prefs?.edition ?? 'v2',
+});
+
+/** Where to read an ayah: its place in the verse view, or its page in the chosen mushaf. */
+export function readerHref(surah: number, ayah = 1, place?: ReaderPlace) {
+  if (place?.view === 'mushaf') return `/quran/page/${pageOf(surah, ayah, place.edition)}`;
   return ayah > 1 ? `/quran/${surah}/${ayah}` : `/quran/${surah}`;
 }
 
@@ -49,4 +63,10 @@ export function useToday(): CivilDate | null {
   if (!now) return null;
   const zone = settings?.location?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
   return civilDate(now, zone);
+}
+
+/** The reader's colors: like the app, or light, sepia or dark whatever the app theme. */
+export function useReaderTheme(chosen: ReadingTheme | undefined): ThemeName {
+  const app = useResolvedTheme();
+  return !chosen || chosen === 'app' ? app : chosen;
 }

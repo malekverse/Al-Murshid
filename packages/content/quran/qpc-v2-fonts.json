@@ -1,5 +1,5 @@
 {
-  "$comment": "SHA-256 of each QCF V2 page font (King Fahd Glorious Quran Printing Complex, via QUL: https://qul.tarteel.ai/resources/font/249, retrieved 2026-10-18). Installed by scripts/install-v2-fonts.ts; never edited.",
+  "$comment": "SHA-256 of each QCF V2 page font (King Fahd Glorious Quran Printing Complex, via QUL: https://qul.tarteel.ai/resources/font/249, retrieved 2026-10-18). Installed by scripts/install-page-fonts.ts; never edited.",
   "files": {
     "p1.ttf": "1686695486474b88a24a05cd4578f5295961bc9516885309ec95be574f213c27",
     "p2.ttf": "305ca9b7aaf39b47551a7b9b73501b761068052e3f51bdf7d2b37d4e39177ece",

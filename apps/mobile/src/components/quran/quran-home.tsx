@@ -30,16 +30,31 @@ import { useAppLocale } from '@/lib/locale';
 import { readingPosition, useBookmarks, useLoad } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
 import { useColors } from '@/lib/theme';
-import { markColor, readerHref, SurahCalligraphy, useSurahName, useSurahNameFont } from './common';
+import {
+  markColor,
+  readerHref,
+  readerPlace,
+  SurahCalligraphy,
+  useSurahName,
+  useSurahNameFont,
+  type ReaderPlace,
+} from './common';
 import { KhatmahCard } from './khatmah';
 
 type Tab = 'surahs' | 'juz' | 'bookmarks';
 type Row =
   | { kind: 'surah'; number: number }
   | { kind: 'juz'; number: number }
-  | { kind: 'bookmark'; surah: number; ayah: number; color: Parameters<typeof markColor>[1] };
+  | {
+      kind: 'bookmark';
+      surah: number;
+      ayah: number;
+      /** The last ayah of a marked passage, if it is one. */
+      ayahEnd: number | null;
+      color: Parameters<typeof markColor>[1];
+    };
 
-function ContinueCard({ view }: { view: 'verses' | 'mushaf' }) {
+function ContinueCard({ place }: { place: ReaderPlace }) {
   const t = useTranslations('quran.home');
   const format = useFormatter();
   const color = useColors();
@@ -49,7 +64,7 @@ function ContinueCard({ view }: { view: 'verses' | 'mushaf' }) {
     <Pressable
       accessibilityRole="button"
       onPress={() =>
-        router.push(position ? readerHref(position.surah, position.ayah, view) : readerHref(1))
+        router.push(position ? readerHref(position.surah, position.ayah, place) : readerHref(1))
       }
     >
       <Card className="flex-row items-center gap-4 p-6">
@@ -74,14 +89,14 @@ function ContinueCard({ view }: { view: 'verses' | 'mushaf' }) {
 }
 
 /** A found ayah: its reference and its published text. */
-function AyahResult({ at, view }: { at: AyahRef; view: 'verses' | 'mushaf' }) {
+function AyahResult({ at, place }: { at: AyahRef; place: ReaderPlace }) {
   const name = useSurahName();
   const format = useFormatter();
   const text = useLoad(() => loadSurahText(at.surah), `text/${at.surah}`);
   return (
     <Pressable
       accessibilityRole="button"
-      onPress={() => router.push(readerHref(at.surah, at.ayah, view))}
+      onPress={() => router.push(readerHref(at.surah, at.ayah, place))}
       className="gap-2 rounded-card px-4 py-3"
     >
       <Text role="caption" tone="lantern">
@@ -109,7 +124,7 @@ function AyahResult({ at, view }: { at: AyahRef; view: 'verses' | 'mushaf' }) {
   );
 }
 
-function SearchResults({ query, view }: { query: string; view: 'verses' | 'mushaf' }) {
+function SearchResults({ query, place }: { query: string; place: ReaderPlace }) {
   const t = useTranslations('quran.search');
   const tSurah = useTranslations('quran.surah');
   const format = useFormatter();
@@ -138,7 +153,7 @@ function SearchResults({ query, view }: { query: string; view: 'verses' | 'musha
         <Pressable
           accessibilityRole="button"
           onPress={() =>
-            router.push(readerHref(result.reference!.surah, result.reference!.ayah, view))
+            router.push(readerHref(result.reference!.surah, result.reference!.ayah, place))
           }
           className="rounded-card bg-lantern/10 px-4 py-3"
         >
@@ -159,7 +174,7 @@ function SearchResults({ query, view }: { query: string; view: 'verses' | 'musha
             <Pressable
               key={s.number}
               accessibilityRole="button"
-              onPress={() => router.push(readerHref(s.number, 1, view))}
+              onPress={() => router.push(readerHref(s.number, 1, place))}
               className="min-h-touch flex-row items-center justify-between gap-4 px-4 py-2"
             >
               <Text role="body">{`${format.number(s.number)}. ${name(s)}`}</Text>
@@ -176,7 +191,7 @@ function SearchResults({ query, view }: { query: string; view: 'verses' | 'musha
             {t('ayahs', { count: result.total })}
           </Text>
           {result.ayahs.map((a) => (
-            <AyahResult key={`${a.surah}:${a.ayah}`} at={a} view={view} />
+            <AyahResult key={`${a.surah}:${a.ayah}`} at={a} place={place} />
           ))}
           {result.total > result.ayahs.length && (
             <Text role="caption" tone="muted" className="px-4">
@@ -208,7 +223,7 @@ export function QuranHome() {
   const fontReady = useSurahNameFont();
   const [tab, setTab] = useState<Tab>('surahs');
   const [query, setQuery] = useState('');
-  const view = settings.quran.view;
+  const place = readerPlace(settings.quran);
   const searching = query.trim().length > 0;
 
   const rows: Row[] = searching
@@ -221,6 +236,7 @@ export function QuranHome() {
             kind: 'bookmark',
             surah: b.surah,
             ayah: b.ayah,
+            ayahEnd: b.ayahEnd ?? null,
             color: b.color,
           }));
 
@@ -243,10 +259,10 @@ export function QuranHome() {
         />
       </View>
       {searching ? (
-        <SearchResults query={query} view={view} />
+        <SearchResults query={query} place={place} />
       ) : (
         <>
-          <ContinueCard view={view} />
+          <ContinueCard place={place} />
           <KhatmahCard />
           {/* Segmented aligns itself to the start; this wrapper, sized to it, centres it. */}
           <View className="self-center">
@@ -272,7 +288,7 @@ export function QuranHome() {
   const renderRow = ({ item }: { item: Row }) => {
     if (item.kind === 'surah') {
       const s = surahInfo(item.number);
-      const place = t(`surah.${s.revelationPlace}`);
+      const origin = t(`surah.${s.revelationPlace}`);
       const ayahs = t('surah.ayahs', { count: s.ayahCount });
       return (
         <Pressable
@@ -280,10 +296,10 @@ export function QuranHome() {
           accessibilityLabel={t('surah.row', {
             number: format.number(s.number),
             name: name(s),
-            place,
+            place: origin,
             ayahs,
           })}
-          onPress={() => router.push(readerHref(s.number, 1, view))}
+          onPress={() => router.push(readerHref(s.number, 1, place))}
           className="min-h-touch flex-row items-center gap-4 px-3 py-3"
         >
           <View className="size-10 items-center justify-center rounded-full border border-hairline">
@@ -295,7 +311,7 @@ export function QuranHome() {
             <Text role="body" numberOfLines={1}>
               {name(s)}
             </Text>
-            <Text role="caption" tone="muted">{`${place} · ${ayahs}`}</Text>
+            <Text role="caption" tone="muted">{`${origin} · ${ayahs}`}</Text>
           </View>
           {fontReady && <SurahCalligraphy number={s.number} />}
         </Pressable>
@@ -306,7 +322,7 @@ export function QuranHome() {
       return (
         <Pressable
           accessibilityRole="button"
-          onPress={() => router.push(readerHref(start.surah, start.ayah, view))}
+          onPress={() => router.push(readerHref(start.surah, start.ayah, place))}
           className="min-h-touch flex-row items-center gap-4 px-3 py-3"
         >
           <View className="size-10 items-center justify-center rounded-full border border-hairline">
@@ -320,7 +336,7 @@ export function QuranHome() {
               {t('juz.starts', {
                 surah: name(surahInfo(start.surah)),
                 ayah: format.number(start.ayah),
-                page: format.number(pageOf(start.surah, start.ayah)),
+                page: format.number(pageOf(start.surah, start.ayah, place.edition)),
               })}
             </Text>
           </View>
@@ -330,7 +346,7 @@ export function QuranHome() {
     return (
       <Pressable
         accessibilityRole="button"
-        onPress={() => router.push(readerHref(item.surah, item.ayah, view))}
+        onPress={() => router.push(readerHref(item.surah, item.ayah, place))}
         className="min-h-touch flex-row items-center gap-4 px-3 py-3"
       >
         <View
@@ -339,9 +355,19 @@ export function QuranHome() {
           style={{ backgroundColor: markColor(theme === 'dark' ? 'dark' : 'light', item.color) }}
         />
         <View className="flex-1">
-          <Text role="body">{`${name(surahInfo(item.surah))} ${format.number(item.ayah)}`}</Text>
+          <Text role="body">
+            {item.ayahEnd
+              ? t('range.label', {
+                  surah: name(surahInfo(item.surah)),
+                  from: format.number(item.ayah),
+                  to: format.number(item.ayahEnd),
+                })
+              : `${name(surahInfo(item.surah))} ${format.number(item.ayah)}`}
+          </Text>
           <Text role="caption" tone="muted">
-            {t('mushaf.page', { page: format.number(pageOf(item.surah, item.ayah)) })}
+            {t('mushaf.page', {
+              page: format.number(pageOf(item.surah, item.ayah, place.edition)),
+            })}
           </Text>
         </View>
       </Pressable>

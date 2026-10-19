@@ -11,6 +11,7 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@huggingface/transformers": "4.3.1",
     "@murshid/content": "workspace:*",
     "@murshid/core": "workspace:*",
     "@murshid/data": "workspace:*",

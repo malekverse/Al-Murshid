@@ -1,5 +1,5 @@
 import type { TranslationSegment, Word } from '@murshid/content/quran';
-import type { BookmarkColor } from '@murshid/data';
+import type { QuranBookmark } from '@murshid/data';
 import { colors, typeScale } from '@murshid/tokens';
 import { DotsThree } from 'phosphor-react-native/src/icons/DotsThree';
 import { memo } from 'react';
@@ -8,6 +8,8 @@ import { useFormatter, useTranslations } from 'use-intl';
 import { IconButton } from '@/components/ui/icon-button';
 import { Text } from '@/components/ui/text';
 import { markColor, useReaderTheme } from './common';
+import { VeiledWord, type Memorize } from './memorize';
+import { useTajweedGlyphs } from './tajweed';
 
 export interface AyahViewProps {
   surah: number;
@@ -22,8 +24,14 @@ export interface AyahViewProps {
   size: number;
   playing: boolean;
   playingWord: number | null;
-  bookmark: BookmarkColor | null;
+  /** The bookmark marking this ayah, alone or as part of a passage. */
+  bookmark: QuranBookmark | null;
   sajda: boolean;
+  /** What memorizing hides, and the id of the ayah's first word (ids name revealed words). */
+  memorize: Memorize;
+  firstWordId: number;
+  /** The 1441H glyphs, to draw the words with tajweed colors; null for the published text. */
+  glyphs: string[] | null;
   onWord: (index: number, at: { x: number; y: number }) => void;
   onFootnote: (mark: string, text: string) => void;
   onActions: () => void;
@@ -55,6 +63,9 @@ export const AyahView = memo(function AyahView({
   playingWord,
   bookmark,
   sajda,
+  memorize,
+  firstWordId,
+  glyphs,
   onWord,
   onFootnote,
   onActions,
@@ -68,6 +79,16 @@ export const AyahView = memo(function AyahView({
     playing && playingWord === i + 1 ? { backgroundColor: `${palette.lantern}40` } : undefined;
   const tap = (i: number) => (e: GestureResponderEvent) =>
     onWord(i, { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY });
+  const key = `${surah}:${ayah}`;
+  const last = words.length - 1;
+  const glyphOf = useTajweedGlyphs(glyphs, firstWordId, firstWordId + last);
+  /** A word as drawn: its tajweed glyph when on and ready, otherwise as published. */
+  const drawn = (i: number, published: string) => {
+    const g = glyphOf?.(firstWordId + i);
+    return g ? <RNText style={{ fontFamily: g.fontFamily }}>{g.glyph}</RNText> : published;
+  };
+  // Glyphs mean nothing aloud: screen readers get the published text.
+  const spoken = glyphOf ? words.map((w) => w.text + w.after).join('') : undefined;
 
   return (
     <View
@@ -75,21 +96,39 @@ export const AyahView = memo(function AyahView({
       className="gap-4 border-b border-hairline px-2 py-6"
       style={playing ? { backgroundColor: `${palette.lantern}14` } : undefined}
     >
+      {/* A bookmarked ayah, or each ayah of a marked passage, carries its color along its edge. */}
+      {bookmark && (
+        <View
+          className="absolute inset-y-0 start-0 w-1 rounded-full"
+          style={{ backgroundColor: markColor(theme, bookmark.color) }}
+        />
+      )}
       {stacked ? (
         <View
           className="flex-row flex-wrap items-start gap-x-4 gap-y-6"
           style={{ direction: 'rtl' }}
         >
           {words.map((w, i) => {
-            const number = i === words.length - 1;
+            const number = i === last;
+            const hidden = memorize.hidden(firstWordId + i, i, number, key);
             return (
               <View key={i} className="items-center gap-1">
                 <RNText
                   className="font-quran text-ink"
-                  style={[quranText(size), number ? undefined : wordStyle(i)]}
-                  onPress={number ? undefined : tap(i)}
+                  style={quranText(size)}
+                  accessibilityLabel={glyphOf ? w.text : undefined}
                 >
-                  {w.text}
+                  <VeiledWord
+                    id={firstWordId + i}
+                    index={i}
+                    marker={number}
+                    ayahKey={key}
+                    memorize={memorize}
+                    style={number ? undefined : wordStyle(i)}
+                    onPress={number ? undefined : tap(i)}
+                  >
+                    {drawn(i, w.text)}
+                  </VeiledWord>
                 </RNText>
                 {!number && meanings && (
                   <Text role="caption" tone="muted" className="max-w-32 text-center">
@@ -97,7 +136,13 @@ export const AyahView = memo(function AyahView({
                   </Text>
                 )}
                 {!number && transliteration && (
-                  <Text role="caption" tone="lantern" script="latin" className="text-center">
+                  // Hidden with its word: the sound would give the word away.
+                  <Text
+                    role="caption"
+                    tone="lantern"
+                    script="latin"
+                    className={`text-center ${hidden ? 'opacity-0' : ''}`}
+                  >
                     {transliteration[i] ?? ''}
                   </Text>
                 )}
@@ -106,15 +151,31 @@ export const AyahView = memo(function AyahView({
           })}
         </View>
       ) : (
-        <RNText className="font-quran text-ink" style={quranText(size)}>
+        <RNText className="font-quran text-ink" style={quranText(size)} accessibilityLabel={spoken}>
           {words.map((w, i) =>
-            i === words.length - 1 ? (
-              w.text
+            i === last ? (
+              <VeiledWord
+                key={i}
+                id={firstWordId + i}
+                index={i}
+                marker
+                ayahKey={key}
+                memorize={memorize}
+              >
+                {drawn(i, w.text)}
+              </VeiledWord>
             ) : (
               <RNText key={i}>
-                <RNText style={wordStyle(i)} onPress={tap(i)}>
-                  {w.text}
-                </RNText>
+                <VeiledWord
+                  id={firstWordId + i}
+                  index={i}
+                  ayahKey={key}
+                  memorize={memorize}
+                  style={wordStyle(i)}
+                  onPress={tap(i)}
+                >
+                  {drawn(i, w.text)}
+                </VeiledWord>
                 {w.after}
               </RNText>
             ),
@@ -153,9 +214,9 @@ export const AyahView = memo(function AyahView({
         )}
         {bookmark && (
           <View
-            accessibilityLabel={t(`quran.bookmarks.colors.${bookmark}`)}
+            accessibilityLabel={t(`quran.bookmarks.colors.${bookmark.color}`)}
             className="size-3 rounded-full"
-            style={{ backgroundColor: markColor(theme, bookmark) }}
+            style={{ backgroundColor: markColor(theme, bookmark.color) }}
           />
         )}
         <View className="flex-1" />

@@ -19,7 +19,11 @@ export interface AyahSpan {
 /** How far an ayah may start before the previous one and still be a reciter resuming. */
 const RESUME_MS = 5000;
 
-/** Every ayah's span, in order and never going back. */
+/**
+ * Every ayah's span, in order and never going back. A last ayah may have no usable end (a few files
+ * close each surah with its listed length, rounded down): if its start follows on, it runs from
+ * there to the end of the recording, which is Infinity until withRecordingEnd knows it.
+ */
 export function playbackSpans(timings: readonly AyahTiming[]): AyahSpan[] {
   const reliable = timings.map(([from, to]) => to > from);
   let lastFrom = -Infinity;
@@ -30,8 +34,16 @@ export function playbackSpans(timings: readonly AyahTiming[]): AyahSpan[] {
   });
 
   const spans: AyahSpan[] = [];
+  const last = timings.length - 1;
   let i = 0;
   while (i < timings.length) {
+    if (i === last && !reliable[i]) {
+      const [from, , words] = timings[i]!;
+      if (from >= (spans.at(-1)?.end ?? 0)) {
+        spans.push({ start: from, end: Infinity, words });
+        break;
+      }
+    }
     if (reliable[i]) {
       const [from, to, words] = timings[i]!;
       const start = Math.max(from, spans.at(-1)?.start ?? 0);
@@ -52,6 +64,13 @@ export function playbackSpans(timings: readonly AyahTiming[]): AyahSpan[] {
     i = j;
   }
   return spans;
+}
+
+/** Closes a last ayah that runs to the end of the recording, once the recording's length is known. */
+export function withRecordingEnd(spans: readonly AyahSpan[], lengthMs: number): AyahSpan[] {
+  const final = spans.at(-1);
+  if (!final || Number.isFinite(final.end)) return [...spans];
+  return [...spans.slice(0, -1), { ...final, end: Math.max(final.start, lengthMs) }];
 }
 
 /** The ayah being recited at a moment (0-based), or -1 before the first (the basmalah). */
@@ -75,4 +94,103 @@ export function wordAtTime(span: AyahSpan, ms: number): number | null {
     word = w;
   }
   return word;
+}
+
+// ---------- Repeating (Phase 5b) ----------
+
+/** What to repeat while listening. */
+export interface PlaybackRules {
+  /** How many times each ayah plays (1 plays it once). */
+  repeat: number;
+  /** Ayahs `from` to `to` (from 1, inclusive) played `times` times, then the recitation stops. */
+  range: { from: number; to: number; times: number } | null;
+  /** A pause after each ayah as long as the ayah itself, to recite it back from memory. */
+  gap: boolean;
+}
+
+/** Where playback stands between two looks at the clock. */
+export interface PlaybackCursor {
+  /** The ayah last seen (0-based; -1 before the first). */
+  ayah: number;
+  /** How many more times this ayah plays. */
+  left: number;
+  /** Which time through the range this is (from 1). */
+  pass: number;
+  /** The ayah whose pause was taken, so each hearing pauses once. */
+  gapped: number;
+}
+
+export type PlaybackStep =
+  /** Carry on. */
+  | { kind: 'play' }
+  /** Pause for this long (in recording time; divide by the playback speed), then carry on. */
+  | { kind: 'gap'; ms: number }
+  /** Jump to this moment of the recording. */
+  | { kind: 'seek'; ms: number }
+  /** The range is done: stop. */
+  | { kind: 'stop' };
+
+/** The cursor to start with. */
+export const startCursor = (): PlaybackCursor => ({ ayah: -2, left: 0, pass: 1, gapped: -1 });
+
+/**
+ * What to do at a moment of the recording: carry on, pause after an ayah, go back for a repeat,
+ * or stop at the end of a range. `margin` is how early an ayah's end counts as reached (about the
+ * player's update interval), so a repeat starts before the next ayah is heard. An end passed
+ * between two looks at the clock is still honoured, a moment late.
+ */
+export function playbackStep(
+  spans: readonly AyahSpan[],
+  ms: number,
+  cursor: PlaybackCursor,
+  rules: PlaybackRules,
+  margin: number,
+): { step: PlaybackStep; cursor: PlaybackCursor } {
+  const { range } = rules;
+  const play = (c: PlaybackCursor) => ({ step: { kind: 'play' } as PlaybackStep, cursor: c });
+
+  const endOfRange = (c: PlaybackCursor) => {
+    const first = spans[range!.from - 1];
+    if (c.pass >= range!.times || !first)
+      return { step: { kind: 'stop' } as PlaybackStep, cursor: c };
+    return {
+      step: { kind: 'seek', ms: first.start } as PlaybackStep,
+      cursor: { ayah: range!.from - 1, left: rules.repeat - 1, pass: c.pass + 1, gapped: -1 },
+    };
+  };
+
+  // What the end of ayah `i` asks for, if anything: its pause, a repeat, or the range's end.
+  const atEnd = (i: number, c: PlaybackCursor) => {
+    const span = spans[i]!;
+    if (rules.gap && c.gapped !== i) {
+      const next = spans[i + 1];
+      const ms = (next ? next.start : span.end) - span.start;
+      return { step: { kind: 'gap', ms } as PlaybackStep, cursor: { ...c, gapped: i } };
+    }
+    if (c.left > 0) {
+      return {
+        step: { kind: 'seek', ms: span.start } as PlaybackStep,
+        cursor: { ...c, left: c.left - 1, gapped: -1 },
+      };
+    }
+    if (range && i === range.to - 1) return endOfRange(c);
+    return null;
+  };
+
+  const index = ayahAtTime(spans, ms);
+  let c = cursor;
+  // The previous ayah ended since the last look: settle its end before moving on.
+  if (c.ayah >= 0 && index === c.ayah + 1) {
+    const settled = atEnd(c.ayah, c);
+    if (settled) return settled;
+  }
+  if (index !== c.ayah) c = { ayah: index, left: rules.repeat - 1, pass: c.pass, gapped: -1 };
+  const span = spans[index];
+  if (!span) return play(c);
+  // Well past the range (a long wait between looks): its end was missed, act on it now.
+  if (range && index > range.to - 1) return endOfRange(c);
+
+  const next = spans[index + 1];
+  if (ms < (next ? next.start : span.end) - margin) return play(c);
+  return atEnd(index, c) ?? play(c);
 }

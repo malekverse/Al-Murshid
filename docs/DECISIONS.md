@@ -248,3 +248,83 @@ Newest phase at the bottom.
 - **The gate (SPEC 12).** The Quran text: sources pinned by SHA-256, a test that rebuilds all 6,236 ayahs byte for byte from the shown words, and CI failing on stale generated data. Audio sync: `playbackSpans`, `ayahAtTime` and `wordAtTime` are unit-tested (core stays at 100% coverage), and the highlighted word was watched against the recitation (al-Afasy) on web and on an Android release build. Offline: on Android, a downloaded surah plays with the network off, and a mushaf page and a surah opened before stay readable; on web, with the production server stopped, a surah, an ayah and a mushaf spread opened before load from the worker with their page fonts, and any other page shows the offline page in its language.
 - **Web: Playwright flows (search to an ayah, a word's meaning, a bookmark, a mushaf page, a khatmah plan) pass at 1280 px and 360 px with the Phase 4 flow.** The screenshot run adds the Quran home, the verse view and a mushaf page in ar, en and fr, light and dark, at both sizes (reader routes as one viewport, not the full page).
 - **Android release build on the emulator:** the Quran home, the verse reader, recitation with the word highlight, lock-screen controls, the mushaf with swipe paging, and downloads. The emulator reaches the web dev server for page fonts through `adb reverse tcp:3000 tcp:3000`. iOS waits for an EAS build on a device.
+
+## Phase 5b · Quran depth (planned 2026-10-19)
+
+- **The owner added Phase 5b before Phase 6:** reading views, the 1405H, 1441H and Indopak editions, tajweed, a reciter catalog with whole-reciter downloads, tafsir, range bookmarks, memorization tools and a recitation-check prototype. The plan and the exact QUL sources are in `docs/PHASE-5B.md`; SPEC 5.5, 9, 10, 12 and 13 now carry the scope. From the SPEC's later "Hifz mode", hiding words, repeating a range and the recitation check move into v1; memorization schedules stay later.
+- **Tajweed in the verse views draws the 1441H (V4) color glyphs, not QUL's tagged tajweed text.** That text is quran.com's `text_uthmani_tajweed`, encoded differently from the King Fahd text we publish; one source keeps the mushaf and the verse views identical. The V4 fonts are COLRv0 with six palettes (tajweed on and off, light and dark), so the toggle and the theme pick a palette instead of recoloring text.
+- **Indopak: the King Fahd Complex Nastaleeq 15-line layout (610 pages)**, from the same publisher as the other editions, over the Qudratullah and Taj Company layouts. QUL's Indopak resources are all in the South Asian script; none is labelled Naskh.
+- **Reciters: surah-by-surah recitations with word timestamps only;** ayah-by-ayah sets would need a second playback model, so they wait.
+- **Tafsir: Al-Mukhtasar, the one short tafsir QUL has in all three app languages.** Al-Muyassar stays optional until QUL's text is checked against the King Fahd print (its Al-Muzzammil entry reads like Al-Mukhtasar).
+
+### Reading views and memorizing (built)
+
+- **The scrolling reader has two layouts, verse by verse with translation or the Arabic text flowing; the view choice sits first in the reading settings, and the bar's button still turns between the mushaf and the scrolling reader.** The text layout breaks paragraphs where a mushaf page begins, with the page's number between them, so a memorizer keeps their bearings; on mobile the paragraphs also keep the list virtualized.
+- **A hidden word keeps its exact place: on web a thin bar the word's width near the line's base (`memorizeBar` tokens); on mobile a soft tint behind the transparent word,** since React Native's nested text cannot carry a drawn bar. Full-height blocks were tried first on web and read as a wall of bricks.
+- **On Android, a hidden word's color is the ink at zero alpha, not `transparent`:** React Native stores `transparent` as 0, reads it as no color, and the word fell back to the inherited ink.
+- **A tap reveals a word; holding shows the whole ayah while held.** On web the reveal happens on click, not on pointer release, so that click never lands on the word just shown, and the end of a hold is heard on the window, because the peeked ayah replaces the element being held. On mobile the word keeps the same element while peeking, so its own press-out ends the peek.
+- **What memorizing hides is a saved preference;** the reader bar's button is tinted while it is on, and the sheet can hide again what was revealed.
+
+### Passages (built)
+
+- **A bookmark can mark a passage, from its first ayah to a later one in the same surah** (`ayah_end`, a SQLite migration on mobile). Every view shows it: a colored edge beside verses, a tint behind ayah numbers in the text, a ribbon in the mushaf's margin. Changing the color of any ayah in it changes the passage.
+- **Repeating a passage lives in @murshid/core (`playbackStep`), shared by both players:** each ayah N times, the passage M times, then stop; with a pause after each ayah as long as the ayah took (at the playback speed) for the listener to recite it back. A marked passage is offered as the passage to repeat; stepping outside it ends it.
+- **An ayah's end missed between two looks at the clock is still honored, a moment late:** a busy JS thread on a phone easily skips the 120 ms window before an ayah ends, and the first version only looked at the ayah being heard.
+
+### Editions and tajweed (built)
+
+- **Each edition has its own page map.** The 1441H pages start where the 1421H ones do (their lines differ, and they share the 1421H glyph codes); 25 pages of the 1405H mushaf start elsewhere, and the Indopak one has 610 pages. The reading position keeps the ayah and its 1421H page, and a khatmah keeps its pace in 1421H pages; each edition finds its own page from them. A page's address is the chosen edition's page.
+- **QUL's Indopak layout lists text lines only, and gets two lines wrong.** The build adds each surah's name and basmalah before the line that opens it (every page then has its 15 lines), and corrects two boundaries, asserting the error is still there so a fixed source fails loudly: page 304 line 3 repeated five words of line 2, and page 261 line 12 ran from Ibrahim into Al-Hijr. No word changes.
+- **The Indopak page is set in one font and fits itself:** each page is drawn at the token's size, its widest line measured once the font is in, and the page set smaller only if that line passes 97% of the width (checked on all 610 pages at 430 px and in spreads).
+- **Tajweed colors exist only in the 1441H fonts (COLRv0, six palettes).** On web, `@font-palette-values` rules declared per page font pick the palette for the theme and the toggle, and override the ink with the reader's ink; the ayah markers' printed ornaments (pink and teal rings) become an ink ring on the page's color, as in the other editions, so only the tajweed colors stand out.
+- **On phones the 1441H pages keep the font's own colors:** React Native and React Native Skia (2.14) cannot pick a font palette, and rewriting the palette in a copy of each font waits for the font's terms (open item). So on a phone the 1441H edition comes with its colors, choosing one chooses the other, and in dark mode those pages sit on a light page, like paper.
+
+### Reciters, timings and tafsir (built)
+
+- **18 reciters:** the 5 from Phase 5 and 13 more from QUL, each with its style (murattal, mujawwad, or for learning). Four (al-Qatami, Fares Abbad, Muhammad Jibreel, Abdullah Basfar) have timestamps by ayah only, so the highlight follows the ayah.
+- **Timing quirks are pinned in tests, not edited:** al-Minshawi's mujawwad recitation has no timestamps for 32:24 and jumps back 24 times (it repeats ayahs); Basfar and Jibreel end some surahs' last ayah at the listed length, rounded down and shorter than the file, so such a last ayah keeps its start and runs to the recording's real end once the player knows it (`withRecordingEnd`).
+- **Tafsir: Al-Mukhtasar in Arabic, English and French, per surah, each passage with the ayahs it explains;** markup kept to `<b>` and `<i>`. QUL's Al-Muyassar file is left out: it mixes surah introductions into the passages.
+- **For now, every reciter's timings, the tafsir and the Indopak words ship inside the apps,** rather than downloading on mobile as planned: there is no asset CDN yet, and bundled data works offline from the first launch. Moving the large files to downloads belongs with Phase 9's size budget.
+
+### Tajweed in the verse views (built)
+
+- **Both scrolling layouts draw each word with its 1441H glyph, in its page's font and palette, the same source as the mushaf.** Until a word's page fonts are in, it shows as published, so reading never waits. On web the fonts load as verses come within 600 px of the screen, so al-Baqarah fetches its 48 page fonts as it is scrolled, not at once. On mobile the list only mounts rows near the screen, so only their fonts load. Screen readers get the published text (the glyphs are hidden from them, the text kept beside them).
+- **On phones, tajweed in the verse views needs a light or sepia page:** Android draws the fonts' own palette, whose ink is black, so on a dark page the verse views show the published text. Memorizing keeps the colors: Android applies a hidden word's zero-alpha ink to a color glyph too (only the color is the font's), as the 1441H page's centered lines showed. A hidden word standing alone on a justified line fades out entirely, and on the dark-mode paper page the hide marks take the paper's ink. iOS is checked on a device (EAS).
+- **No tajweed legend yet.** Naming each color's rule needs rule names and explanations written in-house and reviewed (SPEC 10); it stays an open item rather than guessed.
+
+### The rings around stopping vowels (1441H fonts)
+
+- **Palette entry 14 of the 1441H fonts draws nothing but hairline rings and boxes around the last vowel of 3,073 words on 401 pages, words that carry a pause sign** (the vowel dropped when stopping there). We checked every layer on that entry: all are hollow outlines, never a letter, vowel or pause mark. As far as we can tell the printed mushaf has no such rings, and at reading sizes they look like stray boxes, so web makes that entry transparent in both palettes. The reviewer should confirm the print has no such marks.
+- **Phones still draw the rings,** since they use the fonts' own palette. Removing them waits for the same palette-only font copy as the dark-mode colors (open item: the King Fahd Complex font terms).
+
+### Testing with color fonts
+
+- **Playwright runs full Chromium in its new headless mode (`channel: 'chromium'`).** Its old headless shell crashed the tab (a failed internal check) on pages drawing the 1441H color fonts, typically after one or two page loads. Chrome and Edge went through the same eight page loads without a crash, and so does full Chromium; a minimal page using the same fonts and palettes never crashed either.
+
+### Recitation check (measured: not shipped)
+
+- **A developer bench (`/dev/recitation-check`, absent from production) runs the model in the browser on a reciter's own recording of a passage**, with an option to cut one word out to stand in for a slip, and shows the marks, the transcript and the timings.
+- **Measured on Al-Ikhlas recited by al-Afasy, a clean studio recording:**
+
+  | Weights                 | Download | Correct words flagged | Cut word found  | Recognition (11.9 s of audio) |
+  | ----------------------- | -------- | --------------------- | --------------- | ----------------------------- |
+  | 4-bit (`q4`)            | 159 MB   | 6 of 15               | not run         | 29.3 s                        |
+  | Full precision (`fp32`) | 397 MB   | 3 of 15               | yes, as skipped | 14.2 s                        |
+
+  Timings come from WebAssembly in a desktop browser pane that was not on screen, so they only bound the order of magnitude.
+
+- **No-go for now.** Even on the cleanest recording it can get, and at full precision, the model marks one correct word in five as different (here three words of ayah 3: يَلِدۡ وَلَمۡ يُولَدۡ). Telling a reader they slipped when they did not is the opposite of mercy over metrics, and 159 to 397 MB is too much to ask on first use. Since the accuracy already fails, the mid-range Android measurement was not run. Nothing reaches users. The alignment in core (`checkRecitation`, tested) and the bench stay for the next attempt.
+- **Next attempt, in order:** align the audio against the expected words instead of transcribing freely (a CTC model's forced alignment gives each expected word a confidence); try a larger Quran-tuned model if its license is open; test on the owner's own recitation, with and without deliberate slips, and then on a mid-range Android phone.
+
+### Whole reciters and storage (built, mobile)
+
+- **A whole reciter downloads one surah after another, and the reciters asked for are kept across launches** (MMKV), so a download stopped by a lost connection or a closed app carries on when the app opens again. Surahs already on the phone are skipped. A surah cut short is deleted and fetched again, since each surah is one file. A failure stops the queue until the next launch or a tap on "Resume". Pausing takes the reciter out of the queue and keeps the surahs already in.
+- **The storage screen (`/quran/storage`, from the reading settings) lists recitations by reciter and mushaf page fonts by edition, with their sizes.** Removing a whole reciter or an edition's fonts asks first, since fetching them again is hundreds of megabytes; a single surah is removed at once. Page fonts come back by themselves when a page is opened. The reading settings keep "Download for offline" for the surah being read, and add "Download all surahs" for the reciter chosen.
+- **While a reciter downloads, the status names the surah under way and how far it is,** since al-Baqarah alone can take minutes and "1 of 114" looked stuck. The hint warns that a whole reciter is often a gigabyte or more: three surahs of Yasser ad-Dussary took 178 MB.
+- **Web has no downloads screen:** the service worker keeps the pages, scripts and page fonts opened, and audio streams.
+
+### Verification (Phase 5b)
+
+- **Web: Playwright flows for the Arabic text view and memorizing, a passage and its repeat, and an edition with tajweed, the reciter search and a tafsir, at 1280 px and 360 px with the earlier flows (10 pass).** The screenshot run adds the 1441H page and the verse view in tajweed, the Indopak page and the text view memorizing, in ar and en, light, dark and sepia, at both sizes.
+- **Android release build on the emulator:** the verse view in tajweed with the word highlight during recitation, its published text for screen readers, the plain text on a dark page, the 1441H page on paper in dark, hidden words on its justified and centered lines, the verse view in tajweed while memorizing with a word revealed in place, the reciter list, a tafsir, and a whole reciter's download: started, paused, carried on after the app was killed, and removed from the storage screen after its confirmation. iOS waits for an EAS build on a device.
+- **The APK is 122 MB** (88 MB after Phase 5), with every reciter's timings, the tafsir and the Indopak words inside; Phase 9 sets the budget.

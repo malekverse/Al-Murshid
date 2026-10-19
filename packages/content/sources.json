@@ -300,6 +300,376 @@
       "retrieved": "2026-10-18",
       "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
       "sha256": "af727624afe7a6615219beb95a2e2bcb8fe89cd731578e1626b7f9feb097f161"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v1-15-lines.db",
+      "title": "KFGQPC V1 layout (1405H print): 604 pages, 15 lines",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/mushaf-layout/15",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's page layout, as published by QUL; QUL states no further terms. Shipped unmodified.",
+      "sha256": "54e5cf604da95f9e65db3fb9dce0c75c17d197e41543ba846ed49264f9c0442a"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v1.json",
+      "title": "QPC V1 Glyphs - Word by Word (glyph codes for the 1405H page fonts)",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/57",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's text; QUL states no further terms. Shipped unmodified.",
+      "sha256": "b303f4107d2145acd04942c082a2286d14f3f7a962795347414e5e13ebcaab67"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v4-15-lines.db",
+      "title": "KFGQPC V4 layout (1441H print): 604 pages, 15 lines",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/mushaf-layout/19",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's page layout, as published by QUL; QUL states no further terms. Shipped unmodified.",
+      "sha256": "4b3fb1cbe8dff749ab0173c4b86cb40fe3c48dd072f41d3c7e715654a9f843cd"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v4.json",
+      "title": "V4 Glyphs (With Tajweed) - Word by word (glyph codes for the 1441H tajweed page fonts)",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/47",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's text; QUL states no further terms. Shipped unmodified.",
+      "sha256": "40964a1b7932e9a69e0dfc0d58dce3b73e30a803febda119fd6828bcb75fac98"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-nastaleeq-15-lines.db",
+      "title": "KFGQPC Nastaleeq 15 lines layout (Indopak): 610 pages",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/mushaf-layout/8",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's page layout, as published by QUL; QUL states no further terms. Shipped unmodified.",
+      "sha256": "1fdf85523c7fee506054cceb6a2d12a6b9731e9a8e9b4c51e6a97ea6f02c8acc"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-nastaleeq.json",
+      "title": "QPC Nastaleeq script - Word by Word (Indopak)",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/52",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's text; QUL states no further terms. Shipped unmodified.",
+      "sha256": "97e37799459a8963d51b016664e5c46cbd06d6cc1dde1cb4d7cd90e3ab94ca6b"
+    },
+    {
+      "path": "apps/web/src/app/fonts/KFGQPCNastaleeq-Regular.woff2",
+      "title": "KFGQPC Nastaleeq font (Indopak), WOFF2",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/462",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's font, as published by QUL; its terms are to be confirmed (docs/PHASE-5B.md, open items). Shipped unmodified.",
+      "sha256": "7a3932a3bfa5e291e9a5ca5e78a253a1fc3b455efa42d85579e1c887172b99be"
+    },
+    {
+      "path": "apps/mobile/assets/fonts/KFGQPCNastaleeq-Regular.ttf",
+      "title": "KFGQPC Nastaleeq font (Indopak), TTF",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/462",
+      "retrieved": "2026-10-19",
+      "license": "The King Fahd Complex's font, as published by QUL; its terms are to be confirmed (docs/PHASE-5B.md, open items). Shipped unmodified.",
+      "sha256": "de174e33ae14cb581097940de298c8bb9cfa60f7a34d7d0ab0ba2bd5126f912c"
+    },
+    {
+      "path": "packages/content/quran/source/tafsir/ar-mukhtasar.json",
+      "title": "Al-Mukhtasar in interpreting the Noble Quran, Arabic",
+      "publisher": "Tafsir Center for Quranic Studies",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/tafsir/251",
+      "retrieved": "2026-10-19",
+      "license": "Al-Mukhtasar in interpreting the Noble Quran, by the Tafsir Center for Quranic Studies. Copyright of its publisher; included at the owner's choice while written permission is requested, which must be granted before launch (docs/PHASE-5B.md).",
+      "sha256": "646145a4b8763b2f2249c35e0e6ea614fe9c7f9a46da498c19615a06c5a5fc9f"
+    },
+    {
+      "path": "packages/content/quran/source/tafsir/en-mukhtasar.json",
+      "title": "Abridged Explanation of the Quran (Al-Mukhtasar), English",
+      "publisher": "Tafsir Center for Quranic Studies",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/tafsir/266",
+      "retrieved": "2026-10-19",
+      "license": "Al-Mukhtasar in interpreting the Noble Quran, by the Tafsir Center for Quranic Studies. Copyright of its publisher; included at the owner's choice while written permission is requested, which must be granted before launch (docs/PHASE-5B.md).",
+      "sha256": "8f30054ea8b5f1e19b78fbe2b30cca5998da31583a9902a9b7301cd5e81ea766"
+    },
+    {
+      "path": "packages/content/quran/source/tafsir/fr-mukhtasar.json",
+      "title": "Abridged Explanation of the Quran (Al-Mukhtasar), French",
+      "publisher": "Tafsir Center for Quranic Studies",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/tafsir/259",
+      "retrieved": "2026-10-19",
+      "license": "Al-Mukhtasar in interpreting the Noble Quran, by the Tafsir Center for Quranic Studies. Copyright of its publisher; included at the owner's choice while written permission is requested, which must be granted before launch (docs/PHASE-5B.md).",
+      "sha256": "d067403f263f1df05bc965e7657ec069e847fa6d0e18cdf52d126497d472c195"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdur-rahman-as-sudais/surah.json",
+      "title": "Abdur-Rahman as-Sudais, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/407",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "7cb7dd9ecd7145cd964b165b4a18d14f0d433cb5862882ba955e4c6dd8e745e9"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdur-rahman-as-sudais/segments.json",
+      "title": "Abdur-Rahman as-Sudais, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/407",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "17f7746f7e0bf624f57c1a360b61ee4b24039e17d5502f522b81ad747118ea64"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/saud-ash-shuraym/surah.json",
+      "title": "Sa'ud ash-Shuraym, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/317",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "39a3332d860732203cc5fcbb0fe97a7de3f181198edf2f57f008c6a16ee35425"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/saud-ash-shuraym/segments.json",
+      "title": "Sa'ud ash-Shuraym, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/317",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "154a71ab63794ffe17b4daa1d32d77719fdc1c98598d03a6f7a310c946aa570d"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/maher-al-muaiqly/surah.json",
+      "title": "Maher al-Muaiqly, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/405",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "085fec71cb9977cae02cc46b2e6e7e3085de9096405f8398622ac8844d1a4454"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/maher-al-muaiqly/segments.json",
+      "title": "Maher al-Muaiqly, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/405",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "ce4dd138436a5519f9e7dbcd4c2653e8402030e5f9c1581f251872248854b3a8"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/yasser-ad-dussary/surah.json",
+      "title": "Yasser ad-Dussary, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/422",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "244ceb389abf37b057ffef8f474b007dca6545476a9ab513b6cea4388d9baee7"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/yasser-ad-dussary/segments.json",
+      "title": "Yasser ad-Dussary, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/422",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "9e66740f73e02a6a1500982601a0900b9a34e6b8b2a8413989d76ba8ff6f386c"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abu-bakr-al-shatri/surah.json",
+      "title": "Abu Bakr al-Shatri, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/315",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "6855c3488cd20fe37375debd5875eb6bc0a2ef256c3cc2011fd147f9c6c7d78e"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abu-bakr-al-shatri/segments.json",
+      "title": "Abu Bakr al-Shatri, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/315",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "4b05ed4c1ce7babb0163c4c5478316ad8883706d5fb6c661fae060ac78ebbc72"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/hani-ar-rifai/surah.json",
+      "title": "Hani ar-Rifai, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/333",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "dff2e06e4daa2e2f4339b7521acca230c2d65c2be8dc2b3ec62f206942518c83"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/hani-ar-rifai/segments.json",
+      "title": "Hani ar-Rifai, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/333",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "96a3ebff3122e1f96d2d0a5b8648c0e10b517c167373343c2de568815b073dab"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/nasser-al-qatami/surah.json",
+      "title": "Nasser al-Qatami, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/356",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "c1bea5131811dfb1f9436e0754522493f0661d9abc74caaf4a6314494811609d"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/nasser-al-qatami/segments.json",
+      "title": "Nasser al-Qatami, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/356",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "c2adbc32fd091064f82df7ef55410534da4efa6664b4e1d2162e4378cccba030"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/fares-abbad/surah.json",
+      "title": "Fares Abbad, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/336",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "6afa9d1320ee2d580bf23f6b955419fa7cb03595bd9d7173a802eba78f544e15"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/fares-abbad/segments.json",
+      "title": "Fares Abbad, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/336",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "f41b68349e667542242a1182fe0596a3ea4fd27cf144289b298455c212c6da07"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-jibreel/surah.json",
+      "title": "Muhammad Jibreel, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/419",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "5d23755ce597ffd4726ea3593035be91f12640d3338ebf71797f4a488c1c1321"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-jibreel/segments.json",
+      "title": "Muhammad Jibreel, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/419",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "0b03693e7db8ba55224089f8a97a8b814195b669529a9d75210d568b32245c0f"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/khalid-al-jalil/surah.json",
+      "title": "Khalid al-Jalil, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/420",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "19eef972bd3fa4d26b75a1003922241feaedcd3d9a65e2e8af660ee5f2e2ad98"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/khalid-al-jalil/segments.json",
+      "title": "Khalid al-Jalil, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/420",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "c814fb844d032d3827e4f4e11adfbb153637b48d0e00213472abfc5df94bfcfb"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdullah-basfar/surah.json",
+      "title": "Abdullah Basfar, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/416",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "4b09bc2d5d65651dab99503141de873d33535b4932206b2209c3056a9bab1d21"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdullah-basfar/segments.json",
+      "title": "Abdullah Basfar, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/416",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "20a95a98378a67619c10a26edb2fb56cc5fdcfa2891bd5631f432ce365092af5"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-siddiq-al-minshawi-mujawwad/surah.json",
+      "title": "Muhammad Siddiq al-Minshawi, mujawwad, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/395",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "f513d36d3ae989cdcd55a33fc3a52306d2b44eb0230fc912f4d61933febd9fbf"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-siddiq-al-minshawi-mujawwad/segments.json",
+      "title": "Muhammad Siddiq al-Minshawi, mujawwad, surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/395",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "db260c970f8c8d9c370bb4020a6d2b169027e62e1ace0e7b33a2ba87fc7eacee"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mahmoud-husary-muallim/surah.json",
+      "title": "Mahmoud Khalil al-Husary, muallim (teaching), surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/334",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "ac59ba52313bfb0ec7ba272a3ef0c4977406332afb89301a85ccb23cbc74f8d1"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mahmoud-husary-muallim/segments.json",
+      "title": "Mahmoud Khalil al-Husary, muallim (teaching), surah by surah: timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/334",
+      "retrieved": "2026-10-19",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "206b6f619c1be6327dad8bc6e8b2bb878c94780380841bd86d4ce182e4c0fd05"
     }
   ]
 }

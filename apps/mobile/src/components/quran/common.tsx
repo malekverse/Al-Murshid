@@ -1,10 +1,11 @@
-import { pageOf, surahNameGlyph, type Surah } from '@murshid/content/quran';
+import { pageOf, surahNameGlyph, type MushafEdition, type Surah } from '@murshid/content/quran';
 import { civilDate, type CivilDate } from '@murshid/core';
 import type { BookmarkColor, ReadingTheme } from '@murshid/data';
 import { colors, fonts, surahNameSize, type ThemeName } from '@murshid/tokens';
+import * as Font from 'expo-font';
 import { useFonts } from 'expo-font';
 import { getCalendars } from 'expo-localization';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Text as RNText, View } from 'react-native';
 import { ScopedTheme, useUniwind } from 'uniwind';
 import { useAppLocale } from '@/lib/locale';
@@ -17,6 +18,23 @@ export function useSurahNameFont(): boolean {
     'SurahName-V2': require('../../../assets/fonts/surah-name-v2.ttf'),
   });
   return loaded || error !== null;
+}
+
+/** The King Fahd Complex's Nastaleeq font, for the Indopak mushaf: loaded the first time it is shown. */
+export function useIndopakFont(enabled: boolean): boolean {
+  const [ready, setReady] = useState(() => Font.isLoaded(fonts.native.indopak));
+  useEffect(() => {
+    if (!enabled || ready) return;
+    let live = true;
+    const done = () => live && setReady(true);
+    Font.loadAsync({
+      [fonts.native.indopak]: require('../../../assets/fonts/KFGQPCNastaleeq-Regular.ttf'),
+    }).then(done, done);
+    return () => {
+      live = false;
+    };
+  }, [enabled, ready]);
+  return ready;
 }
 
 /** A surah's calligraphic name. Decorative: the name is shown or announced beside it. */
@@ -53,9 +71,23 @@ export function useSurahName() {
   return (s: Surah) => (locale === 'ar' ? s.nameArabic : s.nameSimple);
 }
 
-/** Where to read an ayah: its place in the verse view, or its page in the mushaf. */
-export function readerHref(surah: number, ayah = 1, view: 'verses' | 'mushaf' = 'verses') {
-  if (view === 'mushaf') return `/quran/page/${pageOf(surah, ayah)}` as const;
+/** Where reading opens: the scrolling reader, or the pages of the chosen mushaf. */
+export interface ReaderPlace {
+  view: 'verses' | 'mushaf';
+  edition: MushafEdition;
+}
+export const readerPlace = (
+  prefs: { view: 'verses' | 'mushaf'; edition: MushafEdition } | undefined,
+): ReaderPlace => ({
+  view: prefs?.view ?? 'verses',
+  edition: prefs?.edition ?? 'v2',
+});
+
+/** Where to read an ayah: its place in the verse view, or its page in the chosen mushaf. */
+export function readerHref(surah: number, ayah = 1, place?: ReaderPlace) {
+  if (place?.view === 'mushaf') {
+    return `/quran/page/${pageOf(surah, ayah, place.edition)}` as const;
+  }
   return ayah > 1 ? (`/quran/${surah}/${ayah}` as const) : (`/quran/${surah}` as const);
 }
 
