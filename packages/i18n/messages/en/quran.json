@@ -1,0 +1,160 @@
+{
+  "title": "Quran",
+  "home": {
+    "continue": "Continue reading",
+    "continueAt": "{surah} · ayah {ayah} · page {page}",
+    "begin": "Begin with Al-Fatihah",
+    "tabs": {
+      "label": "Browse the Quran",
+      "surahs": "Surahs",
+      "juz": "Juz",
+      "bookmarks": "Bookmarks"
+    }
+  },
+  "surah": {
+    "ayahs": "{count, plural, one {# ayah} other {# ayahs}}",
+    "makkah": "Meccan",
+    "madinah": "Medinan",
+    "row": "Surah {number}, {name}, {place}, {ayahs}"
+  },
+  "juz": {
+    "name": "Juz {number}",
+    "starts": "From {surah} {ayah} · page {page}"
+  },
+  "search": {
+    "label": "Search the Quran",
+    "placeholder": "A surah, a word, or 2:255",
+    "surahs": "Surahs",
+    "ayahs": "{count, plural, one {# ayah} other {# ayahs}}",
+    "more": "Showing the first {shown} of {total}.",
+    "none": "Nothing found for “{query}”.",
+    "goTo": "Go to {surah} {ayah}",
+    "clear": "Clear the search"
+  },
+  "bookmarks": {
+    "empty": "Ayahs you bookmark gather here.",
+    "colors": {
+      "label": "Bookmark color",
+      "lantern": "Gold",
+      "sage": "Green",
+      "sky": "Blue",
+      "plum": "Purple",
+      "clay": "Clay"
+    }
+  },
+  "khatmah": {
+    "title": "Khatmah",
+    "today": "Today: pages {from} to {to}",
+    "todayOne": "Today: page {page}",
+    "readToday": "{read} of {count} read today",
+    "finish": "On pace to finish by {date}",
+    "done": "Your khatmah is complete. May Allah accept it.",
+    "read": "Read today’s portion",
+    "markRead": "Mark today’s portion as read",
+    "progress": "{percent} of the khatmah read",
+    "plan": "Plan a khatmah",
+    "planHint": "Read the whole Quran by a date, or a few pages each day.",
+    "end": "End this plan",
+    "sheet": {
+      "title": "Plan a khatmah",
+      "description": "The plan adjusts quietly when a day is missed. Nothing is ever owed.",
+      "goal": "Plan by",
+      "byDate": "A finish date",
+      "byPace": "Pages a day",
+      "within": "Finish within",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "pace": "{count, plural, one {# page a day} other {# pages a day}}",
+      "estimate": "About {pace}, finishing by {date}.",
+      "begin": "Begin"
+    }
+  },
+  "reader": {
+    "back": "Quran",
+    "settings": "Reading settings",
+    "verses": "Verse view",
+    "page": "Page view",
+    "loading": "Opening the surah",
+    "error": "This surah could not be opened.",
+    "retry": "Try again",
+    "offline": "You are offline. Surahs already opened here stay readable.",
+    "next": "Next: {surah}",
+    "previous": "Previous: {surah}",
+    "sajda": "Ayah of prostration",
+    "footnote": "Note {mark}",
+    "closeFootnote": "Close the note",
+    "translationBy": "Translation: {name}"
+  },
+  "actions": {
+    "label": "Ayah {surah}:{ayah}",
+    "play": "Play from here",
+    "words": "Word by word",
+    "bookmark": "Bookmark",
+    "unbookmark": "Remove bookmark",
+    "copy": "Copy",
+    "copied": "Copied",
+    "share": "Share",
+    "close": "Close"
+  },
+  "word": {
+    "meaning": "Meaning",
+    "transliteration": "Transliteration",
+    "none": "No meaning listed for this word."
+  },
+  "mushaf": {
+    "page": "Page {page}",
+    "pageOf": "Page {page} of {count}",
+    "juz": "Juz {number}",
+    "previous": "Previous page",
+    "next": "Next page",
+    "loading": "Preparing page {page}",
+    "fontError": "This page could not be downloaded. Check the connection and try again.",
+    "pageNumber": "Page number",
+    "go": "Go"
+  },
+  "audio": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "previous": "Previous ayah",
+    "next": "Next ayah",
+    "playing": "{surah} · {reciter}",
+    "speed": "Speed",
+    "repeat": "Repeat each ayah",
+    "times": "{count, plural, one {Once} other {# times}}",
+    "loading": "Loading the recitation",
+    "error": "The recitation could not be played. Check the connection, or download it for offline.",
+    "download": "Download for offline",
+    "downloading": "Downloading {percent}",
+    "downloaded": "Downloaded",
+    "removeDownload": "Remove the download",
+    "downloads": "Downloads",
+    "downloadsEmpty": "Surahs you download play without a connection.",
+    "size": "{size} on this device"
+  },
+  "reciters": {
+    "label": "Reciter",
+    "afasy": "Mishary Rashid Alafasy",
+    "husary": "Mahmoud Khalil al-Husary (teaching pace)",
+    "abdulbasit": "Abdul Basit Abdul Samad",
+    "minshawi": "Muhammad Siddiq al-Minshawi",
+    "ghamdi": "Saad al-Ghamdi"
+  },
+  "settings": {
+    "title": "Reading settings",
+    "arabicSize": "Arabic size",
+    "translation": "Translation",
+    "none": "None",
+    "sahih": "Saheeh International (English)",
+    "hamidullah": "Muhammad Hamidullah (French)",
+    "wordMeanings": "Meaning under each word",
+    "transliteration": "Transliteration under each word",
+    "theme": "Page color",
+    "themes": {
+      "app": "Like the app",
+      "light": "Light",
+      "sepia": "Sepia",
+      "dark": "Dark"
+    },
+    "sample": "The size of Quran text"
+  }
+}

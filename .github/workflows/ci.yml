@@ -29,6 +29,8 @@ jobs:
 
       - name: Design tokens are up to date
         run: pnpm tokens:check
+      - name: Quran data is up to date
+        run: pnpm content:check
       - name: Every string exists in every locale
         run: pnpm i18n:check
       - name: Formatting

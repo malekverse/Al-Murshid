@@ -31,5 +31,10 @@
   "soon": {
     "quran": "Le lecteur du Coran arrive bientôt, si Dieu le veut.",
     "remember": "Adhkar, invocations et tasbih arrivent bientôt, si Dieu le veut."
+  },
+  "offline": {
+    "title": "Vous êtes hors ligne",
+    "body": "Ce que vous avez ouvert ici reste disponible sans connexion : Aujourd’hui, et les sourates déjà lues.",
+    "action": "Ouvrir le Coran"
   }
 }

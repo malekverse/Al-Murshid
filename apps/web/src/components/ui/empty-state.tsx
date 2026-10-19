@@ -20,12 +20,15 @@ export function EmptyState({ illustration, title, action }: EmptyStateProps) {
       <div className="relative size-48">
         {/* The motif fades out inside the picture's own square, so it never reaches the text. */}
         <StarLattice className="absolute inset-0 size-48 text-ink [mask-image:radial-gradient(closest-side,black_35%,transparent)]" />
-        {/* Both versions are in the page; the theme shows one, so switching never reloads. */}
+        {/* Both versions are in the page; the theme shows one, so switching never reloads. The files
+            are already 2x webp of about 13 KB, served as they are, so the offline page's picture is
+            the one the service worker precached. */}
         <Image
           src={`/illustrations/empty-${illustration}-day.webp`}
           alt=""
           width={192}
           height={192}
+          unoptimized
           className="relative dark:hidden"
         />
         <Image
@@ -33,6 +36,7 @@ export function EmptyState({ illustration, title, action }: EmptyStateProps) {
           alt=""
           width={192}
           height={192}
+          unoptimized
           className="relative hidden dark:block"
         />
       </div>

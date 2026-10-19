@@ -1,5 +1,5 @@
-import { Soon } from '@/components/soon';
+import { QuranHome } from '@/components/quran/quran-home';
 
 export default function Quran() {
-  return <Soon what="quran" illustration="bookmarks" />;
+  return <QuranHome />;
 }

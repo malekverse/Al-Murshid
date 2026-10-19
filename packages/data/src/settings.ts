@@ -26,6 +26,7 @@ import {
   type Track,
 } from '@murshid/core';
 import { z } from 'zod';
+import { defaultQuranPrefs, quranPrefsSchema } from './quran';
 
 const isoDateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const methodIds = Object.keys(methods) as [MethodId, ...MethodId[]];
@@ -146,6 +147,8 @@ export const settingsSchema = z.object({
       remembrance: null,
     }),
   simpleView: z.boolean().catch(false),
+  /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */
+  quran: quranPrefsSchema.catch(() => defaultQuranPrefs()),
   /** The last day the app was opened, and the one before it (for "Welcome back"). */
   lastOpenedOn: isoDateString.nullable().catch(null),
   previousOpenedOn: isoDateString.nullable().catch(null),

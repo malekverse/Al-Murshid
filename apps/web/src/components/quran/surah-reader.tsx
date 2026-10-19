@@ -1,0 +1,271 @@
+'use client';
+
+import {
+  ayahWords,
+  loadSurahText,
+  loadTranslation,
+  loadTransliteration,
+  pageOf,
+  sajdaOf,
+  surah as surahInfo,
+  type SurahTranslation,
+} from '@murshid/content/quran';
+import { translationFor, translationLanguage, type QuranBookmark } from '@murshid/data';
+import { typeScale } from '@murshid/tokens';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Text } from '@/components/ui/text';
+import { Link, useRouter } from '@/i18n/navigation';
+import { saveReadingPosition, useBookmarks, useLoad } from '@/lib/quran';
+import { useSettings } from '@/lib/settings';
+import {
+  AyahActions,
+  FootnoteSheet,
+  WordPopover,
+  type ActionsTarget,
+  type WordTarget,
+} from './ayah-overlays';
+import { AyahView } from './ayah-view';
+import { SurahCalligraphy, useSurahName } from './common';
+import { ReaderBar } from './reader-bar';
+import { ReadingSettings, setQuranPrefs } from './reading-settings';
+import { ReadingSurface } from './reading-surface';
+import { useRecitation } from './recitation';
+
+/** The basmalah that opens a surah: the words of Al-Fatihah 1 as published, without its number. */
+export function Basmalah({ size }: { size: number }) {
+  const text = useLoad(() => loadSurahText(1), 'text/1');
+  if (!text.data) return <div style={{ height: size * typeScale.quran.arabic.lineHeight }} />;
+  const words = ayahWords(text.data, 1).slice(0, -1);
+  return (
+    <p
+      lang="ar"
+      dir="rtl"
+      className="text-center font-quran text-ink"
+      style={{ fontSize: size, lineHeight: typeScale.quran.arabic.lineHeight }}
+    >
+      {words.map((w, i) => (i === words.length - 1 ? w.text : w.text + w.after)).join('')}
+    </p>
+  );
+}
+
+function plainTranslation(tr: SurahTranslation | undefined, ayah: number) {
+  return tr?.t[ayah - 1]?.filter((s): s is string => typeof s === 'string').join('') ?? null;
+}
+
+/** The verse-by-verse reader (SPEC 5.5). */
+export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah?: number }) {
+  const format = useFormatter();
+  const t = useTranslations('quran');
+  const locale = useLocale();
+  const router = useRouter();
+  const settings = useSettings();
+  const recitation = useRecitation();
+  const name = useSurahName();
+  const info = surahInfo(surah);
+  const prefs = settings?.quran;
+
+  const translation = prefs ? translationFor(prefs, locale) : null;
+  // Word meanings come in the translation's language, or the app's (English in Arabic).
+  const lang = translation ? translationLanguage[translation] : locale === 'fr' ? 'fr' : 'en';
+  const text = useLoad(() => loadSurahText(surah), `text/${surah}`);
+  const extra = useLoad(() => loadTranslation(lang, surah), `${lang}/${surah}`);
+  const translit = useLoad(() => loadTransliteration(surah), `translit/${surah}`);
+  const bookmarks = useBookmarks();
+
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [word, setWord] = useState<WordTarget | null>(null);
+  const [actions, setActions] = useState<ActionsTarget | null>(null);
+  const [note, setNote] = useState<{ mark: string; text: string } | null>(null);
+  const ayahRefs = useRef(new Map<number, HTMLElement>());
+
+  const size = prefs?.arabicSize ?? typeScale.quran.arabic.size;
+  const playingHere = recitation.surah === surah;
+
+  // Open at the ayah asked for.
+  const ready = Boolean(text.data);
+  useEffect(() => {
+    if (!ready || startAyah <= 1) return;
+    ayahRefs.current.get(startAyah)?.scrollIntoView({ block: 'start' });
+  }, [ready, startAyah]);
+
+  // Remember the ayah at the top of the screen as the last position.
+  useEffect(() => {
+    if (!ready) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const top = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (!top) return;
+        const ayah = Number((top.target as HTMLElement).dataset.ayah);
+        clearTimeout(timer);
+        timer = setTimeout(() => saveReadingPosition(surah, ayah), 600);
+      },
+      { rootMargin: '-20% 0px -70% 0px' },
+    );
+    for (const el of ayahRefs.current.values()) observer.observe(el);
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [ready, surah]);
+
+  // Follow the recitation: keep the ayah being recited in view.
+  useEffect(() => {
+    if (!playingHere || recitation.ayah === null) return;
+    const el = ayahRefs.current.get(recitation.ayah);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < 80 || r.bottom > window.innerHeight - 96) {
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }, [playingHere, recitation.ayah]);
+
+  if (!prefs) return null;
+
+  const bookmarkOf = (ayah: number): QuranBookmark | undefined =>
+    bookmarks?.find((b) => b.surah === surah && b.ayah === ayah);
+  const play = () => {
+    if (playingHere && recitation.playing) recitation.pause();
+    else if (playingHere && recitation.surah !== null) recitation.resume();
+    else recitation.play(surah, 1);
+  };
+  const toggleView = () => {
+    setQuranPrefs({ view: 'mushaf' });
+    const position = recitation.surah === surah && recitation.ayah ? recitation.ayah : startAyah;
+    router.push(`/quran/page/${pageOf(surah, position)}`);
+  };
+
+  return (
+    <ReadingSurface theme={prefs.theme}>
+      <ReaderBar
+        title={name(info)}
+        subtitle={`${t(`surah.${info.revelationPlace}`)} · ${t('surah.ayahs', { count: info.ayahCount })}`}
+        view="verses"
+        onToggleView={toggleView}
+        onSettings={() => setSettingsOpen(true)}
+        playing={playingHere && recitation.playing}
+        onPlay={play}
+      />
+      <main id="main" className="mx-auto flex w-full max-w-reading flex-col px-4 pb-32">
+        <div className="flex flex-col items-center gap-2 py-8">
+          <SurahCalligraphy number={surah} size="header" />
+          {locale !== 'ar' && (
+            <Text role="callout" tone="muted">
+              {info.nameSimple}
+            </Text>
+          )}
+        </div>
+        {info.bismillahPre && (
+          <div className="pb-4">
+            <Basmalah size={size} />
+          </div>
+        )}
+
+        {text.error ? (
+          <Card className="flex flex-col items-start gap-4 p-6">
+            <Text role="body">{navigator.onLine ? t('reader.error') : t('reader.offline')}</Text>
+            <Button variant="secondary" onClick={text.retry}>
+              {t('reader.retry')}
+            </Button>
+          </Card>
+        ) : !text.data ? (
+          <div className="flex flex-col gap-6 py-6" aria-label={t('reader.loading')} aria-busy>
+            {Array.from({ length: 3 }, (_, i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
+          </div>
+        ) : (
+          text.data.w.map((_, i) => {
+            const ayah = i + 1;
+            const words = ayahWords(text.data!, ayah);
+            const meanings = extra.data?.m[i] ?? null;
+            const tl = translit.data?.[i] ?? null;
+            const bookmark = bookmarkOf(ayah)?.color ?? null;
+            return (
+              <AyahView
+                key={ayah}
+                ref={(el) => {
+                  if (el) ayahRefs.current.set(ayah, el);
+                  else ayahRefs.current.delete(ayah);
+                }}
+                surah={surah}
+                ayah={ayah}
+                surahName={name(info)}
+                words={words}
+                meanings={prefs.wordMeanings && meanings ? meanings : undefined}
+                transliteration={prefs.transliteration && tl ? tl : undefined}
+                translation={translation ? extra.data?.t[i] : undefined}
+                footnotes={extra.data?.f}
+                size={size}
+                playing={playingHere && recitation.ayah === ayah}
+                playingWord={playingHere && recitation.ayah === ayah ? recitation.word : null}
+                bookmark={bookmark}
+                sajda={sajdaOf(surah, ayah) !== null}
+                onWord={(w, el) =>
+                  setWord({
+                    word: words[w]!,
+                    meaning: meanings?.[w] ?? null,
+                    transliteration: tl?.[w] ?? null,
+                    rect: el.getBoundingClientRect(),
+                  })
+                }
+                onFootnote={(mark, noteText) => setNote({ mark, text: noteText })}
+                onActions={() =>
+                  setActions({
+                    surah,
+                    ayah,
+                    title: `${name(info)} ${format.number(ayah)}`,
+                    text: words.map((w) => w.text + w.after).join(''),
+                    translation: translation ? plainTranslation(extra.data, ayah) : null,
+                    words,
+                    meanings,
+                    transliteration: tl,
+                    bookmark,
+                  })
+                }
+              />
+            );
+          })
+        )}
+
+        {text.data && (
+          <nav className="flex flex-wrap justify-between gap-4 py-8">
+            {surah > 1 ? (
+              <Link href={`/quran/${surah - 1}`} className="rounded-full px-4 py-3 hover:bg-ink/5">
+                <Text as="span" role="callout" tone="lantern">
+                  {t('reader.previous', { surah: name(surahInfo(surah - 1)) })}
+                </Text>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {surah < 114 && (
+              <Link href={`/quran/${surah + 1}`} className="rounded-full px-4 py-3 hover:bg-ink/5">
+                <Text as="span" role="callout" tone="lantern">
+                  {t('reader.next', { surah: name(surahInfo(surah + 1)) })}
+                </Text>
+              </Link>
+            )}
+          </nav>
+        )}
+      </main>
+
+      {word && <WordPopover target={word} onClose={() => setWord(null)} />}
+      <AyahActions
+        target={actions}
+        onClose={() => setActions(null)}
+        onPlay={(s, a) => recitation.play(s, a)}
+        shareUrl={(s, a) => `${window.location.origin}/${locale}/quran/${s}/${a}`}
+      />
+      <FootnoteSheet note={note} onClose={() => setNote(null)} />
+      <ReadingSettings open={settingsOpen} onOpenChange={setSettingsOpen} prefs={prefs} />
+    </ReadingSurface>
+  );
+}

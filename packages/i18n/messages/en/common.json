@@ -31,5 +31,10 @@
   "soon": {
     "quran": "The Quran reader is coming soon, God willing.",
     "remember": "Adhkar, duas and tasbih are coming soon, God willing."
+  },
+  "offline": {
+    "title": "You are offline",
+    "body": "What you have opened here stays with you without a connection: Today, and the surahs you have read.",
+    "action": "Open the Quran"
   }
 }

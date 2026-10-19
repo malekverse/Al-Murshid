@@ -12,7 +12,7 @@ import {
 } from './index';
 
 describe('color contrast (WCAG 2.2 AA)', () => {
-  for (const theme of ['light', 'dark'] as ThemeName[]) {
+  for (const theme of Object.keys(colors) as ThemeName[]) {
     for (const [fg, bg, min] of contrastRequirements) {
       it(`${theme}: ${fg} on ${bg} >= ${min}:1`, () => {
         const ratio = contrastRatio(colors[theme][fg], colors[theme][bg]);

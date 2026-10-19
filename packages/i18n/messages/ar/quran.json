@@ -1,0 +1,160 @@
+{
+  "title": "القرآن",
+  "home": {
+    "continue": "متابعة القراءة",
+    "continueAt": "{surah} · الآية {ayah} · الصفحة {page}",
+    "begin": "ابدأ بسورة الفاتحة",
+    "tabs": {
+      "label": "تصفّح القرآن",
+      "surahs": "السور",
+      "juz": "الأجزاء",
+      "bookmarks": "العلامات"
+    }
+  },
+  "surah": {
+    "ayahs": "{count, plural, zero {لا آيات} one {آية واحدة} two {آيتان} few {# آيات} many {# آية} other {# آية}}",
+    "makkah": "مكية",
+    "madinah": "مدنية",
+    "row": "سورة {number}، {name}، {place}، {ayahs}"
+  },
+  "juz": {
+    "name": "الجزء {number}",
+    "starts": "من {surah} {ayah} · الصفحة {page}"
+  },
+  "search": {
+    "label": "ابحث في القرآن",
+    "placeholder": "سورة أو كلمة أو 2:255",
+    "surahs": "السور",
+    "ayahs": "{count, plural, zero {لا آيات} one {آية واحدة} two {آيتان} few {# آيات} many {# آية} other {# آية}}",
+    "more": "تُعرض أول {shown} من {total}.",
+    "none": "لا نتائج لـ«{query}».",
+    "goTo": "انتقل إلى {surah} {ayah}",
+    "clear": "امسح البحث"
+  },
+  "bookmarks": {
+    "empty": "تجتمع هنا الآيات التي تضع عليها علامة.",
+    "colors": {
+      "label": "لون العلامة",
+      "lantern": "ذهبي",
+      "sage": "أخضر",
+      "sky": "أزرق",
+      "plum": "بنفسجي",
+      "clay": "طيني"
+    }
+  },
+  "khatmah": {
+    "title": "الختمة",
+    "today": "اليوم: من الصفحة {from} إلى {to}",
+    "todayOne": "اليوم: الصفحة {page}",
+    "readToday": "قُرئ اليوم {read} من {count}",
+    "finish": "على هذا الإيقاع تتمّ بحلول {date}",
+    "done": "تمّت ختمتك. تقبّل الله منك.",
+    "read": "اقرأ ورد اليوم",
+    "markRead": "علّم ورد اليوم مقروءًا",
+    "progress": "قُرئ {percent} من الختمة",
+    "plan": "خطّط لختمة",
+    "planHint": "اختم القرآن كاملًا بحلول تاريخ، أو بصفحات قليلة كل يوم.",
+    "end": "أنهِ هذه الخطة",
+    "sheet": {
+      "title": "خطّط لختمة",
+      "description": "تتكيّف الخطة بهدوء إذا فات يوم، ولا يُحسب عليك شيء.",
+      "goal": "الخطة حسب",
+      "byDate": "تاريخ الختم",
+      "byPace": "صفحات في اليوم",
+      "within": "اختم خلال",
+      "days": "{count, plural, zero {لا أيام} one {يوم واحد} two {يومان} few {# أيام} many {# يومًا} other {# يوم}}",
+      "pace": "{count, plural, zero {لا صفحات في اليوم} one {صفحة في اليوم} two {صفحتان في اليوم} few {# صفحات في اليوم} many {# صفحة في اليوم} other {# صفحة في اليوم}}",
+      "estimate": "نحو {pace}، فتتمّ بحلول {date}.",
+      "begin": "ابدأ"
+    }
+  },
+  "reader": {
+    "back": "القرآن",
+    "settings": "إعدادات القراءة",
+    "verses": "عرض الآيات",
+    "page": "عرض الصفحات",
+    "loading": "تُفتح السورة",
+    "error": "تعذّر فتح هذه السورة.",
+    "retry": "حاول مجددًا",
+    "offline": "أنت غير متصل. السور التي فتحتها هنا تبقى متاحة للقراءة.",
+    "next": "التالية: {surah}",
+    "previous": "السابقة: {surah}",
+    "sajda": "آية سجدة",
+    "footnote": "حاشية {mark}",
+    "closeFootnote": "أغلق الحاشية",
+    "translationBy": "الترجمة: {name}"
+  },
+  "actions": {
+    "label": "الآية {surah}:{ayah}",
+    "play": "شغّل من هنا",
+    "words": "كلمة بكلمة",
+    "bookmark": "ضع علامة",
+    "unbookmark": "أزل العلامة",
+    "copy": "انسخ",
+    "copied": "نُسخ",
+    "share": "شارك",
+    "close": "أغلق"
+  },
+  "word": {
+    "meaning": "المعنى",
+    "transliteration": "النطق بالحروف اللاتينية",
+    "none": "لا معنى مدرج لهذه الكلمة."
+  },
+  "mushaf": {
+    "page": "الصفحة {page}",
+    "pageOf": "الصفحة {page} من {count}",
+    "juz": "الجزء {number}",
+    "previous": "الصفحة السابقة",
+    "next": "الصفحة التالية",
+    "loading": "تُجهَّز الصفحة {page}",
+    "fontError": "تعذّر تنزيل هذه الصفحة. تحقق من الاتصال وحاول مجددًا.",
+    "pageNumber": "رقم الصفحة",
+    "go": "انتقل"
+  },
+  "audio": {
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "stop": "إيقاف",
+    "previous": "الآية السابقة",
+    "next": "الآية التالية",
+    "playing": "{surah} · {reciter}",
+    "speed": "السرعة",
+    "repeat": "كرّر كل آية",
+    "times": "{count, plural, zero {بلا تكرار} one {مرة واحدة} two {مرتين} few {# مرات} many {# مرة} other {# مرة}}",
+    "loading": "يُحمَّل التسجيل",
+    "error": "تعذّر تشغيل التلاوة. تحقق من الاتصال، أو نزّلها للاستماع دون اتصال.",
+    "download": "نزّل للاستماع دون اتصال",
+    "downloading": "يُنزَّل {percent}",
+    "downloaded": "مُنزَّلة",
+    "removeDownload": "احذف التنزيل",
+    "downloads": "التنزيلات",
+    "downloadsEmpty": "السور التي تنزّلها تُسمع دون اتصال.",
+    "size": "{size} على هذا الجهاز"
+  },
+  "reciters": {
+    "label": "القارئ",
+    "afasy": "مشاري راشد العفاسي",
+    "husary": "محمود خليل الحصري (المصحف المعلّم)",
+    "abdulbasit": "عبد الباسط عبد الصمد",
+    "minshawi": "محمد صديق المنشاوي",
+    "ghamdi": "سعد الغامدي"
+  },
+  "settings": {
+    "title": "إعدادات القراءة",
+    "arabicSize": "حجم الخط العربي",
+    "translation": "الترجمة",
+    "none": "بلا ترجمة",
+    "sahih": "صحيح إنترناشيونال (بالإنجليزية)",
+    "hamidullah": "محمد حميد الله (بالفرنسية)",
+    "wordMeanings": "المعنى تحت كل كلمة",
+    "transliteration": "النطق اللاتيني تحت كل كلمة",
+    "theme": "لون الصفحة",
+    "themes": {
+      "app": "مثل التطبيق",
+      "light": "فاتح",
+      "sepia": "ورقي",
+      "dark": "داكن"
+    },
+    "sample": "حجم نص القرآن"
+  }
+}

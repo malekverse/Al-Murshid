@@ -25,6 +25,10 @@
   --color-focus: #8C5C14;
   --color-positive: #2F7D6D;
   --color-danger: #B5483B;
+  --color-mark-sage: #4D7C5A;
+  --color-mark-sky: #3D6D9C;
+  --color-mark-plum: #7D5A8E;
+  --color-mark-clay: #A0663F;
   --color-sky-fajr-top: #1E2A4A;
   --color-sky-fajr-bottom: #C98B8B;
   --color-sky-sunrise-top: #F4C79A;
@@ -42,6 +46,7 @@
   --font-ui: var(--font-readex-pro), ui-sans-serif, system-ui, sans-serif;
   --font-sacred: var(--font-amiri), serif;
   --font-quran: var(--font-qpc-hafs), var(--font-amiri), serif;
+  --font-surah: var(--font-surah-name);
   --default-font-family: var(--font-ui);
 
   --text-display: 2.5rem;
@@ -131,6 +136,10 @@
   --color-focus: #8C5C14;
   --color-positive: #2F7D6D;
   --color-danger: #B5483B;
+  --color-mark-sage: #4D7C5A;
+  --color-mark-sky: #3D6D9C;
+  --color-mark-plum: #7D5A8E;
+  --color-mark-clay: #A0663F;
 }
 
 [data-theme=dark] {
@@ -148,6 +157,32 @@
   --color-focus: #E8B25A;
   --color-positive: #5FB8A3;
   --color-danger: #E07A6C;
+  --color-mark-sage: #7FB38E;
+  --color-mark-sky: #80AADA;
+  --color-mark-plum: #BB9BD0;
+  --color-mark-clay: #D9A07A;
   --shadow-card: 0 0 #0000;
   --shadow-lift: 0 0 #0000;
+}
+
+/* Warm paper, for the Quran reader only. */
+[data-theme=sepia] {
+  color-scheme: light;
+  --color-canvas: #F3EAD6;
+  --color-surface: #FAF4E4;
+  --color-surface-glass: rgba(250, 244, 228, 0.76);
+  --color-ink: #2B2118;
+  --color-ink-muted: #6A5843;
+  --color-hairline: rgba(43, 33, 24, 0.10);
+  --color-card-edge: rgba(43, 33, 24, 0);
+  --color-lantern: #8C5C14;
+  --color-on-lantern: #FFFFFF;
+  --color-lantern-ink: #7A4E0F;
+  --color-focus: #7A4E0F;
+  --color-positive: #2F6B5E;
+  --color-danger: #9E3F30;
+  --color-mark-sage: #4A7656;
+  --color-mark-sky: #3B6894;
+  --color-mark-plum: #775587;
+  --color-mark-clay: #985F3A;
 }

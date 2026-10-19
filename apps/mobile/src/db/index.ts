@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
-import { prayerLogs } from './schema';
+import { prayerLogs, quranBookmarks } from './schema';
 
 // The personal database (SPEC 8.3): expo-sqlite with Drizzle for queries. Migrations are plain
 // SQL run in order and tracked with SQLite's user_version, so nothing needs a bundler plugin.
@@ -15,6 +15,16 @@ const migrations = [
      PRIMARY KEY (date, prayer)
    );
    CREATE INDEX IF NOT EXISTS prayer_logs_date ON prayer_logs (date);`,
+  `CREATE TABLE IF NOT EXISTS quran_bookmarks (
+     id TEXT PRIMARY KEY NOT NULL,
+     surah INTEGER NOT NULL,
+     ayah INTEGER NOT NULL,
+     color TEXT NOT NULL,
+     created_at TEXT NOT NULL,
+     updated_at TEXT NOT NULL,
+     deleted INTEGER NOT NULL DEFAULT 0
+   );
+   CREATE INDEX IF NOT EXISTS quran_bookmarks_ayah ON quran_bookmarks (surah, ayah);`,
 ];
 
 const sqlite = openDatabaseSync('murshid.db', { enableChangeListener: true });
@@ -31,5 +41,5 @@ function migrate() {
 }
 migrate();
 
-export const db = drizzle(sqlite, { schema: { prayerLogs } });
-export { prayerLogs };
+export const db = drizzle(sqlite, { schema: { prayerLogs, quranBookmarks } });
+export { prayerLogs, quranBookmarks };

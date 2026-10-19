@@ -1,0 +1,160 @@
+{
+  "title": "Coran",
+  "home": {
+    "continue": "Reprendre la lecture",
+    "continueAt": "{surah} · verset {ayah} · page {page}",
+    "begin": "Commencer par Al-Fatiha",
+    "tabs": {
+      "label": "Parcourir le Coran",
+      "surahs": "Sourates",
+      "juz": "Juz’",
+      "bookmarks": "Signets"
+    }
+  },
+  "surah": {
+    "ayahs": "{count, plural, one {# verset} many {# versets} other {# versets}}",
+    "makkah": "Mecquoise",
+    "madinah": "Médinoise",
+    "row": "Sourate {number}, {name}, {place}, {ayahs}"
+  },
+  "juz": {
+    "name": "Juz’ {number}",
+    "starts": "Dès {surah} {ayah} · page {page}"
+  },
+  "search": {
+    "label": "Rechercher dans le Coran",
+    "placeholder": "Une sourate, un mot ou 2:255",
+    "surahs": "Sourates",
+    "ayahs": "{count, plural, one {# verset} many {# versets} other {# versets}}",
+    "more": "Les {shown} premiers sur {total}.",
+    "none": "Aucun résultat pour « {query} ».",
+    "goTo": "Aller à {surah} {ayah}",
+    "clear": "Effacer la recherche"
+  },
+  "bookmarks": {
+    "empty": "Les versets que vous marquez se retrouvent ici.",
+    "colors": {
+      "label": "Couleur du signet",
+      "lantern": "Or",
+      "sage": "Vert",
+      "sky": "Bleu",
+      "plum": "Violet",
+      "clay": "Argile"
+    }
+  },
+  "khatmah": {
+    "title": "Khatma",
+    "today": "Aujourd’hui : pages {from} à {to}",
+    "todayOne": "Aujourd’hui : page {page}",
+    "readToday": "{read} sur {count} lues aujourd’hui",
+    "finish": "À ce rythme, fin le {date}",
+    "done": "Votre khatma est achevée. Qu’Allah l’accepte.",
+    "read": "Lire la portion du jour",
+    "markRead": "Marquer la portion du jour comme lue",
+    "progress": "{percent} de la khatma lus",
+    "plan": "Planifier une khatma",
+    "planHint": "Lire tout le Coran d’ici une date, ou quelques pages chaque jour.",
+    "end": "Arrêter ce plan",
+    "sheet": {
+      "title": "Planifier une khatma",
+      "description": "Le plan s’ajuste discrètement quand un jour est manqué. Rien n’est jamais dû.",
+      "goal": "Planifier par",
+      "byDate": "Une date de fin",
+      "byPace": "Pages par jour",
+      "within": "Terminer en",
+      "days": "{count, plural, one {# jour} many {# jours} other {# jours}}",
+      "pace": "{count, plural, one {# page par jour} many {# pages par jour} other {# pages par jour}}",
+      "estimate": "Environ {pace}, fin le {date}.",
+      "begin": "Commencer"
+    }
+  },
+  "reader": {
+    "back": "Coran",
+    "settings": "Réglages de lecture",
+    "verses": "Vue par versets",
+    "page": "Vue par pages",
+    "loading": "Ouverture de la sourate",
+    "error": "Impossible d’ouvrir cette sourate.",
+    "retry": "Réessayer",
+    "offline": "Vous êtes hors ligne. Les sourates déjà ouvertes ici restent lisibles.",
+    "next": "Suivante : {surah}",
+    "previous": "Précédente : {surah}",
+    "sajda": "Verset de prosternation",
+    "footnote": "Note {mark}",
+    "closeFootnote": "Fermer la note",
+    "translationBy": "Traduction : {name}"
+  },
+  "actions": {
+    "label": "Verset {surah}:{ayah}",
+    "play": "Écouter à partir d’ici",
+    "words": "Mot à mot",
+    "bookmark": "Ajouter un signet",
+    "unbookmark": "Retirer le signet",
+    "copy": "Copier",
+    "copied": "Copié",
+    "share": "Partager",
+    "close": "Fermer"
+  },
+  "word": {
+    "meaning": "Sens",
+    "transliteration": "Translittération",
+    "none": "Aucun sens indiqué pour ce mot."
+  },
+  "mushaf": {
+    "page": "Page {page}",
+    "pageOf": "Page {page} sur {count}",
+    "juz": "Juz’ {number}",
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "loading": "Préparation de la page {page}",
+    "fontError": "Impossible de télécharger cette page. Vérifiez la connexion et réessayez.",
+    "pageNumber": "Numéro de page",
+    "go": "Aller"
+  },
+  "audio": {
+    "play": "Écouter",
+    "pause": "Pause",
+    "stop": "Arrêter",
+    "previous": "Verset précédent",
+    "next": "Verset suivant",
+    "playing": "{surah} · {reciter}",
+    "speed": "Vitesse",
+    "repeat": "Répéter chaque verset",
+    "times": "{count, plural, one {Une fois} many {# fois} other {# fois}}",
+    "loading": "Chargement de la récitation",
+    "error": "Impossible de lire la récitation. Vérifiez la connexion, ou téléchargez-la pour l’écouter hors ligne.",
+    "download": "Télécharger pour écouter hors ligne",
+    "downloading": "Téléchargement {percent}",
+    "downloaded": "Téléchargée",
+    "removeDownload": "Supprimer le téléchargement",
+    "downloads": "Téléchargements",
+    "downloadsEmpty": "Les sourates téléchargées s’écoutent sans connexion.",
+    "size": "{size} sur cet appareil"
+  },
+  "reciters": {
+    "label": "Récitateur",
+    "afasy": "Mishary Rashid Alafasy",
+    "husary": "Mahmoud Khalil al-Husary (rythme d’apprentissage)",
+    "abdulbasit": "Abdul Basit Abdul Samad",
+    "minshawi": "Muhammad Siddiq al-Minshawi",
+    "ghamdi": "Saad al-Ghamdi"
+  },
+  "settings": {
+    "title": "Réglages de lecture",
+    "arabicSize": "Taille de l’arabe",
+    "translation": "Traduction",
+    "none": "Aucune",
+    "sahih": "Saheeh International (anglais)",
+    "hamidullah": "Muhammad Hamidullah (français)",
+    "wordMeanings": "Sens sous chaque mot",
+    "transliteration": "Translittération sous chaque mot",
+    "theme": "Couleur de la page",
+    "themes": {
+      "app": "Comme l’app",
+      "light": "Clair",
+      "sepia": "Sépia",
+      "dark": "Sombre"
+    },
+    "sample": "Taille du texte coranique"
+  }
+}

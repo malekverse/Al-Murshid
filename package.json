@@ -16,7 +16,8 @@
     "i18n:check": "pnpm --filter @murshid/i18n check",
     "tokens:check": "pnpm --filter @murshid/tokens check",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "content:check": "pnpm --filter @murshid/content quran:check"
   },
   "devDependencies": {
     "prettier": "3.9.10",

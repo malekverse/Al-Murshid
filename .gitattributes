@@ -8,3 +8,9 @@
 # Content sources stay byte for byte as published (packages/content/sources.json)
 packages/content/quran/source/** -text
 packages/content/places/** -text
+*.db binary
+
+# Derived from the sources above by packages/content/scripts/build-quran.ts
+packages/content/quran/generated/*.json linguist-generated=true -diff
+packages/content/quran/generated/**/*.json linguist-generated=true -diff
+packages/content/quran/generated/loaders.js linguist-generated=true

@@ -75,6 +75,21 @@ export type UiRole = (typeof uiRoles)[number];
 /** The reader can resize Quran text within this range (px). */
 export const quranSizeRange = { min: 20, max: 48 } as const;
 
+/** Calligraphic surah names (QUL surah name font): in lists, and heading a surah. */
+export const surahNameSize = { list: 32, header: 52 } as const;
+
+/**
+ * The mushaf page (SPEC 5.5). Each page's QCF V2 font is sized from the page width so every line
+ * fills it as printed: font size = width x fontPerWidth, up to maxWidth.
+ */
+export const mushafPage = {
+  maxWidth: 600,
+  fontPerWidth: 0.0545,
+  lineHeight: 1.85,
+  /** The basmalah line, drawn in page 1's font, is set a little smaller so it fits one line. */
+  basmalah: 0.8,
+} as const;
+
 /** In-app comfort size multiplies on top of the system text size, up to 200%. */
 export const comfortScale = { min: 1, max: 2, step: 0.1 } as const;
 
@@ -88,10 +103,13 @@ export const fonts = {
     sacred: 'var(--font-amiri), serif',
     // King Fahd Complex QPC Hafs font, self-hosted (SPEC 6.2, 10); Amiri only if it fails to load.
     quran: 'var(--font-qpc-hafs), var(--font-amiri), serif',
+    // QUL's surah name font: ligatures turn "surah002" into its calligraphy.
+    surah: 'var(--font-surah-name)',
   },
   native: {
     ui: { 400: 'ReadexPro-Regular', 500: 'ReadexPro-Medium', 600: 'ReadexPro-SemiBold' },
     sacred: 'Amiri-Regular',
     quran: 'QPC-Hafs',
+    surah: 'SurahName-V2',
   },
 } as const;

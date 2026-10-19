@@ -53,3 +53,6 @@ builds/
 # Playwright results and review screenshots
 apps/web/e2e/.results/
 apps/web/e2e/.screens/
+
+# QCF V2 page fonts (about 200 MB), installed by packages/content fonts:v2
+apps/web/public/fonts/quran-v2/

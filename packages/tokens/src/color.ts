@@ -4,7 +4,8 @@
 // Token names differ slightly from the SPEC table so Tailwind utilities read well:
 //   SPEC bg -> canvas, text -> ink, text-muted -> ink-muted (see docs/DECISIONS.md).
 
-export type ThemeName = 'light' | 'dark';
+/** The reader adds a warm paper theme, sepia, for long reading (SPEC 5.5). */
+export type ThemeName = 'light' | 'dark' | 'sepia';
 
 export interface ColorTokens {
   /** App background off Today (SPEC `bg`). */
@@ -36,6 +37,11 @@ export interface ColorTokens {
   positive: string;
   /** Destructive actions only. Never used for worship. */
   danger: string;
+  /** Bookmark colors beside the lantern (SPEC 5.5), small marks only (3:1). */
+  markSage: string;
+  markSky: string;
+  markPlum: string;
+  markClay: string;
 }
 
 export const colors: Record<ThemeName, ColorTokens> = {
@@ -53,6 +59,10 @@ export const colors: Record<ThemeName, ColorTokens> = {
     focus: '#8C5C14',
     positive: '#2F7D6D',
     danger: '#B5483B',
+    markSage: '#4D7C5A',
+    markSky: '#3D6D9C',
+    markPlum: '#7D5A8E',
+    markClay: '#A0663F',
   },
   dark: {
     canvas: '#0E1116',
@@ -68,6 +78,31 @@ export const colors: Record<ThemeName, ColorTokens> = {
     focus: '#E8B25A',
     positive: '#5FB8A3',
     danger: '#E07A6C',
+    markSage: '#7FB38E',
+    markSky: '#80AADA',
+    markPlum: '#BB9BD0',
+    markClay: '#D9A07A',
+  },
+  // Warm paper for the reader only. The lantern deepens so it still reads on paper, and its
+  // label turns white.
+  sepia: {
+    canvas: '#F3EAD6',
+    surface: '#FAF4E4',
+    surfaceGlass: 'rgba(250, 244, 228, 0.76)',
+    ink: '#2B2118',
+    inkMuted: '#6A5843',
+    hairline: 'rgba(43, 33, 24, 0.10)',
+    cardEdge: 'rgba(43, 33, 24, 0)',
+    lantern: '#8C5C14',
+    onLantern: '#FFFFFF',
+    lanternInk: '#7A4E0F',
+    focus: '#7A4E0F',
+    positive: '#2F6B5E',
+    danger: '#9E3F30',
+    markSage: '#4A7656',
+    markSky: '#3B6894',
+    markPlum: '#775587',
+    markClay: '#985F3A',
   },
 };
 
@@ -90,6 +125,14 @@ export const contrastRequirements: ReadonlyArray<
   ['lantern', 'surface', 3],
   ['focus', 'canvas', 3],
   ['focus', 'surface', 3],
+  ['markSage', 'canvas', 3],
+  ['markSage', 'surface', 3],
+  ['markSky', 'canvas', 3],
+  ['markSky', 'surface', 3],
+  ['markPlum', 'canvas', 3],
+  ['markPlum', 'surface', 3],
+  ['markClay', 'canvas', 3],
+  ['markClay', 'surface', 3],
 ];
 
 /** Kebab-case CSS name for a token key: inkMuted -> ink-muted. */

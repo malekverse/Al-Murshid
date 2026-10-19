@@ -15,6 +15,8 @@ export default defineConfig({
         'src/geo.ts',
         'src/today.ts',
         'src/calendar.ts',
+        'src/khatmah.ts',
+        'src/recitation.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

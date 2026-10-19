@@ -204,3 +204,47 @@ Newest phase at the bottom.
 - **Web: a Playwright flow covers first visit, onboarding by city, Today, "I prayed", an earlier prayer and a reload, and passes at 1280 px and 360 px.** It runs with `pnpm --filter @murshid/web e2e`, not yet in CI, which would need the browsers installed. A screenshot run covers Today, You, Qibla and the calendar in ar, en and fr, light and dark, at both sizes (`e2e/.screens`, not committed).
 - **Release builds keep WorkManager's Room database through R8 (`expo-build-properties` adds the keep rules).** The notification and background-task modules bring WorkManager, and SDK 58 shrinks release builds by default. Without the rules, the release app crashed at launch (`WorkDatabase_Impl` stripped), which no debug build would ever show.
 - **Offline: the mobile daily loop makes no network calls (prayer times, cities, the Quran verse and the Hijri calendar are all local).** Web offline arrives with the PWA (Serwist) in Phase 5.
+
+## Phase 5 · Quran (2026-10-18)
+
+### Sources (SPEC 10)
+
+- **Everything comes from QUL, downloaded with the owner's account and permission, and is pinned by SHA-256 in `packages/content/sources.json`:** the KFGQPC Hafs word-by-word script, the QCF V2 glyph text and the 1421H 15-line layout, juz/hizb/rub/sajdah metadata, the surah name font, English and French word-by-word meanings, English word-by-word transliteration, and timestamps for five reciters. Files stay byte for byte as published.
+- **Translations: Saheeh International (English) and Muhammad Hamidullah (French), the owner's choice, pending written permission from their publishers before launch.** The repository is public, so committing them already redistributes them; this is recorded as an open item. Word meanings and transliteration come from QUL, which does not flag them as copyrighted (it flags some other word-by-word sets).
+- **Not in Phase 5:** translated surah names (no licensed source; lists show the transliterated name and the calligraphy), short tafsir (no licensed source chosen; the ayah actions leave it out), private ayah notes (they need the encrypted local store that night reflections bring in Phase 7), and sharing an ayah as an image card (Phase 6 makes per-ayah Open Graph images).
+
+### Pipeline
+
+- **`scripts/build-quran.ts` derives `quran/generated` (1,033 minified JSON files) from the pinned sources, per surah, so neither app parses the whole Quran at once.** A generated `loaders.js` gives each file its own dynamic import for both bundlers. CI fails when the folder is stale (`pnpm content:check`).
+- **The words shown are cut from the published ayah text, with the word-by-word file used only for boundaries.** The two differ in spacing only (the rub el hizb sign takes a no-break space in the ayah text; 12 sajdah or joined marks have no space), so every character comes from the published text, and a test rebuilds all 6,236 ayahs byte for byte from words and separators.
+- **Data quirks are pinned in tests rather than edited:** one empty Saheeh footnote (7:143; its mark is hidden), Abdul Basit's al-Baqarah listed at 8,655 s though the file runs 9,685 s (its MP3 header; players use the file's own length), and one timestamp matched to an earlier occurrence of a refrain (Abdul Basit 55:71). `playbackSpans` (core) places unusable ayahs between their neighbours.
+- **Search (references, surah names, Arabic words, the translation) matches plain forms built for search only;** results always show the published text.
+
+### Mushaf (SPEC 5.5)
+
+- **The 1421H (V2) Madani layout with its 604 page fonts, as SPEC 5.5 asks ("page-accurate fonts").** Each line is drawn in its page's QCF V2 font, sized from the width (`mushafPage` tokens). The basmalah line uses Al-Fatihah 1's own glyphs from page 1, without the number. In 18 surahs the printed page ends with the surah's name and the next page opens with the basmalah; the layout keeps that.
+- **The page fonts (about 200 MB) stay out of git.** `quran/qpc-v2-fonts.json` pins each file's hash and `pnpm --filter @murshid/content fonts:v2 <folder>` installs them into `apps/web/public/fonts/quran-v2`, refusing any file that differs. Mobile downloads a page's font once from `EXPO_PUBLIC_ASSET_BASE_URL` and keeps it. Hosting them on the asset CDN is an open item for the owner. The fonts carry no license text ("Test Font, KFGQPC" in their name table): an item for the reviewer.
+- **Pages turn like a paper mushaf in every app language: the next page lies to the left (button, ← key, or a swipe toward the right).** Wide web screens show facing pages, odd on the right. Pages change in place, without a transition, because Quran text never animates.
+
+### Reading and listening
+
+- **Verse view: tap a word for its meaning and transliteration; each ayah's actions are play from here, word by word, five bookmark colors, copy and share.** Copying and sharing carry the published text, the shown translation and the reference.
+- **New tokens: a sepia reading theme (scoped to the reader, `data-theme` on web, Uniwind `ScopedTheme` on mobile) and four bookmark colors beside the lantern, each 3:1 against both surfaces in every theme.**
+- **Recitations: al-Afasy, al-Husary, Abdul Basit, al-Minshawi and al-Ghamdi, surah by surah with word timestamps.** QUL's al-Husary "murattal" set is his teaching edition, labelled as such. Audio streams from the publishers' servers (QuranicAudio, Tarteel's CDN); hosting it on our own CDN waits for each reciter's rights (open item). Web uses one audio element and the Media Session API; mobile uses expo-audio with background playback and lock-screen controls, and plays a downloaded surah from the phone.
+- **Khatmah (core): today's portion holds still through the day; falling behind raises the daily portion quietly, never above twice the starting pace, and the finish date moves instead.** Nothing is ever shown as owed.
+- **Web routes `/quran/[surah]` (prerendered), `/quran/[surah]/[ayah]` and `/quran/page/[page]`, mirrored on mobile.** Cache Components needs the reader routes to block (`instant = false`), since the shell reads the address.
+
+### Platform notes
+
+- **Release builds may fetch plain HTTP from `localhost` and `10.0.2.2` only (`plugins/with-local-cleartext.js`); every other host needs HTTPS.** Release builds forbid cleartext by default, which kept an emulator from downloading page fonts from the web dev server. Debug builds keep cleartext everywhere, as React Native's debug manifest already allows, so the dev client reaches Metro on the LAN.
+- **The native theme declares `@custom-variant sepia` itself.** Uniwind compiles the imported theme file on its own while it looks for dependencies, before it declares the variants for `extraThemes`, and Tailwind rejected the unknown variant.
+- **The release APK grows from 63 MB to 88 MB with the bundled Quran data (about 20 MB of JSON as Hermes modules), loaded per surah.** Shipping it as raw assets instead could trim this; measured in Phase 9 with the other size and start-up budgets.
+- **On the emulator, debug builds are too slow to judge the Quran screens:** Today's per-second updates and the lazily bundled data files saturate the JS thread. The screens were verified on release builds.
+- **Web: Serwist (`@serwist/turbopack`) in production only.** It caches pages and scripts as they are visited (including in-app navigations), keeps every mushaf page font once fetched, and falls back to a small offline page in the page's language. Icons and the manifest come from the app icon.
+- **The worker precaches only the shell (23 files, about 370 KB): styles, icons, illustrations and the offline pages.** By default it would have precached all of `public` and every script, 1,692 files and 223 MB including the 604 page fonts, on a first visit. Pages opened here stay in their own cache (300 pages, no expiry, unlike the default 32 for a day), and content-hashed scripts, where each surah's data lives, are kept cache-first. Empty-state pictures are served as they are (already 2x webp of about 13 KB), so the offline page shows the one the worker precached rather than an image-optimizer URL.
+
+### Verification
+
+- **The gate (SPEC 12).** The Quran text: sources pinned by SHA-256, a test that rebuilds all 6,236 ayahs byte for byte from the shown words, and CI failing on stale generated data. Audio sync: `playbackSpans`, `ayahAtTime` and `wordAtTime` are unit-tested (core stays at 100% coverage), and the highlighted word was watched against the recitation (al-Afasy) on web and on an Android release build. Offline: on Android, a downloaded surah plays with the network off, and a mushaf page and a surah opened before stay readable; on web, with the production server stopped, a surah, an ayah and a mushaf spread opened before load from the worker with their page fonts, and any other page shows the offline page in its language.
+- **Web: Playwright flows (search to an ayah, a word's meaning, a bookmark, a mushaf page, a khatmah plan) pass at 1280 px and 360 px with the Phase 4 flow.** The screenshot run adds the Quran home, the verse view and a mushaf page in ar, en and fr, light and dark, at both sizes (reader routes as one viewport, not the full page).
+- **Android release build on the emulator:** the Quran home, the verse reader, recitation with the word highlight, lock-screen controls, the mushaf with swipe paging, and downloads. The emulator reaches the web dev server for page fonts through `adb reverse tcp:3000 tcp:3000`. iOS waits for an EAS build on a device.

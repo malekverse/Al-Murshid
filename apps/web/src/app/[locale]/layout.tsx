@@ -35,6 +35,15 @@ const qpcHafs = localFont({
   adjustFontFallback: false,
 });
 
+// QUL's surah name font: its ligatures draw each surah's calligraphic name ("surah002").
+const surahNames = localFont({
+  src: '../fonts/surah-name-v2.woff2',
+  variable: '--font-surah-name',
+  display: 'block',
+  preload: false,
+  adjustFontFallback: false,
+});
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -65,7 +74,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
     <html
       lang={locale}
       dir={direction(locale)}
-      className={`${readex.variable} ${amiri.variable} ${qpcHafs.variable}`}
+      className={`${readex.variable} ${amiri.variable} ${qpcHafs.variable} ${surahNames.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -77,7 +86,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
       <body className="bg-canvas font-ui text-ink">
         <a
           href="#main"
-          className="sr-only-focusable z-10 rounded-control bg-surface px-4 py-3 text-callout shadow-lift"
+          className="sr-only-focusable z-10 rounded-control bg-surface px-4 py-3 text-callout focus-visible:shadow-lift"
         >
           {t('a11y.skipToContent')}
         </a>

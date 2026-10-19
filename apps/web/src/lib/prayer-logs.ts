@@ -2,19 +2,10 @@
 
 import { addDays, isoDate, type CivilDate, type Prayer } from '@murshid/core';
 import { logKey, newLog, type LogSource, type PrayerLog } from '@murshid/data';
-import Dexie, { type EntityTable } from 'dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from './db';
 
-// Prayer logs stay in this browser (SPEC 9): IndexedDB through Dexie. Un-logging keeps a
-// tombstone, so a later sync (Phase 8) can carry it to other devices.
-
-interface Row extends PrayerLog {
-  /** "2026-10-18:asr" */
-  key: string;
-}
-
-const db = new Dexie('murshid') as Dexie & { prayerLogs: EntityTable<Row, 'key'> };
-db.version(1).stores({ prayerLogs: 'key, date' });
+// Prayer logs (SPEC 9), in this browser's IndexedDB. Un-logging keeps a tombstone.
 
 /** Logs from the last eight days (what Today and the Journey read), live. */
 export function useRecentLogs(today: CivilDate | null): PrayerLog[] | undefined {

@@ -93,6 +93,7 @@ function web(): string {
     `${i}--font-ui: ${fonts.web.ui};`,
     `${i}--font-sacred: ${fonts.web.sacred};`,
     `${i}--font-quran: ${fonts.web.quran};`,
+    `${i}--font-surah: ${fonts.web.surah};`,
     `${i}--default-font-family: var(--font-ui);`,
     '',
     ...textVars(i, { withWeight: true, absoluteLineHeight: false }),
@@ -124,6 +125,12 @@ function web(): string {
     ...Object.keys(shadow).map((k) => `${i}--shadow-${k}: 0 0 #0000;`),
     '}',
     '',
+    '/* Warm paper, for the Quran reader only. */',
+    '[data-theme=sepia] {',
+    `${i}color-scheme: light;`,
+    ...colorVars(colors.sepia, i),
+    '}',
+    '',
   ].join('\n');
 }
 
@@ -136,7 +143,11 @@ function native(): string {
   });
   return [
     HEADER,
-    '/* Uniwind theme: light and dark variables switch with Uniwind.setTheme(). */',
+    '/* Uniwind themes: light and dark switch with Uniwind.setTheme(); sepia scopes the reader. */',
+    '/* Declared here too (as Uniwind declares it), because Uniwind compiles this file on its own',
+    '   to find dependencies, before adding its variants for extraThemes. */',
+    '@custom-variant sepia (&:where(.sepia, .sepia *));',
+    '',
     '@layer theme {',
     '  :root {',
     '    @variant light {',
@@ -144,6 +155,9 @@ function native(): string {
     '    }',
     '    @variant dark {',
     ...colorVars(colors.dark, ii),
+    '    }',
+    '    @variant sepia {',
+    ...colorVars(colors.sepia, ii),
     '    }',
     '  }',
     '}',
@@ -155,6 +169,7 @@ function native(): string {
     ...weightVars,
     `${i}--font-sacred: ${fonts.native.sacred};`,
     `${i}--font-quran: ${fonts.native.quran};`,
+    `${i}--font-surah: ${fonts.native.surah};`,
     '',
     ...textVars(i, { withWeight: false, absoluteLineHeight: true }),
     '',

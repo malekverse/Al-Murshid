@@ -1,6 +1,7 @@
 // Must run before anything formats a number or a plural.
 import '@/lib/intl-polyfills';
 // Background tasks must exist before the OS can wake the app for them (SPEC 5.2).
+import { RecitationProvider } from '@/components/quran/recitation';
 import { registerBackgroundTasks } from '@/lib/background';
 import { Amiri_400Regular } from '@expo-google-fonts/amiri';
 import {
@@ -110,14 +111,17 @@ function Root() {
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <ReminderSync />
         <ToastProvider>
-          <SheetHost>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: 'transparent' },
-              }}
-            />
-          </SheetHost>
+          {/* One recitation for the whole app, so listening carries on across screens. */}
+          <RecitationProvider>
+            <SheetHost>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: 'transparent' },
+                }}
+              />
+            </SheetHost>
+          </RecitationProvider>
         </ToastProvider>
       </LocaleProvider>
     </View>

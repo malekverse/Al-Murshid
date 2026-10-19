@@ -5,13 +5,17 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./quran": "./src/quran-api.ts",
     "./cities": "./src/cities.ts"
   },
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
     "test": "vitest run",
-    "cities": "tsx scripts/import-cities.ts"
+    "cities": "tsx scripts/import-cities.ts",
+    "quran": "tsx scripts/build-quran.ts",
+    "quran:check": "tsx scripts/build-quran.ts --check",
+    "fonts:v2": "tsx scripts/install-v2-fonts.ts"
   },
   "devDependencies": {
     "@murshid/config": "workspace:*",

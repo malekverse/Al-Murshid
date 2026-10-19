@@ -10,6 +10,7 @@ import arJourney from '../messages/ar/journey.json';
 import arNotifications from '../messages/ar/notifications.json';
 import arOnboarding from '../messages/ar/onboarding.json';
 import arQibla from '../messages/ar/qibla.json';
+import arQuran from '../messages/ar/quran.json';
 import arSettings from '../messages/ar/settings.json';
 import arShowcase from '../messages/ar/showcase.json';
 import arToday from '../messages/ar/today.json';
@@ -22,6 +23,7 @@ import enJourney from '../messages/en/journey.json';
 import enNotifications from '../messages/en/notifications.json';
 import enOnboarding from '../messages/en/onboarding.json';
 import enQibla from '../messages/en/qibla.json';
+import enQuran from '../messages/en/quran.json';
 import enSettings from '../messages/en/settings.json';
 import enShowcase from '../messages/en/showcase.json';
 import enToday from '../messages/en/today.json';
@@ -34,6 +36,7 @@ import frJourney from '../messages/fr/journey.json';
 import frNotifications from '../messages/fr/notifications.json';
 import frOnboarding from '../messages/fr/onboarding.json';
 import frQibla from '../messages/fr/qibla.json';
+import frQuran from '../messages/fr/quran.json';
 import frSettings from '../messages/fr/settings.json';
 import frShowcase from '../messages/fr/showcase.json';
 import frToday from '../messages/fr/today.json';
@@ -50,6 +53,7 @@ const en = {
   notifications: enNotifications,
   onboarding: enOnboarding,
   qibla: enQibla,
+  quran: enQuran,
   settings: enSettings,
   showcase: enShowcase,
   today: enToday,
@@ -67,6 +71,7 @@ export const messages: Record<Locale, Messages> = {
     notifications: arNotifications,
     onboarding: arOnboarding,
     qibla: arQibla,
+    quran: arQuran,
     settings: arSettings,
     showcase: arShowcase,
     today: arToday,
@@ -82,6 +87,7 @@ export const messages: Record<Locale, Messages> = {
     notifications: frNotifications,
     onboarding: frOnboarding,
     qibla: frQibla,
+    quran: frQuran,
     settings: frSettings,
     showcase: frShowcase,
     today: frToday,

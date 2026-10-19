@@ -1,5 +1,17 @@
-import { Soon } from '@/components/soon';
+import { isLocale } from '@murshid/i18n';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { QuranHome } from '@/components/quran/quran-home';
+
+export async function generateMetadata({
+  params,
+}: PageProps<'/[locale]/quran'>): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = await getTranslations({ locale, namespace: 'quran' });
+  return { title: t('title') };
+}
 
 export default function QuranPage() {
-  return <Soon what="quran" illustration="bookmarks" />;
+  return <QuranHome />;
 }

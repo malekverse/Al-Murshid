@@ -8,4 +8,6 @@ const config = getDefaultConfig(__dirname);
 module.exports = withUniwindConfig(config, {
   cssEntryFile: './src/global.css',
   dtsFile: './src/uniwind-types.d.ts',
+  // The Quran reader's paper theme, scoped with <ScopedTheme theme="sepia">.
+  extraThemes: ['sepia'],
 });

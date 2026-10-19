@@ -32,6 +32,13 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - Mobile reminders: `/dev/reminders` rings a test notification in 5 s. Background tasks (a notification
   action with the app closed) only run reliably in release builds, not in the dev client.
 - If the dev client cannot reach Metro after an adb restart: `adb reverse tcp:8081 tcp:8081`.
+- Quran data: `packages/content/quran/generated` is built from the pinned sources by
+  `pnpm --filter @murshid/content quran` (CI runs `pnpm content:check`). The 604 mushaf page fonts are not in
+  git: install them with `pnpm --filter @murshid/content fonts:v2 <unzipped QUL folder>` (web serves them from
+  `public/fonts/quran-v2`; the emulator reaches the web dev server with `adb reverse tcp:3000 tcp:3000`).
+- If the debug app is killed at launch ("failed to complete startup"), compile it ahead of time:
+  `adb shell cmd package compile -m speed -f com.malekverse.almurshid`. Judge the Quran screens on a release
+  build: in debug, Today's per-second updates starve the emulator's JS thread.
 - Commands run from the repo root through Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Design tokens live in `packages/tokens`; run `pnpm --filter @murshid/tokens build` after editing them
   (it regenerates `theme.css` for both apps).

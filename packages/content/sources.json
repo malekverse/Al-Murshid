@@ -50,6 +50,256 @@
       "retrieved": "2026-10-18",
       "license": "CC BY 4.0; credit GeoNames (https://www.geonames.org) in About.",
       "sha256": "f332056a4dde66b2d95ecee1bcc0fb4c584f8dafc8238a240dddafadf818dd8c"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-hafs-word-by-word.json",
+      "title": "KFGQPC Hafs script - Word by word",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/312",
+      "retrieved": "2026-10-18",
+      "license": "The King Fahd Complex's published Quran text, split into words; QUL states no further terms. Shipped unmodified.",
+      "sha256": "f366269234e24f322146c043fe5fbf0132990613a94aff4b3f23847f45793ea7"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v2.json",
+      "title": "QPC V2 Glyph - Word by Word (glyph codes for the 1421H page fonts)",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-script/61",
+      "retrieved": "2026-10-18",
+      "license": "The King Fahd Complex's QCF V2 glyph text; QUL states no further terms. Shipped unmodified.",
+      "sha256": "40964a1b7932e9a69e0dfc0d58dce3b73e30a803febda119fd6828bcb75fac98"
+    },
+    {
+      "path": "packages/content/quran/source/qpc-v2-15-lines.db",
+      "title": "KFGQPC V2 layout (1421H print): 604 pages, 15 lines",
+      "publisher": "King Fahd Glorious Quran Printing Complex",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/mushaf-layout/10",
+      "retrieved": "2026-10-18",
+      "license": "Layout of the printed mushaf, prepared by QUL; the resource page states no further terms.",
+      "sha256": "e4df98f35dd3b8927ff096337c8739e0f0b12c8ba622834c345eaa4c3e28dd8c"
+    },
+    {
+      "path": "packages/content/quran/source/surah-name-v2-ligatures.json",
+      "title": "Surah name font v2: ligature names",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/455",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "913095159d6d8f82d93dab653271f9ed321545d8350f3d8f3009bfce3c3592aa"
+    },
+    {
+      "path": "apps/web/src/app/fonts/surah-name-v2.woff2",
+      "title": "Surah name font v2, WOFF2",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/455",
+      "retrieved": "2026-10-18",
+      "license": "No license text in the font (its name table credits qul.tarteel.ai). Shipped unmodified; credit QUL in About.",
+      "sha256": "0000efbb176694d755efecf19e3857659d806e847baa49d0cdfb049af8540d73"
+    },
+    {
+      "path": "apps/mobile/assets/fonts/surah-name-v2.ttf",
+      "title": "Surah name font v2, TTF",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/font/455",
+      "retrieved": "2026-10-18",
+      "license": "No license text in the font (its name table credits qul.tarteel.ai). Shipped unmodified; credit QUL in About.",
+      "sha256": "2d4678ef53ef76c361c32c13a9ad26317b8f8219089ab5822aafa6ed5d17502a"
+    },
+    {
+      "path": "packages/content/quran/source/metadata/quran-metadata-juz.json",
+      "title": "Juz boundaries",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-metadata/68",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "0e34f5abbd786c828d388b1f3c732db8b42b1bf36a4f619603e4c632f9e86628"
+    },
+    {
+      "path": "packages/content/quran/source/metadata/quran-metadata-hizb.json",
+      "title": "Hizb boundaries",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-metadata/67",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "6a99e08337fc3629b3c0ae04897cbdd33c818fea94ff01d1be8aa33a80e2cb64"
+    },
+    {
+      "path": "packages/content/quran/source/metadata/quran-metadata-rub.json",
+      "title": "Rub al-hizb boundaries",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-metadata/63",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "9a8b17d69a3c173bff92aae5d53f6f83829cc8f513514b82266c4e4a3f81fd38"
+    },
+    {
+      "path": "packages/content/quran/source/metadata/quran-metadata-sajda.json",
+      "title": "Ayahs of prostration",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/quran-metadata/64",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "5b7a7859b57b03387b9b58fd46dfdcb3792b61cad5e982f0295ac29603958988"
+    },
+    {
+      "path": "packages/content/quran/source/translations/en-sahih-international-with-footnote-tags.json",
+      "title": "Saheeh International, English, with footnotes",
+      "publisher": "Saheeh International (Dar Abul-Qasim)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/translation/193",
+      "retrieved": "2026-10-18",
+      "license": "Copyright of the translator and publisher. Included at the owner's choice while written permission is requested; it must be granted before launch (SPEC 10, docs/DECISIONS.md).",
+      "sha256": "7cbed343434258ed8d66aa5481ab0b9ee09ba81e97884e1bc10837db48a5fedc"
+    },
+    {
+      "path": "packages/content/quran/source/translations/quran-fr-hamidullah-with-footnote-tags.json",
+      "title": "Muhammad Hamidullah, French, with footnotes",
+      "publisher": "Muhammad Hamidullah",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/translation/227",
+      "retrieved": "2026-10-18",
+      "license": "Copyright of the translator and publisher. Included at the owner's choice while written permission is requested; it must be granted before launch (SPEC 10, docs/DECISIONS.md).",
+      "sha256": "f644ff37a191c47e089a2d32156e26735758670a00da44629435524b7aae21c5"
+    },
+    {
+      "path": "packages/content/quran/source/wbw/english-wbw-translation.json",
+      "title": "English word by word translation",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/translation/92",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About. Not flagged as copyrighted on QUL, unlike some word-by-word sets.",
+      "sha256": "42992eec66ae5dd98659cda9bff9d350def46d953edb2622a8e3a444d56313b9"
+    },
+    {
+      "path": "packages/content/quran/source/wbw/french-wbw-translation.json",
+      "title": "French word by word translation",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/translation/95",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About. Not flagged as copyrighted on QUL, unlike some word-by-word sets.",
+      "sha256": "c3848a99db082b7966b2ffcd3da7c747a173236dc8b576935fb75379e84dd554"
+    },
+    {
+      "path": "packages/content/quran/source/wbw/english-wbw-transliteration.json",
+      "title": "English word by word transliteration",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/transliteration/71",
+      "retrieved": "2026-10-18",
+      "license": "QUL data; the resource page states no further terms. Credit QUL in About.",
+      "sha256": "56a4495058182eadfc872fe3963326732c6c24ae025bc26f094b4d16224b32dc"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mishari-rashid-al-afasy-streaming/surah.json",
+      "title": "Mishari Rashid al-Afasy, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/414",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "d444cab81b962bf727d44c9da4c99e734a2a35e1e0527874200167f7cd83ae02"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mishari-rashid-al-afasy-streaming/segments.json",
+      "title": "Mishari Rashid al-Afasy, surah by surah: word timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/414",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "10e5d5a13c52750b351f2fe7114abe0e1726aadaa61f1dcdacd9ad67d036ddca"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mahmoud-husary-murattal/surah.json",
+      "title": "Mahmoud Khalil al-Husary, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/316",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "3c71af3efa6d6a7bab601874e2ab07f4bedc41967ef90fe9e1d2cb2299a84d8f"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/mahmoud-husary-murattal/segments.json",
+      "title": "Mahmoud Khalil al-Husary, surah by surah: word timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/316",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "0d9726b92fbb6ff25463178ec115c1a4b66995c65dce2c679c8d4c534371499f"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdul-basit-abd-us-samad-murattal/surah.json",
+      "title": "Abdul Basit Abd us-Samad, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/408",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "14e4897ddd3dd025583a325e3eccfe3337c2b0fdce9b9e1a62c9a052d12420ba"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/abdul-basit-abd-us-samad-murattal/segments.json",
+      "title": "Abdul Basit Abd us-Samad, surah by surah: word timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/408",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "800cfcc90d4b196d53d99fc64289ec79e3643c9dc420e6be303b053316a59d14"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-siddiq-al-minshawy-murattal/surah.json",
+      "title": "Muhammad Siddiq al-Minshawi, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/396",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "1c33643cd1889a51a415026431cc374da4fc89d1ddc6522a287902df2959252d"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/muhammad-siddiq-al-minshawy-murattal/segments.json",
+      "title": "Muhammad Siddiq al-Minshawi, surah by surah: word timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/396",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "eae369453b2d8b997a991812a40ef8d08fe1813126197cf4d4e2aee78f8367c9"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/saad-ghamadi/surah.json",
+      "title": "Sa'd al-Ghamdi, surah by surah: audio links and durations",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/335",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "909ab665e0e304e95080e22c0e8a9742b94d0839f74d85b83864ee94da41d097"
+    },
+    {
+      "path": "packages/content/quran/source/recitations/saad-ghamadi/segments.json",
+      "title": "Sa'd al-Ghamdi, surah by surah: word timestamps",
+      "publisher": "Quranic Universal Library (Tarteel)",
+      "via": "Quranic Universal Library (Tarteel)",
+      "url": "https://qul.tarteel.ai/resources/recitation/335",
+      "retrieved": "2026-10-18",
+      "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
+      "sha256": "af727624afe7a6615219beb95a2e2bcb8fe89cd731578e1626b7f9feb097f161"
     }
   ]
 }
