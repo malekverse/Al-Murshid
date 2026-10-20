@@ -7,6 +7,9 @@ import { countryName } from '@/lib/country-name';
 import { loadPlaces } from '@/lib/places';
 import { pageMetadata } from '@/lib/seo';
 
+// Every country is prerendered; an unknown one renders its not-found page on request.
+export const instant = false;
+
 export async function generateStaticParams() {
   return (await loadPlaces()).countries.map((c) => ({ country: c.slug }));
 }

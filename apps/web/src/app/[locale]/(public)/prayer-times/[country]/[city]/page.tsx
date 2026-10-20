@@ -11,6 +11,11 @@ import { pageMetadata } from '@/lib/seo';
 
 // The 100 most populous cities are prerendered; the other 31,666 render on their first visit.
 // Each is kept for an hour (cityDay), so today's times follow the day.
+// Addresses not prerendered at build render whole on their first visit, then are kept: their
+// params are only known then, and Cache Components would otherwise refuse the render (on Netlify
+// the visitor got an error page).
+export const instant = false;
+
 export async function generateStaticParams() {
   const places = await loadPlaces();
   return places.countries

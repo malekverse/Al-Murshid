@@ -7,7 +7,10 @@ import { StaticSurah } from '@/components/quran/static-surah';
 import { pageMetadata } from '@/lib/seo';
 
 // /quran/2: a surah, sent by the server in every language (Phase 6); the reader takes over on
-// the first touch.
+// the first touch. All 114 are prerendered; any other address renders its not-found page on
+// request.
+export const instant = false;
+
 export function generateStaticParams() {
   return Array.from({ length: 114 }, (_, i) => ({ surah: String(i + 1) }));
 }

@@ -47,6 +47,9 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - Public web pages (`apps/web/src/app/[locale]/(public)`) are Server Components with small client islands.
   Keep the root layout free of client providers: the app's go in `AppProviders`, in the app's own layouts.
   Their budgets: `next build`, then `npx -y @lhci/cli@0.15.1 autorun` from `apps/web` (CI runs it).
+- The site deploys to Netlify from `main` (every push spends free-plan credits). A public route with params
+  sets `export const instant = false`, and client components that read the address sit in `<Suspense>`:
+  otherwise Netlify answers 500 for pages rendered on request.
 - If a CSS change is missing from a production build, Turbopack's build cache is stale: delete
   `apps/web/.next/cache/turbopack` and build again.
 - Share images (`opengraph-image.tsx`) draw text through `apps/web/src/lib/og`, shaped with HarfBuzz:

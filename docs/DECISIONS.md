@@ -379,6 +379,13 @@ The plan, the gate and the owner's part are in `docs/PHASE-6.md`.
 - **Measured on CI's runner (the first Phase 6 run, median of three):** the prayer-time pages score 0.97–0.98 with TBT around 90 ms, the Quran pages 0.86–0.93; LCP 2.3–2.6 s on the prayer-time pages and 3.2–3.9 s on the Quran pages.
 - **Measured locally (production build, Lighthouse 12 in LHCI, simulated slow 4G, median of three):** the prayer-time pages score 0.92–0.93 (LCP 2.6–2.8 s, TBT 156–247 ms), the Quran pages 0.79–0.87 (LCP 3.3–4.2 s). Accessibility, SEO and Best Practices are 100 and CLS at most 0.025 on all six. Unthrottled in Chromium, the same pages paint in 140–300 ms. The simulated LCP is mostly bytes on a 1.6 Mbps link: about 141 KB of framework scripts, the interface fonts, and on Quran pages the 107 KB Hafs font, which keeps `font-display: block` so Quran text never shows in another font.
 
+### Hosting
+
+- **The site runs on Netlify's free plan (the owner's Vercel account is paused), from `main`.** Netlify builds from the repository root with `pnpm --filter @murshid/web build` rather than through Turborepo, which hides undeclared environment variables from the build; package directory `apps/web`; `NEXT_PUBLIC_SITE_URL` set to the site's address. Its Next.js runtime (OpenNext) handles Cache Components, the share images and the sitemaps as they are.
+- **On Netlify a page rendered on request may not read the address or its params outside Suspense: it answers 500, where `next start` renders it anyway.** The first deploy failed every city and ayah page not prerendered. The recitation host now sits in Suspense, and the public routes with params set `instant = false`, as the reader routes did before Phase 6 moved them.
+- **Netlify serves `public/` without next.config's headers, so `apps/web/netlify.toml` gives the Hafs font its long cache.**
+- **The free plan's 300 credits a month are a hard cap: past it, the whole site pauses until the next month.** Each production deploy and every gigabyte served draws on them, which is why the 450 MB of mushaf page fonts need their own host.
+
 ### Adhkar and duas
 
 - **No adhkar or dua pages yet, and no placeholders.** They need a named source with references, translations licensed for English and French, and a reviewer (SPEC 10). IslamHouse's Hisn al-Muslim is the one source found with all three languages under usable terms; the owner asks for written permission (`docs/PHASE-6.md`).

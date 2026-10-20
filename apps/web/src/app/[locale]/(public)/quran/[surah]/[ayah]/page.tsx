@@ -9,6 +9,11 @@ import { pageMetadata } from '@/lib/seo';
 
 // /quran/2/255: an ayah's own page (SPEC 4, Phase 6). Al-Fatihah's are prerendered; the other
 // 6,229 render on their first visit and are kept.
+// Addresses not prerendered at build render whole on their first visit, then are kept: their
+// params are only known then, and Cache Components would otherwise refuse the render (on Netlify
+// the visitor got an error page).
+export const instant = false;
+
 export function generateStaticParams() {
   return Array.from({ length: 7 }, (_, i) => ({ surah: '1', ayah: String(i + 1) }));
 }

@@ -6,6 +6,7 @@ import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import Script from 'next/script';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 import { ServiceWorker } from '@/components/service-worker';
 import { RecitationHost } from '@/components/quran/recitation-host';
 import { themeScript } from '@/components/theme';
@@ -113,7 +114,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps<'/[
             {children}
           </div>
         </ServiceWorker>
-        <RecitationHost locale={locale} />
+        {/* It reads the address, which a page prerendered on request does not have yet. */}
+        <Suspense fallback={null}>
+          <RecitationHost locale={locale} />
+        </Suspense>
       </body>
     </html>
   );
