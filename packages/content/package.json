@@ -21,6 +21,7 @@
     "@murshid/config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "harfbuzzjs": "1.6.3",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

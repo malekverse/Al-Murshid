@@ -36,6 +36,7 @@ supabase/.temp/
 coverage/
 playwright-report/
 test-results/
+.lighthouseci/
 
 # OS / editors
 .DS_Store

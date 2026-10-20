@@ -12,6 +12,7 @@ import type {
   MushafGlyphs,
   ReciterEntry,
   ReciterId,
+  SurahName,
   SurahTafsir,
   SurahText,
   SurahTranslation,
@@ -204,6 +205,8 @@ export const isGlyphMushaf = (m: Mushaf): m is MushafGlyphs => 'glyphs' in m;
 export type TafsirLanguage = 'ar' | 'en' | 'fr';
 export const loadTafsir = (lang: TafsirLanguage, n: number) =>
   once<SurahTafsir>(`tafsir/${lang}/${n}`, load.tafsir[lang][n]);
+/** A surah's calligraphic name as an outline, for pages that skip the name font (Phase 6). */
+export const loadSurahName = (n: number) => once<SurahName>(`surah-names/${n}`, load.surahName[n]);
 /** A run of tafsir text, bold or italic as published (the only markup kept). */
 export interface TafsirRun {
   text: string;

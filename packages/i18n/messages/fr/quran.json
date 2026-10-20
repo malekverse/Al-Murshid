@@ -253,5 +253,24 @@
     "removeConfirm": "Supprimer {name} ? {size} seront libérés ; vous pourrez le retélécharger.",
     "removeAction": "Supprimer",
     "list": "Les sourates téléchargées"
+  },
+  "ayahPage": {
+    "position": "Verset {number} sur {count}",
+    "readFromHere": "Lire la sourate à partir d’ici",
+    "listen": "Écouter",
+    "pause": "Pause",
+    "notes": "Notes",
+    "words": "Mot à mot",
+    "wordsHint": "Le sens et la prononciation de chaque mot",
+    "previous": "Verset précédent : {ref}",
+    "next": "Verset suivant : {ref}",
+    "inSurah": "Dans la sourate {surah}"
+  },
+  "seo": {
+    "surahTitle": "Sourate {name}",
+    "surahDescription": "Lisez la sourate {name} ({ayahs}, {place}) en écriture othmanie avec la traduction de Muhammad Hamidullah, le sens de chaque mot, un tafsir court et des récitations.",
+    "ayahTitle": "Sourate {surah}, verset {ayah}",
+    "ayahDescription": "Le verset {ayah} de la sourate {surah} avec sa traduction, le sens de chaque mot, un tafsir court et sa récitation.",
+    "quran": "Le Noble Coran"
   }
 }

@@ -326,5 +326,63 @@ Newest phase at the bottom.
 ### Verification (Phase 5b)
 
 - **Web: Playwright flows for the Arabic text view and memorizing, a passage and its repeat, and an edition with tajweed, the reciter search and a tafsir, at 1280 px and 360 px with the earlier flows (10 pass).** The screenshot run adds the 1441H page and the verse view in tajweed, the Indopak page and the text view memorizing, in ar and en, light, dark and sepia, at both sizes.
-- **Android release build on the emulator:** the verse view in tajweed with the word highlight during recitation, its published text for screen readers, the plain text on a dark page, the 1441H page on paper in dark, hidden words on its justified and centered lines, the verse view in tajweed while memorizing with a word revealed in place, the reciter list, a tafsir, and a whole reciter's download: started, paused, carried on after the app was killed, and removed from the storage screen after its confirmation. iOS waits for an EAS build on a device.
+- **Android release build on the emulator:** the verse view in tajweed with the word highlight during recitation, its published text for screen readers, the plain text on a dark page, the 1441H page on paper in dark, hidden words on its justified and centered lines, the verse view in tajweed while memorizing with a word revealed in place, the reciter list, a tafsir, and a whole reciter's download: started, paused, carried on after the app was killed, and removed from the storage screen after its confirmation; a surah of a newly added reciter (as-Sudais) downloaded and played with the network off; tajweed on the sepia page. iOS waits for an EAS build on a device.
 - **The APK is 122 MB** (88 MB after Phase 5), with every reciter's timings, the tafsir and the Indopak words inside; Phase 9 sets the budget.
+
+## Phase 6 · Public web pages (2026-10-20)
+
+The plan, the gate and the owner's part are in `docs/PHASE-6.md`.
+
+### A light root
+
+- **The root layout keeps only the document, fonts, theme script, skip link and service worker; the app's messages, Motion and toasts move to the layouts of the app's own routes (`AppProviders`).** Before, every page paid 210 KB gzipped for them, and `/en/quran/2` shipped 604 KB. Public routes now load 143–147 KB. Alt: keep one provider tree and trim it; Motion and the messages alone were over budget.
+- **One recitation still plays across every page: its player and bar live at the root and load on the first play** (`recitation-store.ts` is a small store; `RecitationHost` imports the player and its messages lazily). Alt: a player per page, which would stop when the reader moves between surahs.
+- **Public pages never send a visitor to onboarding.** The Quran tab no longer asks for setup (it needs no place), and the public routes moved out of the `(app)` group into `(public)` with a server-rendered site shell. The redirect had made the surah pages `noindex` for search engines (SEO 60).
+
+### Surah pages: sent whole, then handed to the reader
+
+- **`/quran/[surah]` sends the whole surah as HTML, in the default view of the address's language, with the same markup and classes as the client reader** (`reader-markup.ts` and CSS utilities shared by both). Ayahs come in groups of 12, each its own Suspense boundary so hydration is chunked, and use `content-visibility: auto`. Alt: a client reader with a server-rendered first screen; search engines and slow phones would see only part of the text.
+- **The full reader takes over on the first touch (a word, an ayah's actions, the bar), replaying that touch, and at once for someone who has finished onboarding,** whose settings may ask for another view. An end-to-end test checks that no word moves when it does. Alt: hydrate the full reader on every visit, which cost Performance 32.
+- **The first group of ayahs is sent in place, outside any Suspense boundary.** Once a page's HTML is large, React streams each later boundary after the rest of the page and reveals it with a script, so the ayahs on screen would have appeared last. The same splitting on the prayer-time pages moved their content as it was revealed (CLS 0.18) without saving measurable blocking time, so those pages have no boundaries.
+- **The Hafs font is served from a fixed address (`/fonts/hafs/UthmanicHafs_V22.woff2`, cached as immutable) and preloaded on the Quran's public pages only.** With `next/font` it was preloaded on every page and its hashed address could not be named in a preload. Readex Pro and Amiri are no longer preloaded (they are not in the first paint of the public pages).
+- **Surah names in calligraphy are drawn from outlines shaped at build time** (`surah-names/<n>.json`, HarfBuzz over the pinned surah-name font), instead of loading the 212 KB font to draw one word. The font itself is read, never changed; a content test checks all 114.
+
+### Ayah pages
+
+- **`/quran/[surah]/[ayah]` becomes the ayah's own page: the published text, the translation, each word with its meaning and sound, the short tafsir, its neighbours, Listen, and "Read from here".** The reader now opens at an ayah with an anchor (`/quran/2#ayah-255`), so the two do not compete for one address; the mobile app keeps `/quran/2/255` as its deep link into the reader. Al-Fatihah's ayahs are prerendered; the other 6,229 render on their first visit and are kept.
+- **Its description is the translation itself when it fits (200 characters), else a sentence naming the surah and the ayah.** Never a cut-off translation.
+
+### Prayer-time pages
+
+- **The 31,766 bundled GeoNames cities (15,000 people or more) get stable English slugs in every language** (accents removed; namesakes in one country take their region). Country names come from `Intl.DisplayNames`. Every country page and the 100 largest cities are prerendered; the rest render on their first visit. Alt: localized slugs, which would split each city's links three ways.
+- **A city's day is cached until its local midnight, an hour at most, and the countdown to the next prayer runs in the visitor's browser.** With Next's `hours` profile, a rarely visited city could have shown yesterday's date for up to a day.
+- **A city that does not exist gets the not-found page with `noindex`, served with status 200.** With Cache Components the page's shell is already streaming when the city is looked up. Search engines treat it as a soft 404, which is enough. Alt: check the city in a proxy before rendering, which costs a function call on every visit.
+- **"Use this city" writes the place, and the country's method unless the person chose one, to this browser's settings, then opens Today, or onboarding's place step on a first visit.** The page itself always shows the country's usual method and says so.
+
+### Search
+
+- **Absolute addresses come from `NEXT_PUBLIC_SITE_URL`, else Vercel's production address.** Every public page has a canonical address, `hreflang` for ar, en and fr (Arabic as x-default), Open Graph and Twitter tags, and JSON-LD: a `Chapter` for a surah, a `Quotation` for an ayah, a `WebPage` about a `City`, and breadcrumbs. Search console verification tags come from environment variables, so no account's token is in the repository.
+- **`robots.txt` keeps crawlers out of `/dev`, `/welcome`, `/you`, `/offline` and the worker; a sitemap index lists the Quran (19,050 addresses) and the places in files of at most 45,000.** Each address names its other languages.
+
+### Share images
+
+- **Share images are drawn as SVG with every line shaped by HarfBuzz (`harfbuzzjs`, MIT) and then turned into a PNG by `next/og`.** Satori, which `next/og` uses, neither joins Arabic letters nor orders right-to-left lines. `lib/og/text.ts` splits each line into runs by script with a simplified bidi algorithm. Interface text uses Readex Pro's subsets, read from its WOFF files; Quran text is shaped whole with the pinned Hafs font, marks and number included. Alt: images drawn at build time, 6,350 Quran pages and 31,766 cities in three languages.
+- **An ayah's image shows its published text when it fits on four lines (52, 44 or 38 px), else the surah's calligraphy and the reference.** The text is never cut short.
+- **`harfbuzzjs` stays outside the server bundle (`serverExternalPackages`) and the fonts and its WebAssembly travel with the image routes (`outputFileTracingIncludes`).** Bundling it moved the WebAssembly file out of reach.
+
+### Budgets
+
+- **Public pages link with plain `<a>`, not `next/link`.** Each `Link` is a client component that hydrates with its own hooks, and a country can list over a thousand cities; between cached public pages a full load is quick. Scripts went from 148–151 KB to 141–144 KB.
+- **The service worker precaches no fonts from `public/fonts` and no scripts.** The Phase 5b editions had added hundreds of page fonts to its install, which competed with a first visit's own downloads. The favicon went from 68 KB to 2 KB (48 px).
+- **Lighthouse CI (`@lhci/cli`, Apache-2.0) runs on every pull request on six public pages, mobile, median of three runs (`apps/web/lighthouserc.json`).** It fails on Accessibility or SEO under 100, CLS over 0.05, scripts over 150 KB, or Performance under 80, and warns when LCP passes 2 s or Total Blocking Time 200 ms. Total Blocking Time stands in for INP, which a lab run cannot measure. The timings move with the runner's CPU, so the gate's Performance 95 is measured on the deployed site (PageSpeed Insights) rather than failing every pull request. Alt: fail below 95 in CI, which would block every change on a shared runner's noise.
+- **Measured locally (production build, Lighthouse 12 in LHCI, simulated slow 4G, median of three):** the prayer-time pages score 0.92–0.93 (LCP 2.6–2.8 s, TBT 156–247 ms), the Quran pages 0.79–0.87 (LCP 3.3–4.2 s). Accessibility, SEO and Best Practices are 100 and CLS at most 0.025 on all six. Unthrottled in Chromium, the same pages paint in 140–300 ms. The simulated LCP is mostly bytes on a 1.6 Mbps link: about 141 KB of framework scripts, the interface fonts, and on Quran pages the 107 KB Hafs font, which keeps `font-display: block` so Quran text never shows in another font.
+
+### Adhkar and duas
+
+- **No adhkar or dua pages yet, and no placeholders.** They need a named source with references, translations licensed for English and French, and a reviewer (SPEC 10). IslamHouse's Hisn al-Muslim is the one source found with all three languages under usable terms; the owner asks for written permission (`docs/PHASE-6.md`).
+
+### Verification (Phase 6)
+
+- **Web, production build: 58 Playwright tests pass at 1280 px and 360 px.** New: a visitor goes from the countries to Tunis and takes the city into onboarding; canonical, `hreflang`, JSON-LD, share images, `noindex` on an unknown city; robots and sitemaps; a surah sent whole and taken over without anything moving; an ayah's page and reading on from it. The screenshot run adds the public pages in ar, en and fr, light and dark.
+- **Share images checked by eye:** a surah's calligraphy, Ayat al-Kursi whole on three lines with its number, al-Fatihah 1 in Arabic, a city's times in Arabic, and a page of links in French.
+- **Not done here:** the deployment, search console indexing and PageSpeed Insights on the deployed site, which are the owner's steps (`docs/PHASE-6.md`); and the adhkar and dua pages.

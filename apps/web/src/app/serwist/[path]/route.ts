@@ -14,13 +14,9 @@ export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =
       revision,
     })),
     // Precache only the shell: styles, icons and the offline pages (about 400 KB). Scripts (each
-    // surah's words, translations and timings are script chunks), UI fonts and mushaf page fonts
-    // (about 200 MB) are cached as they are used instead (sw.ts).
-    globIgnores: [
-      '**/node_modules/**/*',
-      'public/fonts/quran-v2/**',
-      '.next/static/chunks/**/*.js',
-    ],
+    // surah's words, translations and timings are script chunks), fonts (the Quran text's, and
+    // each edition's mushaf page fonts, about 200 MB each) are cached as they are used (sw.ts).
+    globIgnores: ['**/node_modules/**/*', 'public/fonts/**', '.next/static/chunks/**/*.js'],
     swSrc: 'src/app/sw.ts',
     useNativeEsbuild: true,
   },

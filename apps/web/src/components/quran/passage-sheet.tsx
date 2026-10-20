@@ -14,7 +14,7 @@ import { Toggle } from '@/components/ui/toggle';
 import { cn } from '@/lib/cn';
 import { setBookmark } from '@/lib/quran';
 import { markClass } from './quran-home';
-import type { PassagePlan } from './recitation';
+import type { PassagePlan } from './recitation-store';
 
 const timesOptions = ['1', '2', '3', '5', '10'] as const;
 

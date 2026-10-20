@@ -9,6 +9,7 @@ import arGlossary from '../messages/ar/glossary.json';
 import arJourney from '../messages/ar/journey.json';
 import arNotifications from '../messages/ar/notifications.json';
 import arOnboarding from '../messages/ar/onboarding.json';
+import arPlaces from '../messages/ar/places.json';
 import arQibla from '../messages/ar/qibla.json';
 import arQuran from '../messages/ar/quran.json';
 import arSettings from '../messages/ar/settings.json';
@@ -22,6 +23,7 @@ import enGlossary from '../messages/en/glossary.json';
 import enJourney from '../messages/en/journey.json';
 import enNotifications from '../messages/en/notifications.json';
 import enOnboarding from '../messages/en/onboarding.json';
+import enPlaces from '../messages/en/places.json';
 import enQibla from '../messages/en/qibla.json';
 import enQuran from '../messages/en/quran.json';
 import enSettings from '../messages/en/settings.json';
@@ -35,6 +37,7 @@ import frGlossary from '../messages/fr/glossary.json';
 import frJourney from '../messages/fr/journey.json';
 import frNotifications from '../messages/fr/notifications.json';
 import frOnboarding from '../messages/fr/onboarding.json';
+import frPlaces from '../messages/fr/places.json';
 import frQibla from '../messages/fr/qibla.json';
 import frQuran from '../messages/fr/quran.json';
 import frSettings from '../messages/fr/settings.json';
@@ -52,6 +55,7 @@ const en = {
   journey: enJourney,
   notifications: enNotifications,
   onboarding: enOnboarding,
+  places: enPlaces,
   qibla: enQibla,
   quran: enQuran,
   settings: enSettings,
@@ -70,6 +74,7 @@ export const messages: Record<Locale, Messages> = {
     journey: arJourney,
     notifications: arNotifications,
     onboarding: arOnboarding,
+    places: arPlaces,
     qibla: arQibla,
     quran: arQuran,
     settings: arSettings,
@@ -86,6 +91,7 @@ export const messages: Record<Locale, Messages> = {
     journey: frJourney,
     notifications: frNotifications,
     onboarding: frOnboarding,
+    places: frPlaces,
     qibla: frQibla,
     quran: frQuran,
     settings: frSettings,

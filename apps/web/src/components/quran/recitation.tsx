@@ -11,71 +11,23 @@ import {
   type AyahSpan,
   type PlaybackCursor,
 } from '@murshid/core';
-import type { ReciterChoice } from '@murshid/data';
 import { useTranslations } from 'next-intl';
-import { createContext, use, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSettings } from '@/lib/settings';
+import { idle, publishPlayer, type PassagePlan, type RecitationState } from './recitation-store';
 
 // Recitation on web (SPEC 5.5): one audio element for the whole app, so listening carries on
 // while browsing. It follows the recording ayah by ayah and word by word from QUL's timestamps,
 // repeats each ayah as often as asked, repeats a passage as a whole and can pause after each ayah
 // for memorizing (Phase 5b, rules in @murshid/core), and shows in the system's media controls.
-
-/** A passage played several times while memorizing: ayahs `from` to `to`, `times` times. */
-export interface PassagePlan {
-  to: number;
-  times: number;
-  /** Pause after each ayah, as long as the ayah, to recite it back. */
-  gap: boolean;
-}
-
-export interface RecitationState {
-  surah: number | null;
-  /** The ayah being recited (from 1), or null before the first (the basmalah). */
-  ayah: number | null;
-  /** The word being recited (from 1), when the timestamps allow it. */
-  word: number | null;
-  playing: boolean;
-  loading: boolean;
-  error: boolean;
-  /** The passage being repeated, and which time through it this is. */
-  passage: { from: number; to: number; times: number; pass: number } | null;
-  /** Paused after an ayah for the listener to recite it back. */
-  turn: boolean;
-}
-
-interface Recitation extends RecitationState {
-  reciter: ReciterChoice;
-  play: (surah: number, fromAyah?: number, passage?: PassagePlan) => void;
-  pause: () => void;
-  resume: () => void;
-  stop: () => void;
-  step: (by: 1 | -1) => void;
-}
-
-const idle: RecitationState = {
-  surah: null,
-  ayah: null,
-  word: null,
-  playing: false,
-  loading: false,
-  error: false,
-  passage: null,
-  turn: false,
-};
+// Screens reach it through `useRecitation` (recitation-store); `RecitationHost` loads it on the
+// first request, so pages that never play do not carry it (Phase 6).
 
 /** How early an ayah's end counts as reached: the frame loop looks every 16 ms or so. */
 const MARGIN_MS = 40;
 
-const RecitationContext = createContext<Recitation | null>(null);
-
-export function useRecitation(): Recitation {
-  const value = use(RecitationContext);
-  if (!value) throw new Error('useRecitation needs a RecitationProvider');
-  return value;
-}
-
-export function RecitationProvider({ children }: { children: ReactNode }) {
+/** The player: one audio element for the whole app. It renders nothing; screens read the store. */
+export function RecitationPlayer() {
   const t = useTranslations('quran');
   const settings = useSettings();
   const prefs = settings?.quran;
@@ -288,9 +240,10 @@ export function RecitationProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.surah, reciter]);
 
-  return (
-    <RecitationContext value={{ ...state, reciter, play, pause, resume, stop, step }}>
-      {children}
-    </RecitationContext>
-  );
+  // Published after every render, so screens always call the latest handlers.
+  useEffect(() => {
+    publishPlayer({ ...state, reciter, play, pause, resume, stop, step });
+  });
+
+  return null;
 }

@@ -34,7 +34,8 @@ test('search, read, look up a word and bookmark an ayah', async ({ page }) => {
   await expect(result).toBeVisible();
   await result.click();
 
-  await expect(page).toHaveURL(/\/en\/quran\/2\/255$/);
+  // The reader opens at the ayah (its own page, /quran/2/255, is for studying and sharing it).
+  await expect(page).toHaveURL(/\/en\/quran\/2#ayah-255$/);
   const ayah = page.getByRole('article', { name: 'Al-Baqarah, verse 255' });
   await expect(ayah).toBeVisible();
   await expect(ayah).toContainText('the Ever-Living');
@@ -138,6 +139,48 @@ test('choose a mushaf, color its tajweed, read a tafsir and pick a reciter', asy
   await expect(page.getByRole('dialog', { name: /Tafsir · Al-Baqarah 2/ })).toContainText(
     'Al-Mukhtasar',
   );
+});
+
+test('a visitor reads a surah as sent; the reader takes over on a touch, nothing moving', async ({
+  page,
+}) => {
+  // No settings: a first visit, as from a search engine. Nothing sends it to onboarding.
+  await page.goto('/en/quran/112');
+  const ayah = page.getByRole('article', { name: 'Al-Ikhlas, verse 1' });
+  await expect(ayah).toContainText('Allāh');
+  const sent = ayah.locator('[data-intent="words"] > span');
+  await expect(sent).toHaveCount(5);
+  const before = await sent.evaluateAll((els) =>
+    els.map((e) => {
+      const r = e.getBoundingClientRect();
+      return [Math.round(r.x), Math.round(r.y), Math.round(r.width)];
+    }),
+  );
+
+  // A word's meaning: the full reader takes over and shows it.
+  await sent.nth(1).click();
+  await expect(page.getByRole('dialog', { name: 'Meaning' })).toBeVisible();
+  const words = ayah.locator('p[lang="ar"] > span');
+  const after = await words.evaluateAll((els) =>
+    els.map((e) => {
+      const r = (e.firstElementChild ?? e).getBoundingClientRect();
+      return [Math.round(r.x), Math.round(r.y), Math.round(r.width)];
+    }),
+  );
+  expect(after).toEqual(before);
+});
+
+test("an ayah's own page, and reading on from it", async ({ page }) => {
+  await page.goto('/en/quran/2/255');
+  await expect(page.getByRole('heading', { name: 'Al-Baqarah 255', level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Word by word' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Tafsir' })).toBeVisible();
+  await expect(page.getByText('Al-Mukhtasar in interpreting the Noble Quran')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Next ayah: Al-Baqarah 256' })).toBeVisible();
+
+  await page.getByRole('link', { name: 'Read the surah from here' }).click();
+  await expect(page).toHaveURL(/\/en\/quran\/2#ayah-255$/);
+  await expect(page.getByRole('article', { name: 'Al-Baqarah, verse 255' })).toBeInViewport();
 });
 
 test('read the mushaf and plan a khatmah', async ({ page }) => {

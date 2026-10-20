@@ -41,3 +41,31 @@ jobs:
 
       - name: Build the web app
         run: pnpm turbo run build --filter=@murshid/web
+
+  lighthouse:
+    name: Lighthouse budgets (public pages)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build the web app
+        run: pnpm turbo run build --filter=@murshid/web
+      # Six public pages, mobile, median of three runs (SPEC 8.4, 11). Fails on Accessibility or SEO
+      # under 100, CLS over 0.05, scripts over 150 KB or Performance under 80; warns when LCP or TBT
+      # miss the gate, which is measured on the deployed site (timings vary with the runner's CPU).
+      - name: Lighthouse CI
+        working-directory: apps/web
+        run: npx -y @lhci/cli@0.15.1 autorun
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: lighthouse
+          path: apps/web/.lighthouseci/reports
+          if-no-files-found: ignore

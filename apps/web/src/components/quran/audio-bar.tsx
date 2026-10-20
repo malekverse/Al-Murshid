@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/text';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
 import { useSurahName } from './common';
-import { useRecitation } from './recitation';
+import { useRecitation } from './recitation-store';
 
 /** The recitation, wherever you are in the app: play or pause, step ayah by ayah, stop. */
 export function AudioBar({ className }: { className?: string }) {
@@ -46,7 +46,9 @@ export function AudioBar({ className }: { className?: string }) {
             />
             <Link
               href={
-                r.ayah && r.ayah > 1 ? `/quran/${info.number}/${r.ayah}` : `/quran/${info.number}`
+                r.ayah && r.ayah > 1
+                  ? `/quran/${info.number}#ayah-${r.ayah}`
+                  : `/quran/${info.number}`
               }
               className="flex min-w-0 flex-1 flex-col rounded-control px-2 hover:bg-ink/5"
             >

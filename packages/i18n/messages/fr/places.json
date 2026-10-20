@@ -1,0 +1,23 @@
+{
+  "title": "Horaires de prière",
+  "indexTitle": "Horaires de prière dans le monde",
+  "indexBody": "Choisissez votre pays, puis votre ville, pour les prières du jour et le calendrier du mois.",
+  "countryTitle": "Horaires de prière : {country}",
+  "cities": "{count, plural, one {# ville} many {# villes} other {# villes}} de 15 000 habitants ou plus",
+  "cityTitle": "Horaires de prière à {city}",
+  "cityDescription": "Horaires de prière aujourd’hui à {city} ({country}) : Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha}, avec le calendrier du mois et la qibla.",
+  "today": "Aujourd’hui, {date}",
+  "next": "Prochaine : {prayer} dans {duration}",
+  "now": "Maintenant : {prayer}, encore {duration}",
+  "method": "Méthode : {method} · Asr : {asr}",
+  "methodNote": "La méthode habituelle du pays. Vous pouvez la changer dans Al-Murshid.",
+  "month": "Calendrier de {month}",
+  "day": "Jour",
+  "qibla": "Qibla",
+  "useCity": "Choisir cette ville",
+  "useCityHint": "Al-Murshid compte alors jusqu’à chaque prière d’ici, même hors ligne.",
+  "nearby": "Autres villes : {country}",
+  "allCities": "Toutes les villes",
+  "source": "Villes : GeoNames (CC BY 4.0).",
+  "trail": "Vous êtes ici"
+}

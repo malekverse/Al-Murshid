@@ -13,6 +13,22 @@
   initial-value: #1c2541;
 }
 
+/*
+ * King Fahd Complex Uthmanic Hafs (QPC Hafs V22, via QUL). Its license forbids modifying the
+ * font, so it ships exactly as published: no subsetting. It has a fixed address (not next/font)
+ * so the Quran's public pages can preload it (Phase 6: it holds their largest text), while other
+ * pages never fetch it. `block` keeps Quran text from flashing in a fallback that lacks its marks.
+ */
+@font-face {
+  font-family: 'KFGQPC Uthmanic Hafs';
+  src: url('/fonts/hafs/UthmanicHafs_V22.woff2') format('woff2');
+  font-display: block;
+}
+
+:root {
+  --font-qpc-hafs: 'KFGQPC Uthmanic Hafs';
+}
+
 @layer base {
   html {
     background-color: var(--color-canvas);
@@ -104,6 +120,34 @@
 }
 
 /* Glass over the sky; solid when the person asks for less transparency (SPEC 11). */
+/*
+ * The verse reader's repeated pieces (Phase 6): one short class each, shared by the reader and
+ * the page the server sends first (reader-markup.ts), so a long surah's page stays small.
+ */
+@utility ayah {
+  @apply relative flex scroll-mt-24 flex-col gap-4 border-b border-hairline px-2 py-6;
+  /* Ayahs off screen are not laid out until they come near. */
+  contain-intrinsic-size: auto 12rem;
+  content-visibility: auto;
+}
+
+/* The words of an ayah sent by the server: bare spans, the last being the ayah's number. */
+@utility ayah-words {
+  & > span:not(:last-child) {
+    @apply cursor-pointer rounded-control hover:bg-ink/5;
+  }
+}
+
+/* A 48 x 48 round button holding one icon (SPEC 6.3 touch targets). */
+@utility icon-button {
+  @apply inline-flex size-touch shrink-0 items-center justify-center rounded-full transition-colors duration-(--duration-instant) ease-standard disabled:cursor-not-allowed disabled:opacity-40;
+}
+
+/* A translation's footnote mark. */
+@utility footnote {
+  @apply rounded-full px-1 align-super text-caption text-lantern-ink hover:bg-lantern/10;
+}
+
 @utility glass {
   background-color: var(--color-surface-glass);
   backdrop-filter: blur(var(--blur-glass)) saturate(1.15);

@@ -1,0 +1,23 @@
+{
+  "title": "مواقيت الصلاة",
+  "indexTitle": "مواقيت الصلاة حول العالم",
+  "indexBody": "اختر بلدك ثم مدينتك، وتظهر لك صلوات اليوم وتقويم الشهر.",
+  "countryTitle": "مواقيت الصلاة في {country}",
+  "cities": "{count, plural, zero {لا مدن} one {مدينة واحدة} two {مدينتان} few {# مدن} many {# مدينة} other {# مدينة}} يسكنها ١٥٬٠٠٠ نسمة أو أكثر",
+  "cityTitle": "مواقيت الصلاة في {city}",
+  "cityDescription": "مواقيت الصلاة اليوم في {city}، {country}: الفجر {fajr} والظهر {dhuhr} والعصر {asr} والمغرب {maghrib} والعشاء {isha}، مع تقويم الشهر واتجاه القبلة.",
+  "today": "اليوم، {date}",
+  "next": "التالية: {prayer}، ويبقى عليها {duration}",
+  "now": "الآن: {prayer}، يبقى {duration}",
+  "method": "الطريقة: {method} · العصر: {asr}",
+  "methodNote": "طريقة البلد المعتادة، ويمكنك تغييرها في المرشد.",
+  "month": "تقويم {month}",
+  "day": "اليوم",
+  "qibla": "القبلة",
+  "useCity": "اجعلها مدينتي",
+  "useCityHint": "يعدّ لك المرشد الوقت حتى كل صلاة هنا، حتى دون اتصال.",
+  "nearby": "مدن أخرى في {country}",
+  "allCities": "كل المدن",
+  "source": "المدن من GeoNames ‏(CC BY 4.0).",
+  "trail": "مسار الصفحة"
+}

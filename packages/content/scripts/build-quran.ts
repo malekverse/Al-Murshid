@@ -17,11 +17,13 @@
 //   tafsir/<lang>/<n>.json  Al-Mukhtasar's passages and the ayahs each explains
 //   search/<lang>.json    plain text per ayah to search in (never displayed)
 //   audio/reciters.json, audio/<reciter>/<n>.json   audio links, durations and word timestamps
+//   surah-names/<n>.json  each surah's calligraphic name as the outline its font draws (Phase 6)
 //   loaders.js (+ .d.ts)  one dynamic import per file, so bundlers split them
 
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
+import * as hb from 'harfbuzzjs';
 import { normalizeArabic, normalizeLatin } from '../src/search';
 
 const quranDir = fileURLToPath(new URL('../quran/', import.meta.url));
@@ -520,6 +522,43 @@ const reciterIndex = reciters.map(({ id, slug, style }) => {
 });
 put('audio/reciters.json', reciterIndex);
 
+// ---------- Surah names as outlines (Phase 6) ----------
+
+// QUL's surah name font draws each name as one ligature ("surah002"). Public web pages draw that
+// outline as an SVG path instead of fetching the 200 KB font for a single name. HarfBuzz shapes
+// the name with the pinned font (the app's TTF, sources.json), so the outline is the font's own;
+// the font itself is not changed. Coordinates are font units, y up.
+{
+  const bytes = readFileSync(
+    fileURLToPath(new URL('../../../apps/mobile/assets/fonts/surah-name-v2.ttf', import.meta.url)),
+  );
+  const face = new hb.Face(new hb.Blob(new Uint8Array(bytes)));
+  const font = new hb.Font(face);
+  const { ascender, descender } = font.hExtents();
+  for (let n = 1; n <= 114; n++) {
+    const buffer = new hb.Buffer();
+    buffer.addText(`surah${String(n).padStart(3, '0')}`);
+    buffer.guessSegmentProperties();
+    hb.shape(font, buffer);
+    const infos = buffer.getGlyphInfos();
+    const positions = buffer.getGlyphPositions();
+    let x = 0;
+    const glyphs: [number, number, string][] = [];
+    infos.forEach((info, i) => {
+      const pos = positions[i]!;
+      const d = font.glyphToPath(info.codepoint);
+      if (d) glyphs.push([x + pos.xOffset, pos.yOffset, d]);
+      x += pos.xAdvance;
+    });
+    // Most names are one ligature; a few are drawn from several glyphs (al-Ahzab's from six).
+    assert(
+      glyphs.length > 0 && infos.every((info) => info.codepoint !== 0),
+      `surah ${n}: its name has a glyph missing from the font`,
+    );
+    put(`surah-names/${n}.json`, { upem: face.upem, ascender, descender, width: x, glyphs });
+  }
+}
+
 // Loaders: literal paths, so web and native bundlers can split every file.
 const list = (dir: string) =>
   `[null, ${Array.from({ length: 114 }, (_, i) => `() => import('./${dir}/${i + 1}.json')`).join(', ')}]`;
@@ -540,6 +579,7 @@ files.set(
     `export const mushaf = {`,
     ...Object.keys(editions).map((id) => `  ${id}: () => import('./mushaf/${id}.json'),`),
     `};`,
+    `export const surahName = ${list('surah-names')};`,
     `export const search = {`,
     ...(['ar', 'en', 'fr'] as const).map((l) => `  ${l}: () => import('./search/${l}.json'),`),
     `};`,

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { IconButton } from '@/components/ui/icon-button';
 import { Text } from '@/components/ui/text';
 import { Link } from '@/i18n/navigation';
+import { readerBackClass, readerBarClass, readerBarRowClass } from './reader-markup';
 
 /**
  * The reader's top bar: back to the Quran, where you are, and the reading controls. The view
@@ -36,13 +37,9 @@ export function ReaderBar({
 }) {
   const t = useTranslations('quran');
   return (
-    <header className="sticky top-0 z-30 border-b border-hairline bg-canvas/90 backdrop-blur-md">
-      <div className="mx-auto flex min-h-16 w-full max-w-page items-center gap-2 px-2">
-        <Link
-          href="/quran"
-          aria-label={t('reader.back')}
-          className="flex size-touch shrink-0 items-center justify-center rounded-full text-ink hover:bg-ink/5"
-        >
+    <header className={readerBarClass}>
+      <div className={readerBarRowClass}>
+        <Link href="/quran" aria-label={t('reader.back')} className={readerBackClass}>
           <CaretLeft size={24} className="rtl:-scale-x-100" aria-hidden />
         </Link>
         <div className="flex min-w-0 flex-1 flex-col">

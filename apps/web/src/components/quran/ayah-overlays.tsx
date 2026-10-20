@@ -24,7 +24,7 @@ import { cn } from '@/lib/cn';
 import { setBookmark } from '@/lib/quran';
 import { PassageSheet, type PassageTarget } from './passage-sheet';
 import { markClass } from './quran-home';
-import type { PassagePlan } from './recitation';
+import type { PassagePlan } from './recitation-store';
 import { TafsirSheet } from './tafsir-sheet';
 
 export interface WordTarget {

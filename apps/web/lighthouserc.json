@@ -1,0 +1,45 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "pnpm start",
+      "startServerReadyPattern": "Ready in",
+      "startServerReadyTimeout": 60000,
+      "url": [
+        "http://localhost:3000/ar/quran/112",
+        "http://localhost:3000/en/quran/2",
+        "http://localhost:3000/ar/quran/2/255",
+        "http://localhost:3000/ar/prayer-times",
+        "http://localhost:3000/fr/prayer-times/tunisia",
+        "http://localhost:3000/en/prayer-times/tunisia/tunis"
+      ],
+      "numberOfRuns": 3
+    },
+    "assert": {
+      "assertions": {
+        "categories:accessibility": ["error", { "minScore": 1, "aggregationMethod": "median-run" }],
+        "categories:seo": ["error", { "minScore": 1, "aggregationMethod": "median-run" }],
+        "cumulative-layout-shift": [
+          "error",
+          { "maxNumericValue": 0.05, "aggregationMethod": "median-run" }
+        ],
+        "resource-summary:script:size": [
+          "error",
+          { "maxNumericValue": 153600, "aggregationMethod": "median-run" }
+        ],
+        "categories:performance": ["error", { "minScore": 0.8, "aggregationMethod": "median-run" }],
+        "largest-contentful-paint": [
+          "warn",
+          { "maxNumericValue": 2000, "aggregationMethod": "median-run" }
+        ],
+        "total-blocking-time": [
+          "warn",
+          { "maxNumericValue": 200, "aggregationMethod": "median-run" }
+        ]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci/reports"
+    }
+  }
+}

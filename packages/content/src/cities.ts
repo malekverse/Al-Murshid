@@ -78,6 +78,11 @@ export class CityIndex {
     return this.cities.length;
   }
 
+  /** Every city, the most populous first. */
+  all(): readonly City[] {
+    return this.cities;
+  }
+
   get(id: number): City | undefined {
     return this.byId.get(id);
   }

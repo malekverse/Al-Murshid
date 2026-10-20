@@ -33,7 +33,7 @@ import { MushafPage } from './mushaf-page';
 import { ReaderBar } from './reader-bar';
 import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { ReadingSurface } from './reading-surface';
-import { useRecitation } from './recitation';
+import { useRecitation } from './recitation-store';
 
 /**
  * The actions for an ayah tapped on a page, once its words are loaded. It stays mounted, so a
@@ -198,12 +198,16 @@ export function MushafReader({ startPage }: { startPage: number }) {
   };
   const toggleView = () => {
     setQuranPrefs({ view: 'verses' });
-    router.push(first.ayah > 1 ? `/quran/${first.surah}/${first.ayah}` : `/quran/${first.surah}`);
+    router.push(
+      first.ayah > 1 ? `/quran/${first.surah}#ayah-${first.ayah}` : `/quran/${first.surah}`,
+    );
   };
   const onView = (v: ReaderView) => {
     if (v === 'mushaf') return;
     setQuranPrefs({ view: 'verses', layout: v });
-    router.push(first.ayah > 1 ? `/quran/${first.surah}/${first.ayah}` : `/quran/${first.surah}`);
+    router.push(
+      first.ayah > 1 ? `/quran/${first.surah}#ayah-${first.ayah}` : `/quran/${first.surah}`,
+    );
   };
 
   const playing =

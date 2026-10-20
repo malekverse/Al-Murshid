@@ -50,10 +50,14 @@ export const readerPlace = (
   edition: prefs?.edition ?? 'v2',
 });
 
-/** Where to read an ayah: its place in the verse view, or its page in the chosen mushaf. */
+/**
+ * Where to read an ayah: its place in the verse view (the surah's page at its anchor; the ayah's
+ * own page, /quran/2/255, is for studying it and for search, Phase 6), or its page in the chosen
+ * mushaf.
+ */
 export function readerHref(surah: number, ayah = 1, place?: ReaderPlace) {
   if (place?.view === 'mushaf') return `/quran/page/${pageOf(surah, ayah, place.edition)}`;
-  return ayah > 1 ? `/quran/${surah}/${ayah}` : `/quran/${surah}`;
+  return ayah > 1 ? `/quran/${surah}#ayah-${ayah}` : `/quran/${surah}`;
 }
 
 /** Today in the person's time zone (or the browser's before a location is set). */

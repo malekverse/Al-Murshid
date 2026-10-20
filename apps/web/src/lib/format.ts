@@ -40,11 +40,4 @@ export function arabicPrayerName(name: TimeName, jumuah = false): string {
   return messages.ar.glossary.prayer[jumuah && name === 'dhuhr' ? 'jumuah' : name];
 }
 
-/** Country names come from Intl, in the UI language. */
-export function countryName(code: string, locale: string): string {
-  try {
-    return new Intl.DisplayNames([locale], { type: 'region' }).of(code) ?? code;
-  } catch {
-    return code;
-  }
-}
+export { countryName } from './country-name';

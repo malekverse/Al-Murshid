@@ -3,10 +3,10 @@
 import { BookOpenText, HandHeart, SunHorizon, UserCircle, type Icon } from '@phosphor-icons/react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { cn } from '@/lib/cn';
+import { tabBarClass, tabClass, type Destination } from './tab-bar-markup';
 import { Text } from './text';
 
-export type Destination = 'today' | 'quran' | 'remember' | 'you';
+export type { Destination } from './tab-bar-markup';
 
 export const destinations: { key: Destination; icon: Icon }[] = [
   { key: 'today', icon: SunHorizon },
@@ -34,23 +34,10 @@ export function TabBar({ active, hrefs, onSelect, layout = 'bar', className }: T
   const rail = layout === 'rail';
 
   return (
-    <nav
-      aria-label={t('label')}
-      className={cn(
-        'flex bg-surface',
-        rail
-          ? 'w-24 flex-col items-stretch gap-2 border-e border-hairline py-6'
-          : 'border-t border-hairline',
-        className,
-      )}
-    >
+    <nav aria-label={t('label')} className={tabBarClass(rail, className)}>
       {destinations.map(({ key, icon: IconComponent }) => {
         const selected = key === active;
-        const className = cn(
-          'flex min-h-16 flex-1 flex-col items-center justify-center gap-1 py-2 transition-colors duration-(--duration-quick) ease-standard',
-          selected ? 'text-lantern-ink' : 'text-ink-muted hover:text-ink',
-          rail && 'flex-none',
-        );
+        const className = tabClass(selected, rail);
         const content = (
           <>
             <IconComponent size={24} weight={selected ? 'fill' : 'regular'} aria-hidden />

@@ -69,8 +69,15 @@ export interface Loaded<T> {
  * Loads reading data (a surah's words, a translation, the mushaf) named by `key`. Data shows only
  * for the key asked, and a failed load (offline) can be retried.
  */
-export function useLoad<T>(load: (() => Promise<T>) | null, key: string): Loaded<T> {
-  const [state, setState] = useState<{ key: string; data?: T; error?: unknown }>({ key: '' });
+export function useLoad<T>(
+  load: (() => Promise<T>) | null,
+  key: string,
+  /** The data already in hand for `key` (the page the server sent), so nothing waits. */
+  initial?: T,
+): Loaded<T> {
+  const [state, setState] = useState<{ key: string; data?: T; error?: unknown }>(() =>
+    initial === undefined ? { key: '' } : { key, data: initial },
+  );
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!load) return;

@@ -7,20 +7,11 @@ import { useEffect, useState, type ComponentProps, type ReactNode } from 'react'
 import { cn } from '@/lib/cn';
 import { useScript } from '@/lib/use-direction';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
-type Size = 'md' | 'lg';
-
-const variants: Record<Variant, string> = {
-  primary: 'bg-lantern text-on-lantern shadow-card hover:bg-lantern/90',
-  secondary:
-    'border border-hairline bg-surface text-ink shadow-card hover:bg-canvas dark:border-card-edge dark:shadow-none',
-  ghost: 'text-lantern-ink hover:bg-lantern/10',
-};
-
-const sizes: Record<Size, { box: string; latin: string; arabic: string }> = {
-  md: { box: 'min-h-touch px-6 gap-2', latin: 'text-callout', arabic: 'text-ar-callout' },
-  lg: { box: 'min-h-16 w-full px-8 gap-3', latin: 'text-headline', arabic: 'text-ar-headline' },
-};
+import {
+  buttonClass,
+  type ButtonSize as Size,
+  type ButtonVariant as Variant,
+} from './button-markup';
 
 export interface ButtonProps extends Omit<ComponentProps<typeof motion.button>, 'children'> {
   variant?: Variant;
@@ -52,16 +43,7 @@ export function Button({
       aria-busy={loading || undefined}
       whileTap={inert ? undefined : reduce ? { opacity: 0.8 } : { scale: tokens.pressScale }}
       transition={{ type: 'spring', ...spring.snappy }}
-      className={cn(
-        'relative inline-flex select-none items-center justify-center rounded-full font-medium',
-        'transition-colors duration-(--duration-instant) ease-standard',
-        'disabled:cursor-not-allowed',
-        disabled && 'opacity-40',
-        variants[variant],
-        sizes[size].box,
-        sizes[size][script],
-        className,
-      )}
+      className={buttonClass({ variant, size, script, disabled, className })}
       {...rest}
     >
       <span className={cn('inline-flex items-center gap-[inherit]', loading && 'opacity-0')}>

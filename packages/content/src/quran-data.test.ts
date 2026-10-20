@@ -17,6 +17,7 @@ import {
   mushafEditions,
   loadMushafV2,
   loadSearchText,
+  loadSurahName,
   loadSurahText,
   loadTimings,
   loadTranslation,
@@ -389,4 +390,17 @@ it('keeps surah metadata available without the text', () => {
   expect(surahNameGlyph(2)).toBe('surah002');
   expect(surahNameGlyph(114)).toBe('surah114');
   expect(() => surahNameGlyph(0)).toThrow(RangeError);
+});
+
+it("draws every surah's calligraphic name from its outlines", async () => {
+  // Shaped from the surah-name font at build time (Phase 6), so pages need not load the font.
+  for (let n = 1; n <= 114; n++) {
+    const name = await loadSurahName(n);
+    expect(name.glyphs.length, `surah ${n}`).toBeGreaterThan(0);
+    expect(name.width, `surah ${n}`).toBeGreaterThan(0);
+    for (const [x, y, d] of name.glyphs) {
+      expect(Number.isFinite(x) && Number.isFinite(y)).toBe(true);
+      expect(d).toMatch(/^M/);
+    }
+  }
 });

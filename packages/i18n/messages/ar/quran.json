@@ -253,5 +253,24 @@
     "removeConfirm": "حذف {name}؟ ستُحرَّر {size}، ويمكن تنزيلها من جديد.",
     "removeAction": "حذف",
     "list": "السور المنزّلة"
+  },
+  "ayahPage": {
+    "position": "الآية {number} من {count}",
+    "readFromHere": "اقرأ السورة من هنا",
+    "listen": "استمع",
+    "pause": "إيقاف مؤقت",
+    "notes": "الحواشي",
+    "words": "كلمة بكلمة",
+    "wordsHint": "معنى كل كلمة ونطقها",
+    "previous": "الآية السابقة: {ref}",
+    "next": "الآية التالية: {ref}",
+    "inSurah": "في سورة {surah}"
+  },
+  "seo": {
+    "surahTitle": "سورة {name}",
+    "surahDescription": "اقرأ سورة {name} ({ayahs}، {place}) بالرسم العثماني مع معاني الكلمات والتفسير المختصر، واستمع إلى تلاوتها.",
+    "ayahTitle": "سورة {surah}، الآية {ayah}",
+    "ayahDescription": "الآية {ayah} من سورة {surah} مع معاني كلماتها والتفسير المختصر وتلاوتها.",
+    "quran": "القرآن الكريم"
   }
 }

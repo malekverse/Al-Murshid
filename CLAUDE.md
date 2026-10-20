@@ -44,6 +44,11 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - If the debug app is killed at launch ("failed to complete startup"), compile it ahead of time:
   `adb shell cmd package compile -m speed -f com.malekverse.almurshid`. Judge the Quran screens on a release
   build: in debug, Today's per-second updates starve the emulator's JS thread.
+- Public web pages (`apps/web/src/app/[locale]/(public)`) are Server Components with small client islands.
+  Keep the root layout free of client providers: the app's go in `AppProviders`, in the app's own layouts.
+  Their budgets: `next build`, then `npx -y @lhci/cli@0.15.1 autorun` from `apps/web` (CI runs it).
+- Share images (`opengraph-image.tsx`) draw text through `apps/web/src/lib/og`, shaped with HarfBuzz:
+  Satori's own text cannot join Arabic letters.
 - Commands run from the repo root through Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Design tokens live in `packages/tokens`; run `pnpm --filter @murshid/tokens build` after editing them
   (it regenerates `theme.css` for both apps).

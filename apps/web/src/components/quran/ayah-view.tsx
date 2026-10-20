@@ -11,6 +11,12 @@ import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
 import { Veil, type Memorize } from './memorize';
 import { markClass } from './quran-home';
+import {
+  ayahClass,
+  ayahFooterClass,
+  footnoteClass,
+  wordClass as wordClasses,
+} from './reader-markup';
 import { useNearViewport, useTajweedWords, type Tajweed } from './tajweed';
 
 export interface AyahViewProps {
@@ -89,11 +95,7 @@ export function AyahView({
   const format = useFormatter();
   const stacked = Boolean(meanings || transliteration);
   const lineHeight = typeScale.quran.arabic.lineHeight;
-  const wordClass = (i: number) =>
-    cn(
-      'cursor-pointer rounded-control',
-      playing && playingWord === i + 1 ? 'bg-lantern/25' : 'hover:bg-ink/5',
-    );
+  const wordClass = (i: number) => wordClasses(playing && playingWord === i + 1);
   const key = `${surah}:${ayah}`;
   const hidden = (i: number) => memorize.hidden(firstWordId + i, i, i === words.length - 1, key);
   const veil = (i: number, word: ReactNode) => (
@@ -114,10 +116,7 @@ export function AyahView({
       id={`ayah-${ayah}`}
       data-ayah={ayah}
       aria-label={tAyah('label', { surah: surahName, number: ayah })}
-      className={cn(
-        'relative flex scroll-mt-24 flex-col gap-4 border-b border-hairline px-2 py-6',
-        playing && 'rounded-card bg-lantern/5',
-      )}
+      className={ayahClass(playing)}
     >
       {/* A bookmarked ayah, or each ayah of a marked passage, carries its color along its edge. */}
       {bookmark && (
@@ -189,7 +188,11 @@ export function AyahView({
               <span key={i}>
                 {veil(
                   i,
-                  <span className={wordClass(i)} onClick={(e) => onWord(i, e.currentTarget)}>
+                  <span
+                    className={wordClass(i)}
+                    data-word={i}
+                    onClick={(e) => onWord(i, e.currentTarget)}
+                  >
                     {drawn(i, w.text)}
                   </span>,
                 )}
@@ -217,7 +220,7 @@ export function AyahView({
                 type="button"
                 onClick={() => onFootnote(seg[0], note)}
                 aria-label={t('reader.footnote', { mark: seg[0] })}
-                className="rounded-full px-1 align-super text-caption text-lantern-ink hover:bg-lantern/10"
+                className={footnoteClass}
               >
                 {seg[0]}
               </button>
@@ -226,7 +229,7 @@ export function AyahView({
         </Text>
       )}
 
-      <div className="flex items-center gap-3">
+      <div className={ayahFooterClass}>
         <Text as="span" role="caption" tone="muted">
           {`${format.number(surah)}:${format.number(ayah)}`}
         </Text>

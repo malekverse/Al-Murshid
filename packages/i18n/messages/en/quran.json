@@ -253,5 +253,24 @@
     "removeConfirm": "Remove {name}? This frees {size}; you can download it again.",
     "removeAction": "Remove",
     "list": "The surahs downloaded"
+  },
+  "ayahPage": {
+    "position": "Ayah {number} of {count}",
+    "readFromHere": "Read the surah from here",
+    "listen": "Listen",
+    "pause": "Pause",
+    "notes": "Notes",
+    "words": "Word by word",
+    "wordsHint": "Each word's meaning and sound",
+    "previous": "Previous ayah: {ref}",
+    "next": "Next ayah: {ref}",
+    "inSurah": "In Surah {surah}"
+  },
+  "seo": {
+    "surahTitle": "Surah {name}",
+    "surahDescription": "Read Surah {name} ({ayahs}, {place}) in the Uthmani script with Saheeh International's translation, word-by-word meanings, a short tafsir and recitations.",
+    "ayahTitle": "Surah {surah}, ayah {ayah}",
+    "ayahDescription": "Ayah {ayah} of Surah {surah} with its translation, word-by-word meanings, a short tafsir and recitation.",
+    "quran": "The Noble Quran"
   }
 }

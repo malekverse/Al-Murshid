@@ -11,10 +11,12 @@ import {
   sajdaOf,
   surah as surahInfo,
   wordId,
+  type SurahName,
+  type SurahText as SurahWords,
   type SurahTranslation,
 } from '@murshid/content/quran';
 import { bookmarkCovering, translationFor, translationLanguage } from '@murshid/data';
-import { typeScale } from '@murshid/tokens';
+import { surahNameSize, typeScale } from '@murshid/tokens';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -37,7 +39,15 @@ import { MemorizeSheet, useMemorize } from './memorize';
 import { ReaderBar } from './reader-bar';
 import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { ReadingSurface } from './reading-surface';
-import { useRecitation } from './recitation';
+import {
+  readerMainClass,
+  surahNavClass,
+  surahNavLinkClass,
+  surahOpeningClass,
+} from './reader-markup';
+import type { ReaderIntent } from './reader-intent';
+import { SurahNameOutline } from './surah-name-outline';
+import { useRecitation } from './recitation-store';
 import { SurahText } from './surah-text';
 import type { Tajweed } from './tajweed';
 
@@ -64,9 +74,28 @@ function plainTranslation(tr: SurahTranslation | undefined, ayah: number) {
 
 /**
  * The scrolling reader (SPEC 5.5, Phase 5b): verse by verse with translation, or the Arabic text
- * flowing, as the reading settings choose. Memorizing hides words or markers in either.
+ * flowing, as the reading settings choose. Memorizing hides words or markers in either. It takes
+ * over the page the server sent (Phase 6) with that page's data, and does what was asked there.
  */
-export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah?: number }) {
+export function SurahReader({
+  surah,
+  startAyah = 1,
+  initial,
+  intent = null,
+}: {
+  surah: number;
+  /** Scroll to this ayah once open. */
+  startAyah?: number;
+  /** The surah's text and translation the page already holds. */
+  initial?: {
+    text: SurahWords;
+    /** The surah's calligraphic name as an outline (the page drew it so; no name font). */
+    name?: SurahName;
+    translation: { lang: 'en' | 'fr'; data: SurahTranslation } | null;
+  };
+  /** What was asked on the page before this reader took over. */
+  intent?: ReaderIntent | null;
+}) {
   const format = useFormatter();
   const t = useTranslations('quran');
   const locale = useLocale();
@@ -80,8 +109,12 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
   const translation = prefs ? translationFor(prefs, locale) : null;
   // Word meanings come in the translation's language, or the app's (English in Arabic).
   const lang = translation ? translationLanguage[translation] : locale === 'fr' ? 'fr' : 'en';
-  const text = useLoad(() => loadSurahText(surah), `text/${surah}`);
-  const extra = useLoad(() => loadTranslation(lang, surah), `${lang}/${surah}`);
+  const text = useLoad(() => loadSurahText(surah), `text/${surah}`, initial?.text);
+  const extra = useLoad(
+    () => loadTranslation(lang, surah),
+    `${lang}/${surah}`,
+    initial?.translation?.lang === lang ? initial.translation.data : undefined,
+  );
   const translit = useLoad(() => loadTransliteration(surah), `translit/${surah}`);
   const bookmarks = useBookmarks();
   // Tajweed colors here too, with the 1441H mushaf (its glyphs load only then).
@@ -102,11 +135,17 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
   const size = prefs?.arabicSize ?? typeScale.quran.arabic.size;
   const playingHere = recitation.surah === surah;
 
-  // Open at the ayah asked for.
+  // Open at the ayah asked for, again once the fonts are in (text taking its size moves it).
   const ready = Boolean(text.data);
   useEffect(() => {
     if (!ready || startAyah <= 1) return;
-    ayahRefs.current.get(startAyah)?.scrollIntoView({ block: 'start' });
+    let live = true;
+    const show = () => live && ayahRefs.current.get(startAyah)?.scrollIntoView({ block: 'start' });
+    show();
+    void document.fonts.ready.then(show);
+    return () => {
+      live = false;
+    };
   }, [ready, startAyah]);
 
   // Remember the ayah at the top of the screen as the last position.
@@ -144,9 +183,6 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
     }
   }, [playingHere, recitation.ayah]);
 
-  if (!prefs) return null;
-
-  const layout = prefs.layout;
   const bookmarkOf = (ayah: number) => bookmarkCovering(bookmarks, surah, ayah);
   const play = () => {
     if (playingHere && recitation.playing) recitation.pause();
@@ -156,11 +192,16 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
   const toggleView = () => {
     setQuranPrefs({ view: 'mushaf' });
     const position = recitation.surah === surah && recitation.ayah ? recitation.ayah : startAyah;
-    router.push(`/quran/page/${pageOf(surah, position, prefs.edition)}`);
+    router.push(`/quran/page/${pageOf(surah, position, prefs?.edition)}`);
   };
-  const onView = (v: ReaderView) => {
-    if (v === 'mushaf') toggleView();
-    else setQuranPrefs({ view: 'verses', layout: v });
+  const openWord = (ayah: number, index: number, el: HTMLElement) => {
+    const words = ayahWords(text.data!, ayah);
+    setWord({
+      word: words[index]!,
+      meaning: extra.data?.m[ayah - 1]?.[index] ?? null,
+      transliteration: translit.data?.[ayah - 1]?.[index] ?? null,
+      rect: el.getBoundingClientRect(),
+    });
   };
   const openActions = (ayah: number) => {
     const words = ayahWords(text.data!, ayah);
@@ -178,6 +219,58 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
     });
   };
 
+  // What was asked on the page this reader took over, once what it needs is in.
+  const pendingIntent = useRef(intent);
+  useEffect(() => {
+    const pending = pendingIntent.current;
+    if (!pending || !prefs || !text.data) return;
+    if (
+      (pending.kind === 'word' || pending.kind === 'actions' || pending.kind === 'footnote') &&
+      !extra.data
+    )
+      return;
+    pendingIntent.current = null;
+    switch (pending.kind) {
+      case 'word': {
+        const el = ayahRefs.current
+          .get(pending.ayah)
+          ?.querySelector<HTMLElement>(`[data-word="${pending.index}"]`);
+        if (el) openWord(pending.ayah, pending.index, el);
+        break;
+      }
+      case 'actions':
+        openActions(pending.ayah);
+        break;
+      case 'footnote': {
+        const text = extra.data?.f[pending.ref];
+        if (text) setNote({ mark: pending.mark, text });
+        break;
+      }
+      case 'settings':
+        setSettingsOpen(true);
+        break;
+      case 'memorize':
+        setMemorizeOpen(true);
+        break;
+      case 'play':
+        play();
+        break;
+      case 'view':
+        toggleView();
+        break;
+    }
+    // The handlers are this render's; the intent runs once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefs, text.data, extra.data]);
+
+  if (!prefs) return null;
+
+  const layout = prefs.layout;
+  const onView = (v: ReaderView) => {
+    if (v === 'mushaf') toggleView();
+    else setQuranPrefs({ view: 'verses', layout: v });
+  };
+
   return (
     <ReadingSurface theme={prefs.theme}>
       <ReaderBar
@@ -191,9 +284,13 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
         playing={playingHere && recitation.playing}
         onPlay={play}
       />
-      <main id="main" className="mx-auto flex w-full max-w-reading flex-col px-4 pb-32">
-        <div className="flex flex-col items-center gap-2 py-8">
-          <SurahCalligraphy number={surah} size="header" />
+      <main id="main" className={readerMainClass}>
+        <div className={surahOpeningClass}>
+          {initial?.name ? (
+            <SurahNameOutline name={initial.name} size={surahNameSize.header} />
+          ) : (
+            <SurahCalligraphy number={surah} size="header" />
+          )}
           {locale !== 'ar' && (
             <Text role="callout" tone="muted">
               {info.nameSimple}
@@ -233,15 +330,7 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
                 : null
             }
             ayahRefs={ayahRefs}
-            onWord={(ayah, w, el) => {
-              const words = ayahWords(text.data!, ayah);
-              setWord({
-                word: words[w]!,
-                meaning: extra.data?.m[ayah - 1]?.[w] ?? null,
-                transliteration: translit.data?.[ayah - 1]?.[w] ?? null,
-                rect: el.getBoundingClientRect(),
-              });
-            }}
+            onWord={openWord}
             onActions={openActions}
           />
         ) : (
@@ -289,9 +378,9 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
         )}
 
         {text.data && (
-          <nav className="flex flex-wrap justify-between gap-4 py-8">
+          <nav className={surahNavClass}>
             {surah > 1 ? (
-              <Link href={`/quran/${surah - 1}`} className="rounded-full px-4 py-3 hover:bg-ink/5">
+              <Link href={`/quran/${surah - 1}`} className={surahNavLinkClass}>
                 <Text as="span" role="callout" tone="lantern">
                   {t('reader.previous', { surah: name(surahInfo(surah - 1)) })}
                 </Text>
@@ -300,7 +389,7 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
               <span />
             )}
             {surah < 114 && (
-              <Link href={`/quran/${surah + 1}`} className="rounded-full px-4 py-3 hover:bg-ink/5">
+              <Link href={`/quran/${surah + 1}`} className={surahNavLinkClass}>
                 <Text as="span" role="callout" tone="lantern">
                   {t('reader.next', { surah: name(surahInfo(surah + 1)) })}
                 </Text>

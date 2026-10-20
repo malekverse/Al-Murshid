@@ -22,7 +22,7 @@
       "sha256": "ada09f674efd35d0c054c9b81c98d14550f6c66b77767a9173674799f675d7de"
     },
     {
-      "path": "apps/web/src/app/fonts/UthmanicHafs_V22.woff2",
+      "path": "apps/web/public/fonts/hafs/UthmanicHafs_V22.woff2",
       "title": "QPC Hafs font (KFGQPC HAFS Uthmanic Script 2.2), WOFF2",
       "publisher": "King Fahd Glorious Quran Printing Complex",
       "via": "Quranic Universal Library (Tarteel)",

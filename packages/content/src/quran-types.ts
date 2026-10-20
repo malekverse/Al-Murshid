@@ -96,3 +96,16 @@ export interface ReciterEntry {
   /** Whether the timestamps follow each word, or only each ayah. */
   words: boolean;
 }
+
+/**
+ * A surah's calligraphic name as its font draws it (Phase 6): glyph outlines as SVG path data in
+ * font units, y up, each placed at its pen position, with the font's vertical metrics.
+ */
+export interface SurahName {
+  upem: number;
+  ascender: number;
+  descender: number;
+  /** The name's advance width. */
+  width: number;
+  glyphs: [x: number, y: number, d: string][];
+}

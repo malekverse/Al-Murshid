@@ -75,6 +75,9 @@ export type UiRole = (typeof uiRoles)[number];
 /** The reader can resize Quran text within this range (px). */
 export const quranSizeRange = { min: 20, max: 48 } as const;
 
+/** An ayah on its own page (Phase 6): a step up from the reader's default size. */
+export const quranFocusSize = 36;
+
 /** Calligraphic surah names (QUL surah name font): in lists, and heading a surah. */
 export const surahNameSize = { list: 32, header: 52 } as const;
 

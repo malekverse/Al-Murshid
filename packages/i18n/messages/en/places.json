@@ -1,0 +1,23 @@
+{
+  "title": "Prayer times",
+  "indexTitle": "Prayer times around the world",
+  "indexBody": "Choose your country, then your city, for today's prayers and the month's timetable.",
+  "countryTitle": "Prayer times in {country}",
+  "cities": "{count, plural, one {# city} other {# cities}} of 15,000 people or more",
+  "cityTitle": "Prayer times in {city}",
+  "cityDescription": "Today's prayer times in {city}, {country}: Fajr {fajr}, Dhuhr {dhuhr}, Asr {asr}, Maghrib {maghrib}, Isha {isha}, with the month's timetable and the Qibla.",
+  "today": "Today, {date}",
+  "next": "Next: {prayer} in {duration}",
+  "now": "Now: {prayer}, {duration} left",
+  "method": "Method: {method} · Asr: {asr}",
+  "methodNote": "The country's usual method. You can change it in Al-Murshid.",
+  "month": "{month} timetable",
+  "day": "Day",
+  "qibla": "Qibla",
+  "useCity": "Use this city",
+  "useCityHint": "Al-Murshid then counts down to each prayer here, even offline.",
+  "nearby": "Other cities in {country}",
+  "allCities": "All cities",
+  "source": "Cities from GeoNames (CC BY 4.0).",
+  "trail": "You are here"
+}
