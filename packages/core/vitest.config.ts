@@ -20,6 +20,7 @@ export default defineConfig({
         'src/recitation-check.ts',
         'src/seasons.ts',
         'src/your-sky.ts',
+        'src/reflection.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

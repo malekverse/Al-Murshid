@@ -5,6 +5,7 @@ import { cityName, loadCities, type City } from '@murshid/content/cities';
 import {
   answerStepOffer,
   dismissCard,
+  setAsideReflection,
   markOpened,
   withLocation,
   type Settings,
@@ -183,7 +184,13 @@ export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
           locale={locale}
           focusPrayer={settings.journey.prayer.focusPrayer}
           place={readerPlace(settings.quran)}
-          onDismiss={() => updateSettings((s) => dismissCard(s, view.card!.kind, today))}
+          onDismiss={() =>
+            updateSettings((s) =>
+              view.card!.kind === 'night-reflection'
+                ? setAsideReflection(s, view.night)
+                : dismissCard(s, view.card!.kind, today),
+            )
+          }
           onAnswer={(accepted) => {
             const card = view.card;
             if (card?.kind !== 'step-offer') return;

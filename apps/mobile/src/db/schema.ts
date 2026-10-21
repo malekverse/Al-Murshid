@@ -24,6 +24,16 @@ export const ramadanLogs = sqliteTable('ramadan_logs', {
   updatedAt: text('updated_at').notNull(),
 });
 
+/**
+ * Night reflections (SPEC 5.7), never synced (SPEC 9). Only the evening's date is readable:
+ * the fields are sealed with AES-GCM (IV, ciphertext and tag together, base64).
+ */
+export const reflections = sqliteTable('reflections', {
+  date: text('date').primaryKey(),
+  sealed: text('sealed').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
 /** Quran bookmarks (SPEC 9's quran_bookmarks, local side). Removing keeps a tombstone. */
 export const quranBookmarks = sqliteTable('quran_bookmarks', {
   id: text('id').primaryKey(),

@@ -5,7 +5,8 @@
     "reminders": "Rappels",
     "appearance": "Apparence",
     "about": "À propos",
-    "seasons": "Saisons"
+    "seasons": "Saisons",
+    "privacy": "Confidentialité et données"
   },
   "location": {
     "label": "Lieu",
@@ -96,5 +97,22 @@
   "ramadanMode": {
     "label": "Mode Ramadan",
     "note": "Comptes à rebours du sohour et de l’iftar, le juz du jour et un ciel de nuit aux lanternes."
+  },
+  "privacy": {
+    "local": "Rien n’est encore gardé ailleurs : il n’y a pas de comptes.",
+    "export": {
+      "label": "Exporter mes données",
+      "note": "Un fichier JSON avec vos réglages, prières, jeûnes, signets, lecture et réflexions.",
+      "action": "Exporter",
+      "done": "Exporté."
+    },
+    "delete": {
+      "label": "Tout effacer sur cet appareil",
+      "note": "Vos réglages, prières, jeûnes, signets, lecture et réflexions. Les récitations téléchargées restent.",
+      "action": "Tout effacer",
+      "confirmTitle": "Tout effacer ?",
+      "confirmBody": "Tout ce que vous avez gardé dans Al-Murshid sur cet appareil est effacé définitivement. Exportez d’abord si vous voulez une copie.",
+      "confirm": "Tout effacer"
+    }
   }
 }

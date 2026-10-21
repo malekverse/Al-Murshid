@@ -52,6 +52,12 @@
       "day": "Day {day}",
       "arafahTomorrow": "Tomorrow is the Day of Arafah, a day many fast.",
       "arafahToday": "Today is the Day of Arafah."
+    },
+    "reflection": {
+      "title": "Before you sleep",
+      "body": "A moment to look back on today, just for you.",
+      "write": "Reflect",
+      "notTonight": "Not tonight"
     }
   },
   "noLocation": {

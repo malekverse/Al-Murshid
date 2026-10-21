@@ -15,6 +15,7 @@ import {
   type PrayerSettings,
   type TimeName,
 } from './prayer-times';
+import { isReflectionTime, reflectionNight } from './reflection';
 import { dhulHijjahState, ramadanState, type DhulHijjahState, type RamadanState } from './seasons';
 import { addDays, civilDate, daysBetween, isoDate, weekday, type CivilDate } from './time';
 
@@ -61,6 +62,8 @@ export const cardKinds = [
   'morning-adhkar',
   'evening-adhkar',
   'step-offer',
+  // Not ranked by SPEC 5.1; after Isha it comes last, so a step offer is never pushed aside.
+  'night-reflection',
 ] as const;
 export type CardKind = (typeof cardKinds)[number];
 
@@ -90,6 +93,11 @@ export interface TodayInput {
   cards?: readonly CardKind[];
   /** Ramadan mode (SPEC 5.8): on by default, the person can turn it off. */
   ramadanMode?: boolean;
+  /**
+   * Night reflection (SPEC 5.7): whether Today invites one after Isha, and the evenings already
+   * written or set aside ("2026-10-18").
+   */
+  reflection?: { prompt: boolean; settled: readonly string[] };
 }
 
 export interface TodayView {
@@ -108,6 +116,8 @@ export interface TodayView {
   ramadan: RamadanState | null;
   /** The first nine days of Dhul Hijjah (SPEC 5.8). */
   dhulHijjah: DhulHijjahState | null;
+  /** The evening a reflection written now belongs to (SPEC 5.7). */
+  night: CivilDate;
 }
 
 const FRIDAY = 5;
@@ -143,6 +153,7 @@ function chooseCard(
   times: DayTimes,
   logs: readonly LoggedPrayer[],
   seasons: { ramadan: RamadanState | null; dhulHijjah: DhulHijjahState | null },
+  night: CivilDate,
 ): ContextCard | null {
   const allowed = (kind: CardKind) =>
     (input.cards ?? cardKinds).includes(kind) && !(input.dismissed ?? []).includes(kind);
@@ -171,6 +182,15 @@ function chooseCard(
       const step = stepToOffer({ ...focus, today: date, days });
       if (step) return { kind: 'step-offer', track: focus.track, step };
     }
+  }
+  const reflection = input.reflection;
+  if (
+    allowed('night-reflection') &&
+    reflection?.prompt &&
+    isReflectionTime(input.now, times) &&
+    !reflection.settled.includes(isoDate(night))
+  ) {
+    return { kind: 'night-reflection' };
   }
   return null;
 }
@@ -235,6 +255,7 @@ export function todayView(input: TodayInput): TodayView {
     ramadan: input.ramadanMode === false ? null : ramadanState(now, date, times, tomorrow, offset),
     dhulHijjah: dhulHijjahState(date, offset),
   };
+  const night = reflectionNight(now, date, times);
   return {
     date,
     hijri: toHijri(date, offset),
@@ -243,8 +264,9 @@ export function todayView(input: TodayInput): TodayView {
     rows,
     hero,
     earlier,
-    card: chooseCard(input, date, times, input.logs, seasons),
+    card: chooseCard(input, date, times, input.logs, seasons, night),
     ...seasons,
+    night,
   };
 }
 

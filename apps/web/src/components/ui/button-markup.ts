@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn';
 // The pill button's look, shared by the app's Button and links drawn as buttons on server-rendered
 // pages (Phase 6).
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'md' | 'lg';
 
 const variants: Record<ButtonVariant, string> = {
@@ -11,6 +11,9 @@ const variants: Record<ButtonVariant, string> = {
   secondary:
     'border border-hairline bg-surface text-ink shadow-card hover:bg-canvas dark:border-card-edge dark:shadow-none',
   ghost: 'text-lantern-ink hover:bg-lantern/10',
+  // Deleting data only (SPEC 6: danger is never used for worship).
+  danger:
+    'border border-hairline bg-surface text-danger shadow-card hover:bg-danger/10 dark:border-card-edge dark:shadow-none',
 };
 
 const sizes: Record<ButtonSize, { box: string; latin: string; arabic: string }> = {

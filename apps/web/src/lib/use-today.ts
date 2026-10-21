@@ -8,13 +8,22 @@ import {
   placeOf,
   prayerSettings,
   previousVisit,
+  settledNights,
   type Settings,
 } from '@murshid/data';
 import { useRecentLogs } from './prayer-logs';
+import { useWrittenNights } from './reflections';
 import { useSettings } from './settings';
 
 /** Cards whose destination exists on web in this build (SPEC 5.1 lists more for later phases). */
-const webCards: CardKind[] = ['welcome-back', 'ramadan', 'jumuah', 'dhul-hijjah', 'step-offer'];
+const webCards: CardKind[] = [
+  'welcome-back',
+  'ramadan',
+  'jumuah',
+  'dhul-hijjah',
+  'step-offer',
+  'night-reflection',
+];
 
 export interface TodayState {
   settings: Settings;
@@ -31,10 +40,11 @@ export function useToday(now: Date | null): TodayState | null | undefined {
   const place = settings ? placeOf(settings) : null;
   const date = place && now ? civilDate(now, place.timeZone) : null;
   const logs = useRecentLogs(date);
+  const written = useWrittenNights();
 
   if (!settings || !now) return undefined;
   if (!place) return null;
-  if (!logs || !date) return undefined;
+  if (!logs || !date || !written) return undefined;
   return {
     settings,
     place,
@@ -49,6 +59,7 @@ export function useToday(now: Date | null): TodayState | null | undefined {
       dismissed: dismissedToday(settings, date),
       cards: webCards,
       ramadanMode: settings.ramadanMode,
+      reflection: { prompt: settings.reflectionPrompt, settled: settledNights(settings, written) },
     }),
   };
 }

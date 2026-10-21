@@ -87,6 +87,15 @@ export function Sheet({ open, onClose, title, description, children }: SheetProp
     }
   }, [open, mounted, reduce, height, y, backdrop, host]);
 
+  // A sheet that leaves with its screen (a navigation while it is open) must not leave the app
+  // behind it scaled down.
+  useEffect(
+    () => () => {
+      if (host) host.set(withSpring(0, spring.gentle));
+    },
+    [host],
+  );
+
   const drag = Gesture.Pan()
     .onUpdate((e) => {
       y.set(Math.max(0, e.translationY));

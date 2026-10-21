@@ -153,6 +153,10 @@ export const settingsSchema = z.object({
   ramadanMode: z.boolean().catch(true),
   /** Your Sky shows counts only when asked (SPEC 5.7: "Show details"). */
   showSkyDetails: z.boolean().catch(false),
+  /** Night reflection (SPEC 5.7): Today invites one after Isha unless turned off. */
+  reflectionPrompt: z.boolean().catch(true),
+  /** The evening whose invitation was set aside ("Not tonight"). */
+  reflectionSetAside: isoDateString.nullable().catch(null),
   /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */
   quran: quranPrefsSchema.catch(() => defaultQuranPrefs()),
   /** The last day the app was opened, and the one before it (for "Welcome back"). */
@@ -305,6 +309,16 @@ export function dismissCard(s: Settings, kind: CardKind, today: CivilDate): Sett
   const date = isoDate(today);
   const kinds = s.dismissedCards?.date === date ? s.dismissedCards.kinds : [];
   return { ...s, dismissedCards: { date, kinds: [...new Set([...kinds, kind])] } };
+}
+
+/** "Not tonight": the evening's invitation is set aside, even past midnight. */
+export function setAsideReflection(s: Settings, night: CivilDate): Settings {
+  return { ...s, reflectionSetAside: isoDate(night) };
+}
+
+/** The evenings Today no longer invites a reflection for: those written and the one set aside. */
+export function settledNights(s: Settings, written: readonly string[]): string[] {
+  return s.reflectionSetAside ? [...written, s.reflectionSetAside] : [...written];
 }
 
 export function dismissedToday(s: Settings, today: CivilDate): CardKind[] {

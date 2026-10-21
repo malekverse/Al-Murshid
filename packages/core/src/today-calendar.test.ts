@@ -233,3 +233,49 @@ describe('todayView: seasons (SPEC 5.8)', () => {
     expect(v.dhulHijjah).toEqual({ day: 1, arafah: null });
   });
 });
+
+describe('todayView: night reflection (SPEC 5.7)', () => {
+  const t = timesOn(sunday);
+  const on = { prompt: true, settled: [] };
+
+  it('invites a reflection from Isha until Fajr, last of the cards', () => {
+    const cards: TodayInput['cards'] = ['step-offer', 'night-reflection'];
+    expect(view(plus(t.isha, -5), { cards, reflection: on }).card).toBeNull();
+    expect(view(plus(t.isha, 5), { cards, reflection: on }).card).toEqual({
+      kind: 'night-reflection',
+    });
+    const monday = addDays(sunday, 1);
+    const beforeFajr = view(plus(timesOn(monday).fajr, -30), { cards, reflection: on });
+    expect(beforeFajr.card).toEqual({ kind: 'night-reflection' });
+    // After midnight the night is still Sunday's.
+    expect(beforeFajr.night).toEqual(sunday);
+    expect(view(plus(t.dhuhr, 5)).night).toEqual(sunday);
+  });
+
+  it('stays away once the night is written or set aside, or when turned off', () => {
+    const cards: TodayInput['cards'] = ['night-reflection'];
+    const night = isoDate(sunday);
+    expect(
+      view(plus(t.isha, 5), { cards, reflection: { prompt: true, settled: [night] } }).card,
+    ).toBeNull();
+    expect(
+      view(plus(t.isha, 5), { cards, reflection: { prompt: false, settled: [] } }).card,
+    ).toBeNull();
+    expect(view(plus(t.isha, 5), { cards }).card).toBeNull();
+  });
+
+  it('gives way to a step offer', () => {
+    const logs = [0, -1, -2, -3, -4].map((d) => log(addDays(sunday, d), 'asr'));
+    const journey = [
+      { track: 'prayer' as const, step: 'one-prayer' as const, focusPrayer: 'asr' as const },
+    ];
+    expect(
+      view(plus(t.isha, 30), {
+        cards: ['step-offer', 'night-reflection'],
+        logs,
+        journey,
+        reflection: on,
+      }).card,
+    ).toMatchObject({ kind: 'step-offer' });
+  });
+});

@@ -14,16 +14,28 @@ import { useTranslations } from 'use-intl';
 import { PressableScale } from './pressable-scale';
 import { Text } from './text';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'md' | 'lg';
 
 const box: Record<Variant, string> = {
   primary: 'bg-lantern shadow-card dark:shadow-none',
   secondary: 'border border-hairline bg-surface shadow-card dark:border-card-edge dark:shadow-none',
   ghost: '',
+  // Deleting data only (SPEC 6: danger is never used for worship).
+  danger: 'border border-hairline bg-surface shadow-card dark:border-card-edge dark:shadow-none',
 };
-const tone = { primary: 'onLantern', secondary: 'default', ghost: 'lantern' } as const;
-const dot = { primary: 'bg-on-lantern', secondary: 'bg-ink', ghost: 'bg-lantern-ink' } as const;
+const tone = {
+  primary: 'onLantern',
+  secondary: 'default',
+  ghost: 'lantern',
+  danger: 'danger',
+} as const;
+const dot = {
+  primary: 'bg-on-lantern',
+  secondary: 'bg-ink',
+  ghost: 'bg-lantern-ink',
+  danger: 'bg-danger',
+} as const;
 const sizes: Record<Size, string> = { md: 'min-h-touch px-6', lg: 'min-h-16 self-stretch px-8' };
 
 export interface ButtonProps {

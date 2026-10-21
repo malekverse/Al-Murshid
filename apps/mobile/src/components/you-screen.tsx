@@ -15,13 +15,16 @@ import { Bell } from 'phosphor-react-native/src/icons/Bell';
 import { Calculator } from 'phosphor-react-native/src/icons/Calculator';
 import { CalendarBlank } from 'phosphor-react-native/src/icons/CalendarBlank';
 import { Crosshair } from 'phosphor-react-native/src/icons/Crosshair';
+import { DownloadSimple } from 'phosphor-react-native/src/icons/DownloadSimple';
 import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
 import { Moon } from 'phosphor-react-native/src/icons/Moon';
 import { SlidersHorizontal } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import { SunHorizon } from 'phosphor-react-native/src/icons/SunHorizon';
+import { Trash } from 'phosphor-react-native/src/icons/Trash';
+import { router } from 'expo-router';
 import { getCalendars } from 'expo-localization';
-import { useState, type ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { useEffect, useRef, useState, type ComponentRef, type ReactNode } from 'react';
+import { AppState, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFormatter, useTranslations } from 'use-intl';
 import { ChoiceList } from './choice-list';
@@ -35,7 +38,10 @@ import { Sheet } from './ui/sheet';
 import { Text } from './ui/text';
 import { Toggle } from './ui/toggle';
 import { JourneySection } from './you/journey-section';
+import { NightReflection } from './you/night-reflection';
 import { YourSky } from './you/your-sky';
+import { canLock, setYouLock, useYouLock } from '@/lib/app-lock';
+import { deleteEverything, exportEverything } from '@/lib/data-export';
 import { countryName, usePrayerName } from '@/lib/format';
 import { useAppLocale } from '@/lib/locale';
 import { locateDevice, locationFromCity } from '@/lib/locate';
@@ -49,7 +55,7 @@ const highLatitudeChoices: HighLatitudeChoice[] = [
   'seventh-of-the-night',
   'twilight-angle',
 ];
-type Open = 'location' | 'method' | 'asr' | 'highLatitude' | 'adjust' | null;
+type Open = 'location' | 'method' | 'asr' | 'highLatitude' | 'adjust' | 'delete' | null;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -62,7 +68,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function YouScreen() {
+/** `focus` brings the night reflection into view; a new value scrolls again. */
+export function YouScreen({ focus = null }: { focus?: string | null }) {
   const t = useTranslations();
   const format = useFormatter();
   const insets = useSafeAreaInsets();
@@ -75,7 +82,25 @@ export function YouScreen() {
   const [reminderFor, setReminderFor] = useState<Prayer | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<'denied' | 'failed' | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const lock = useYouLock();
+  const [lockable, setLockable] = useState<boolean | null>(null);
+  const scroll = useRef<ComponentRef<typeof ScrollView>>(null);
+  const [reflectionY, setReflectionY] = useState<number | null>(null);
   const now = useNow(60_000);
+
+  // A screen lock set up in the system settings counts as soon as the app comes back.
+  useEffect(() => {
+    const check = () => void canLock().then(setLockable);
+    check();
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (status === 'active') check();
+    });
+    return () => subscription.remove();
+  }, []);
+  useEffect(() => {
+    if (focus && reflectionY !== null) scroll.current?.scrollTo({ y: reflectionY, animated: true });
+  }, [focus, reflectionY]);
   const today = civilDate(now, placeOf(settings)?.timeZone ?? getCalendars()[0]?.timeZone ?? 'UTC');
 
   const location = settings.location;
@@ -108,6 +133,7 @@ export function YouScreen() {
   return (
     <View className="flex-1">
       <ScrollView
+        ref={scroll}
         className="flex-1 bg-canvas"
         contentContainerStyle={{
           paddingTop: insets.top + space[6],
@@ -124,6 +150,9 @@ export function YouScreen() {
 
         <YourSky settings={settings} today={today} />
         <JourneySection settings={settings} />
+        <View onLayout={(e) => setReflectionY(e.nativeEvent.layout.y)}>
+          <NightReflection settings={settings} now={now} />
+        </View>
 
         <Section title={t('settings.sections.prayer')}>
           <ListGroup>
@@ -272,6 +301,40 @@ export function YouScreen() {
           </ListGroup>
         </Section>
 
+        <Section title={t('settings.sections.privacy')}>
+          <ListGroup>
+            <ListRow
+              title={t('reflection.lock.label')}
+              subtitle={
+                lockable === false ? t('reflection.lock.unavailable') : t('reflection.lock.note')
+              }
+              control={
+                <Toggle
+                  checked={lock.enabled === true}
+                  disabled={lockable !== true && lock.enabled !== true}
+                  onChange={(on) => void setYouLock(on, t('reflection.lock.prompt'))}
+                  label={t('reflection.lock.label')}
+                />
+              }
+            />
+            <ListRow
+              icon={DownloadSimple}
+              title={t('settings.privacy.export.label')}
+              subtitle={t('settings.privacy.export.note')}
+              onPress={() => void exportEverything(t('settings.privacy.export.label'))}
+            />
+            <ListRow
+              icon={Trash}
+              title={t('settings.privacy.delete.label')}
+              subtitle={t('settings.privacy.delete.note')}
+              onPress={() => setOpen('delete')}
+            />
+          </ListGroup>
+          <Text role="caption" tone="muted" className="px-2">
+            {t('settings.privacy.local')}
+          </Text>
+        </Section>
+
         <Section title={t('settings.sections.about')}>
           <View className="gap-2 rounded-card border border-card-edge bg-surface p-4">
             <Text role="callout">{t('settings.about.noRulings')}</Text>
@@ -281,6 +344,34 @@ export function YouScreen() {
           </View>
         </Section>
       </ScrollView>
+
+      <Sheet
+        open={open === 'delete'}
+        onClose={close}
+        title={t('settings.privacy.delete.confirmTitle')}
+        description={t('settings.privacy.delete.confirmBody')}
+      >
+        <View className="gap-3">
+          <Button
+            variant="danger"
+            size="lg"
+            loading={deleting}
+            onPress={() => {
+              setDeleting(true);
+              void deleteEverything().then(() => {
+                setDeleting(false);
+                close();
+                router.replace('/welcome');
+              });
+            }}
+          >
+            {t('settings.privacy.delete.confirm')}
+          </Button>
+          <Button variant="secondary" size="lg" onPress={close}>
+            {t('common.actions.cancel')}
+          </Button>
+        </View>
+      </Sheet>
 
       <Sheet open={open === 'location'} onClose={close} title={t('settings.location.change')}>
         <View className="gap-4">

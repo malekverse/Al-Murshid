@@ -5,7 +5,8 @@
     "reminders": "Reminders",
     "appearance": "Appearance",
     "about": "About",
-    "seasons": "Seasons"
+    "seasons": "Seasons",
+    "privacy": "Privacy and data"
   },
   "location": {
     "label": "Location",
@@ -96,5 +97,22 @@
   "ramadanMode": {
     "label": "Ramadan mode",
     "note": "Countdowns to suhoor and iftar, the day’s juz, and a lantern-lit night sky."
+  },
+  "privacy": {
+    "local": "Nothing is kept anywhere else yet: there are no accounts.",
+    "export": {
+      "label": "Export my data",
+      "note": "One JSON file with your settings, prayers, fasts, bookmarks, reading and reflections.",
+      "action": "Export",
+      "done": "Exported."
+    },
+    "delete": {
+      "label": "Delete everything on this device",
+      "note": "Your settings, prayers, fasts, bookmarks, reading and reflections. Downloaded recitations stay.",
+      "action": "Delete everything",
+      "confirmTitle": "Delete everything?",
+      "confirmBody": "Everything you have kept in Al-Murshid on this device is deleted for good. Export first if you want a copy.",
+      "confirm": "Delete everything"
+    }
   }
 }

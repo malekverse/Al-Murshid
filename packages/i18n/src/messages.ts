@@ -7,6 +7,7 @@ import arComponents from '../messages/ar/components.json';
 import arGallery from '../messages/ar/gallery.json';
 import arGlossary from '../messages/ar/glossary.json';
 import arJourney from '../messages/ar/journey.json';
+import arReflection from '../messages/ar/reflection.json';
 import arNotifications from '../messages/ar/notifications.json';
 import arOnboarding from '../messages/ar/onboarding.json';
 import arPlaces from '../messages/ar/places.json';
@@ -22,6 +23,7 @@ import enComponents from '../messages/en/components.json';
 import enGallery from '../messages/en/gallery.json';
 import enGlossary from '../messages/en/glossary.json';
 import enJourney from '../messages/en/journey.json';
+import enReflection from '../messages/en/reflection.json';
 import enNotifications from '../messages/en/notifications.json';
 import enOnboarding from '../messages/en/onboarding.json';
 import enPlaces from '../messages/en/places.json';
@@ -37,6 +39,7 @@ import frComponents from '../messages/fr/components.json';
 import frGallery from '../messages/fr/gallery.json';
 import frGlossary from '../messages/fr/glossary.json';
 import frJourney from '../messages/fr/journey.json';
+import frReflection from '../messages/fr/reflection.json';
 import frNotifications from '../messages/fr/notifications.json';
 import frOnboarding from '../messages/fr/onboarding.json';
 import frPlaces from '../messages/fr/places.json';
@@ -56,6 +59,7 @@ const en = {
   gallery: enGallery,
   glossary: enGlossary,
   journey: enJourney,
+  reflection: enReflection,
   notifications: enNotifications,
   onboarding: enOnboarding,
   places: enPlaces,
@@ -76,6 +80,7 @@ export const messages: Record<Locale, Messages> = {
     gallery: arGallery,
     glossary: arGlossary,
     journey: arJourney,
+    reflection: arReflection,
     notifications: arNotifications,
     onboarding: arOnboarding,
     places: arPlaces,
@@ -94,6 +99,7 @@ export const messages: Record<Locale, Messages> = {
     gallery: frGallery,
     glossary: frGlossary,
     journey: frJourney,
+    reflection: frReflection,
     notifications: frNotifications,
     onboarding: frOnboarding,
     places: frPlaces,

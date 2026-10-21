@@ -1,0 +1,31 @@
+{
+  "title": "Night reflection",
+  "intro": "A few quiet words before you sleep. They stay on this device, encrypted, and are never sent anywhere.",
+  "tonight": "Tonight",
+  "fields": {
+    "gratitude": "Something you’re grateful for",
+    "intention": "An intention for tomorrow",
+    "note": "A note, if you like"
+  },
+  "save": "Save",
+  "saved": "Saved on this device.",
+  "past": "Earlier nights",
+  "delete": "Delete this reflection",
+  "deleteTitle": "Delete this reflection?",
+  "deleteBody": "It can’t be brought back.",
+  "deleted": "Deleted.",
+  "unreadable": "This reflection can’t be opened on this device.",
+  "prompt": {
+    "label": "Invite me after Isha",
+    "note": "Today shows a gentle invitation from Isha until Fajr."
+  },
+  "lock": {
+    "label": "Lock You",
+    "note": "Ask for your fingerprint, face or passcode before showing You.",
+    "unavailable": "Set up a screen lock on this device first.",
+    "title": "Your space is locked",
+    "body": "Your sky, your journey and your reflections stay private.",
+    "unlock": "Unlock",
+    "prompt": "Unlock You"
+  }
+}

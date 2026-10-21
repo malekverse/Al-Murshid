@@ -6,13 +6,22 @@ import {
   placeOf,
   prayerSettings,
   previousVisit,
+  settledNights,
   type Settings,
 } from '@murshid/data';
 import { useRecentLogs } from './prayer-logs';
+import { useWrittenNights } from './reflections';
 import { useSettings } from './settings';
 
 /** Cards whose destination exists on mobile in this build (later phases add the rest). */
-const mobileCards: CardKind[] = ['welcome-back', 'ramadan', 'jumuah', 'dhul-hijjah', 'step-offer'];
+const mobileCards: CardKind[] = [
+  'welcome-back',
+  'ramadan',
+  'jumuah',
+  'dhul-hijjah',
+  'step-offer',
+  'night-reflection',
+];
 
 export interface TodayState {
   settings: Settings;
@@ -26,9 +35,10 @@ export function useToday(now: Date): TodayState | null | undefined {
   const place = placeOf(settings);
   const date = place ? civilDate(now, place.timeZone) : null;
   const logs = useRecentLogs(date);
+  const written = useWrittenNights();
 
   if (!place || !date) return null;
-  if (!logs) return undefined;
+  if (!logs || !written) return undefined;
   return {
     settings,
     place,
@@ -43,6 +53,7 @@ export function useToday(now: Date): TodayState | null | undefined {
       dismissed: dismissedToday(settings, date),
       cards: mobileCards,
       ramadanMode: settings.ramadanMode,
+      reflection: { prompt: settings.reflectionPrompt, settled: settledNights(settings, written) },
     }),
   };
 }

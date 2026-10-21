@@ -36,6 +36,8 @@ const tone = {
   muted: 'text-ink-muted',
   lantern: 'text-lantern-ink',
   onLantern: 'text-on-lantern',
+  /** Deleting data only (SPEC 6). */
+  danger: 'text-danger',
   inherit: '',
 } as const;
 
@@ -45,6 +47,7 @@ const toneColor: Record<Exclude<keyof typeof tone, 'inherit'>, keyof ColorTokens
   muted: 'inkMuted',
   lantern: 'lanternInk',
   onLantern: 'onLantern',
+  danger: 'danger',
 };
 
 export interface TextProps extends Omit<RNTextProps, 'role'> {

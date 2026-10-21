@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarBlank, Compass } from '@phosphor-icons/react';
+import { CalendarBlank, Compass, PencilSimpleLine } from '@phosphor-icons/react';
 import {
   isoDate,
   type ContextCard as Card_,
@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl';
 import { useId } from 'react';
 import { AyahText } from '@/components/ui/ayah-text';
 import { Button } from '@/components/ui/button';
+import { buttonClass } from '@/components/ui/button-markup';
 import { Card } from '@/components/ui/card';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
 import { PrayerRow, type PrayerRowState } from '@/components/ui/prayer-row';
@@ -27,6 +28,7 @@ import { Link } from '@/i18n/navigation';
 import type { ReaderPlace } from '@/components/quran/common';
 import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
 import { usePrayerName, useTimeFormat } from '@/lib/format';
+import { useScript } from '@/lib/use-direction';
 
 const MotionLink = motion.create(Link);
 
@@ -74,6 +76,7 @@ export function ContextCard({
   const time = useTimeFormat(timeZone);
   const stepLabel = useStepLabel();
   const headingId = useId();
+  const script = useScript();
 
   if (card.kind === 'welcome-back') {
     const hero = view.hero;
@@ -124,6 +127,28 @@ export function ContextCard({
           <Button onClick={() => onAnswer(true)}>{t('stepOffer.accept')}</Button>
           <Button variant="ghost" onClick={() => onAnswer(false)}>
             {t('stepOffer.notNow')}
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  if (card.kind === 'night-reflection') {
+    return (
+      <Card as="section" aria-labelledby={headingId} className="flex flex-col gap-4 p-6">
+        <Text as="h2" role="headline" id={headingId}>
+          {t('reflection.title')}
+        </Text>
+        <Text role="body" tone="muted">
+          {t('reflection.body')}
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/you#reflection" className={buttonClass({ variant: 'secondary', script })}>
+            <PencilSimpleLine size={20} aria-hidden />
+            {t('reflection.write')}
+          </Link>
+          <Button variant="ghost" onClick={onDismiss}>
+            {t('reflection.notTonight')}
           </Button>
         </div>
       </Card>

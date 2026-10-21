@@ -66,6 +66,13 @@
         }
       ],
       "expo-sqlite",
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Al-Murshid asks for Face ID to unlock You, where your reflections are kept."
+        }
+      ],
       "expo-background-task",
       [
         "expo-build-properties",
@@ -76,7 +83,8 @@
         }
       ],
       "./plugins/with-local-cleartext",
-      "./plugins/with-short-native-build-paths"
+      "./plugins/with-short-native-build-paths",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true,

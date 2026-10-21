@@ -52,6 +52,12 @@
       "day": "Jour {day}",
       "arafahTomorrow": "Demain, c’est le jour d’Arafa, que beaucoup jeûnent.",
       "arafahToday": "Aujourd’hui, c’est le jour d’Arafa."
+    },
+    "reflection": {
+      "title": "Avant de dormir",
+      "body": "Un moment pour revenir sur la journée, rien que pour vous.",
+      "write": "Écrire",
+      "notTonight": "Pas ce soir"
     }
   },
   "noLocation": {

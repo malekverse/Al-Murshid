@@ -52,6 +52,12 @@
       "day": "اليوم {day}",
       "arafahTomorrow": "غدًا يوم عرفة، ويصومه كثيرون.",
       "arafahToday": "اليوم يوم عرفة."
+    },
+    "reflection": {
+      "title": "قبل النوم",
+      "body": "لحظة لتأمّل يومك، لك وحدك.",
+      "write": "كتابة",
+      "notTonight": "ليس الليلة"
     }
   },
   "noLocation": {

@@ -9,6 +9,7 @@ import type { Settings } from '@murshid/data';
 import { router } from 'expo-router';
 import { CalendarBlank } from 'phosphor-react-native/src/icons/CalendarBlank';
 import { Compass } from 'phosphor-react-native/src/icons/Compass';
+import { PencilSimpleLine } from 'phosphor-react-native/src/icons/PencilSimpleLine';
 import { View } from 'react-native';
 import { useTranslations } from 'use-intl';
 import { AyahText } from '@/components/ui/ayah-text';
@@ -114,7 +115,37 @@ export function ContextCard({
       </Card>
     );
   }
+
+  if (card.kind === 'night-reflection') return <ReflectionCard onSetAside={onDismiss} />;
   return null;
+}
+
+/** After Isha (SPEC 5.7): an invitation to You's night reflection, set aside for the night. */
+function ReflectionCard({ onSetAside }: { onSetAside: () => void }) {
+  const t = useTranslations('today.cards');
+  const color = useColors();
+  return (
+    <Card className="gap-4 p-6">
+      <Text role="headline" accessibilityRole="header">
+        {t('reflection.title')}
+      </Text>
+      <Text role="body" tone="muted">
+        {t('reflection.body')}
+      </Text>
+      <View className="flex-row flex-wrap items-center gap-3">
+        <Button
+          variant="secondary"
+          icon={<PencilSimpleLine size={20} color={color.ink} />}
+          onPress={() => router.push(`/you?focus=reflection&at=${Date.now()}` as never)}
+        >
+          {t('reflection.write')}
+        </Button>
+        <Button variant="ghost" onPress={onSetAside}>
+          {t('reflection.notTonight')}
+        </Button>
+      </View>
+    </Card>
+  );
 }
 
 export function FocusLine({ settings }: { settings: Settings }) {

@@ -5,10 +5,12 @@ import {
   CalendarBlank,
   Clock,
   Crosshair,
+  DownloadSimple,
   MapPin,
   Moon,
   SlidersHorizontal,
   SunHorizon,
+  Trash,
 } from '@phosphor-icons/react';
 import {
   civilDate,
@@ -31,10 +33,13 @@ import { Segmented } from '@/components/ui/segmented';
 import { Sheet } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
 import { Toggle } from '@/components/ui/toggle';
 import { JourneySection } from '@/components/you/journey-section';
+import { NightReflection } from '@/components/you/night-reflection';
 import { YourSky } from '@/components/you/your-sky';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { deleteEverything, exportEverything } from '@/lib/data-export';
 import { countryName, usePrayerName } from '@/lib/format';
 import { locateDevice, locationFromCity } from '@/lib/locate';
 import { updateSettings, useSettings } from '@/lib/settings';
@@ -46,7 +51,7 @@ const highLatitudeChoices: HighLatitudeChoice[] = [
   'seventh-of-the-night',
   'twilight-angle',
 ];
-type Open = 'location' | 'method' | 'asr' | 'highLatitude' | 'adjust' | null;
+type Open = 'location' | 'method' | 'asr' | 'highLatitude' | 'adjust' | 'delete' | null;
 
 function Section({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
   const headingId = useId();
@@ -101,6 +106,8 @@ function Settings_({ settings }: { settings: Settings }) {
   const [open, setOpen] = useState<Open>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<'denied' | 'failed' | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const toast = useToast();
   const simpleId = useId();
   const ramadanId = useId();
   const now = useNow(60_000);
@@ -138,6 +145,11 @@ function Settings_({ settings }: { settings: Settings }) {
         <Skeleton aria-hidden className="h-96 w-full rounded-card" />
       )}
       <JourneySection settings={settings} />
+      {now ? (
+        <NightReflection settings={settings} now={now} />
+      ) : (
+        <Skeleton aria-hidden className="h-96 w-full rounded-card" />
+      )}
 
       <Section id="location" title={t('settings.sections.prayer')}>
         <ListGroup>
@@ -283,6 +295,28 @@ function Settings_({ settings }: { settings: Settings }) {
         </ListGroup>
       </Section>
 
+      <Section id="privacy" title={t('settings.sections.privacy')}>
+        <ListGroup>
+          <ListRow
+            icon={DownloadSimple}
+            title={t('settings.privacy.export.label')}
+            subtitle={t('settings.privacy.export.note')}
+            onPress={() => {
+              void exportEverything(settings).then(() => toast(t('settings.privacy.export.done')));
+            }}
+          />
+          <ListRow
+            icon={Trash}
+            title={t('settings.privacy.delete.label')}
+            subtitle={t('settings.privacy.delete.note')}
+            onPress={() => setOpen('delete')}
+          />
+        </ListGroup>
+        <Text role="caption" tone="muted" className="px-2">
+          {t('settings.privacy.local')}
+        </Text>
+      </Section>
+
       <Section title={t('settings.sections.about')}>
         <div className="flex flex-col gap-2 rounded-card border border-card-edge bg-surface p-4">
           <Text role="callout">{t('settings.about.noRulings')}</Text>
@@ -291,6 +325,32 @@ function Settings_({ settings }: { settings: Settings }) {
           </Text>
         </div>
       </Section>
+
+      {/* Delete everything: one confirmed action, then a fresh start at onboarding. */}
+      <Sheet
+        {...sheet('delete')}
+        title={t('settings.privacy.delete.confirmTitle')}
+        description={t('settings.privacy.delete.confirmBody')}
+      >
+        <div className="flex flex-col gap-3">
+          <Button
+            variant="danger"
+            size="lg"
+            loading={deleting}
+            onClick={() => {
+              setDeleting(true);
+              // A full load, not a client navigation: nothing kept in memory survives either.
+              // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+              void deleteEverything().then(() => window.location.assign(`/${locale}`));
+            }}
+          >
+            {t('settings.privacy.delete.confirm')}
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => setOpen(null)}>
+            {t('common.actions.cancel')}
+          </Button>
+        </div>
+      </Sheet>
 
       {/* Location: search a city, or use the device's position. */}
       <Sheet {...sheet('location')} title={t('settings.location.change')}>

@@ -1,0 +1,31 @@
+{
+  "title": "Réflexion du soir",
+  "intro": "Quelques mots au calme avant de dormir. Ils restent chiffrés sur cet appareil et ne sont envoyés nulle part.",
+  "tonight": "Ce soir",
+  "fields": {
+    "gratitude": "Un bienfait de la journée",
+    "intention": "Une intention pour demain",
+    "note": "Une note, si vous le souhaitez"
+  },
+  "save": "Enregistrer",
+  "saved": "Enregistré sur cet appareil.",
+  "past": "Soirs précédents",
+  "delete": "Supprimer cette réflexion",
+  "deleteTitle": "Supprimer cette réflexion ?",
+  "deleteBody": "Elle ne pourra pas être récupérée.",
+  "deleted": "Supprimée.",
+  "unreadable": "Cette réflexion ne peut pas être ouverte sur cet appareil.",
+  "prompt": {
+    "label": "M’inviter après Icha",
+    "note": "Aujourd’hui affiche une invitation discrète d’Icha jusqu’au Fajr."
+  },
+  "lock": {
+    "label": "Verrouiller Vous",
+    "note": "Demander votre empreinte, votre visage ou votre code avant d’afficher Vous.",
+    "unavailable": "Configurez d’abord un verrouillage d’écran sur cet appareil.",
+    "title": "Votre espace est verrouillé",
+    "body": "Votre ciel, votre chemin et vos réflexions restent privés.",
+    "unlock": "Déverrouiller",
+    "prompt": "Déverrouiller Vous"
+  }
+}
