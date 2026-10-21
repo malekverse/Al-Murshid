@@ -21,11 +21,13 @@ along the way go to `docs/DECISIONS.md`.
   Practices 100 on every page, CLS at most 0.025, scripts 141–144 KB. Performance 0.92–0.93 on
   the prayer-time pages and 0.79–0.87 on the Quran pages, where the simulated LCP (3.3–4.2 s)
   waits for the 107 KB Hafs font and the framework's scripts on a simulated slow link.
-- **Open for the gate:** deploy (step 7), measure Performance and LCP with PageSpeed Insights on
-  the deployed site, and submit the sitemaps to the search consoles. If the Quran pages stay under
-  95 there, the choice is the owner's: accept it for those pages, or show Quran text in another
-  font until the Hafs font arrives (`font-display: swap`), which departs from SPEC 6.2 (the King
-  Fahd Complex font for verse-by-verse text).
+- **Deployed (2026-10-21):** https://al-murshid-pro.netlify.app on Netlify's free plan, with the
+  mushaf page fonts on a Cloudflare Worker. Verified in Google Search Console and Bing Webmaster
+  Tools, sitemaps submitted. PageSpeed Insights on the live site: 95 to 100 except al-Baqarah (78).
+- **Open for the gate:** pages showing as indexed in a search console, which takes days to weeks;
+  and al-Baqarah's Performance (78, LCP 4.2 s), the longest surah sent whole. The owner decides
+  whether long surahs may stay below 95, or are sent in parts with the rest loading as the reader
+  scrolls.
 - **Waiting on content:** the adhkar and dua pages (below).
 
 ## Where it starts (measured 2026-10-19, production build)

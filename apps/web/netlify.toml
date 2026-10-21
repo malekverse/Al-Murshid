@@ -4,6 +4,11 @@
 # gets its long cache here, and the service worker (copied there after the build by
 # scripts/static-sw.mjs) the right to control the whole site and no stale copies.
 
+# Every production build spends free-plan credits: skip it when nothing the site is built from
+# changed (docs, the mobile app). The command runs from the repository root; exit 0 skips.
+[build]
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/web packages package.json pnpm-lock.yaml pnpm-workspace.yaml patches .nvmrc"
+
 [[headers]]
   for = "/fonts/hafs/*"
   [headers.values]
