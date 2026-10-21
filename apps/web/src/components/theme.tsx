@@ -10,8 +10,13 @@ const CHANGE_EVENT = 'murshid-theme-change';
 /**
  * Runs before first paint (inlined in <head>) so the page never flashes the wrong theme.
  * Keep it tiny and dependency-free.
+ *
+ * It also takes out of <head> what the host adds there and React never rendered: Netlify inserts
+ * an HTML comment, with line breaks around it, after the charset, and those text nodes made
+ * hydration fail on every page (React error 418; Phase 6). React puts no comment or bare text
+ * in <head>, so only Netlify's comment and whitespace go.
  */
-export const themeScript = `(function(){try{var p=localStorage.getItem('${STORAGE_KEY}')||'auto';var d=p==='dark'||(p==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}})();`;
+export const themeScript = `(function(){try{var p=localStorage.getItem('${STORAGE_KEY}')||'auto';var d=p==='dark'||(p==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}})();(function(){var h=document.head;for(var n=h.firstChild;n;){var x=n.nextSibling;if((n.nodeType===8&&n.data.indexOf('Netlify')>-1)||(n.nodeType===3&&!n.data.trim()))h.removeChild(n);n=x;}})();`;
 
 function readPreference(): ThemePreference {
   try {

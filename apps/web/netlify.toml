@@ -1,9 +1,16 @@
 # Netlify (Phase 6): the project's build settings live in the Netlify app (base directory: the
 # repository root; package directory: apps/web; build command: pnpm --filter @murshid/web build).
-# Netlify serves `public/` itself, without next.config's headers, so the fixed-address Quran font
-# gets its long cache here.
+# Netlify serves `public/` itself, without next.config's headers: the fixed-address Quran font
+# gets its long cache here, and the service worker (copied there after the build by
+# scripts/static-sw.mjs) the right to control the whole site and no stale copies.
 
 [[headers]]
   for = "/fonts/hafs/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/serwist/sw.js"
+  [headers.values]
+    Service-Worker-Allowed = "/"
+    Cache-Control = "public, max-age=0, must-revalidate"

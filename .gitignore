@@ -58,4 +58,6 @@ apps/web/e2e/.screens/
 # Mushaf page fonts (about 200 MB per edition), installed by `pnpm --filter @murshid/content fonts <edition>`
 apps/web/public/fonts/quran-v1/
 apps/web/public/fonts/quran-v2/
+# The service worker copied out of the build on Netlify (apps/web/scripts/static-sw.mjs)
+apps/web/public/serwist/
 apps/web/public/fonts/quran-v4/
