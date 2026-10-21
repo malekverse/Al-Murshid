@@ -1,0 +1,9 @@
+{
+  "title": "Your Sky",
+  "intro": "Each prayer you log adds a light to that day’s sky.",
+  "showDetails": "Show details",
+  "previous": "Previous month",
+  "next": "Next month",
+  "lights": "{count, plural, one {# light} other {# lights}}",
+  "day": "{date}, {lights}"
+}

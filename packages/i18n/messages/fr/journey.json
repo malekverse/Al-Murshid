@@ -12,5 +12,19 @@
     "morning-adhkar": "Les adhkar du matin",
     "evening-adhkar": "Les adhkar du matin et du soir",
     "tasbih-after-prayer": "Le tasbih après chaque prière"
-  }
+  },
+  "title": "Votre chemin",
+  "intro": "Un petit pas à la fois. Changez-le quand vous voulez.",
+  "tracks": {
+    "prayer": "Prière",
+    "quran": "Coran",
+    "remembrance": "Rappel"
+  },
+  "off": "Pas suivi pour l’instant",
+  "changeFocus": "Changer d’étape",
+  "stepBack": "Revenir en arrière",
+  "start": "Commencer",
+  "pause": "Pas maintenant",
+  "chooseStep": "Choisissez votre étape",
+  "focusPrayer": "Quelle prière ?"
 }

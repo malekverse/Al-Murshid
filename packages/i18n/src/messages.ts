@@ -14,6 +14,7 @@ import arQibla from '../messages/ar/qibla.json';
 import arQuran from '../messages/ar/quran.json';
 import arSettings from '../messages/ar/settings.json';
 import arShowcase from '../messages/ar/showcase.json';
+import arSky from '../messages/ar/sky.json';
 import arToday from '../messages/ar/today.json';
 import enCalendar from '../messages/en/calendar.json';
 import enCommon from '../messages/en/common.json';
@@ -28,6 +29,7 @@ import enQibla from '../messages/en/qibla.json';
 import enQuran from '../messages/en/quran.json';
 import enSettings from '../messages/en/settings.json';
 import enShowcase from '../messages/en/showcase.json';
+import enSky from '../messages/en/sky.json';
 import enToday from '../messages/en/today.json';
 import frCalendar from '../messages/fr/calendar.json';
 import frCommon from '../messages/fr/common.json';
@@ -42,6 +44,7 @@ import frQibla from '../messages/fr/qibla.json';
 import frQuran from '../messages/fr/quran.json';
 import frSettings from '../messages/fr/settings.json';
 import frShowcase from '../messages/fr/showcase.json';
+import frSky from '../messages/fr/sky.json';
 import frToday from '../messages/fr/today.json';
 import type { Locale } from './locales';
 
@@ -60,6 +63,7 @@ const en = {
   quran: enQuran,
   settings: enSettings,
   showcase: enShowcase,
+  sky: enSky,
   today: enToday,
 };
 export type Messages = typeof en;
@@ -79,6 +83,7 @@ export const messages: Record<Locale, Messages> = {
     quran: arQuran,
     settings: arSettings,
     showcase: arShowcase,
+    sky: arSky,
     today: arToday,
   },
   en,
@@ -96,6 +101,7 @@ export const messages: Record<Locale, Messages> = {
     quran: frQuran,
     settings: frSettings,
     showcase: frShowcase,
+    sky: frSky,
     today: frToday,
   },
 };

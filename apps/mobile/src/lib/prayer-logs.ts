@@ -1,6 +1,6 @@
 import { addDays, isoDate, type CivilDate, type Prayer } from '@murshid/core';
 import { newLog, type LogSource, type PrayerLog } from '@murshid/data';
-import { and, eq, gte } from 'drizzle-orm';
+import { and, between, eq, gte } from 'drizzle-orm';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { db, prayerLogs } from '@/db';
 
@@ -10,6 +10,18 @@ export function useRecentLogs(today: CivilDate | null): PrayerLog[] | undefined 
   const { data, updatedAt } = useLiveQuery(
     db.select().from(prayerLogs).where(gte(prayerLogs.date, from)),
     [from],
+  );
+  return updatedAt ? data : undefined;
+}
+
+/** Logs between two ISO dates, inclusive (a month of Your Sky), live. */
+export function useLogsBetween(from: string, to: string): PrayerLog[] | undefined {
+  const { data, updatedAt } = useLiveQuery(
+    db
+      .select()
+      .from(prayerLogs)
+      .where(between(prayerLogs.date, from, to)),
+    [from, to],
   );
   return updatedAt ? data : undefined;
 }

@@ -1,0 +1,9 @@
+{
+  "title": "Votre ciel",
+  "intro": "Chaque prière notée ajoute une lumière au ciel de ce jour.",
+  "showDetails": "Afficher les détails",
+  "previous": "Mois précédent",
+  "next": "Mois suivant",
+  "lights": "{count, plural, one {# lumière} many {# de lumières} other {# lumières}}",
+  "day": "{date}, {lights}"
+}

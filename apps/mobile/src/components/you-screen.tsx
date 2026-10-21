@@ -1,4 +1,5 @@
 import {
+  civilDate,
   defaultMethodFor,
   methods,
   prayers,
@@ -7,7 +8,7 @@ import {
   type MethodId,
   type Prayer,
 } from '@murshid/core';
-import { locationLabel, withLocation, withMethod, type Settings } from '@murshid/data';
+import { locationLabel, placeOf, withLocation, withMethod, type Settings } from '@murshid/data';
 import { localeNames, locales, type Locale } from '@murshid/i18n';
 import { space } from '@murshid/tokens';
 import { Bell } from 'phosphor-react-native/src/icons/Bell';
@@ -18,6 +19,7 @@ import { MapPin } from 'phosphor-react-native/src/icons/MapPin';
 import { Moon } from 'phosphor-react-native/src/icons/Moon';
 import { SlidersHorizontal } from 'phosphor-react-native/src/icons/SlidersHorizontal';
 import { SunHorizon } from 'phosphor-react-native/src/icons/SunHorizon';
+import { getCalendars } from 'expo-localization';
 import { useState, type ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,11 +34,14 @@ import { Segmented } from './ui/segmented';
 import { Sheet } from './ui/sheet';
 import { Text } from './ui/text';
 import { Toggle } from './ui/toggle';
+import { JourneySection } from './you/journey-section';
+import { YourSky } from './you/your-sky';
 import { countryName, usePrayerName } from '@/lib/format';
 import { useAppLocale } from '@/lib/locale';
 import { locateDevice, locationFromCity } from '@/lib/locate';
 import { updateSettings, useSettings } from '@/lib/settings';
 import { useColors, useThemePreference, type ThemePreference } from '@/lib/theme';
+import { useNow } from '@/lib/use-now';
 
 const highLatitudeChoices: HighLatitudeChoice[] = [
   'auto',
@@ -70,6 +75,8 @@ export function YouScreen() {
   const [reminderFor, setReminderFor] = useState<Prayer | null>(null);
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<'denied' | 'failed' | null>(null);
+  const now = useNow(60_000);
+  const today = civilDate(now, placeOf(settings)?.timeZone ?? getCalendars()[0]?.timeZone ?? 'UTC');
 
   const location = settings.location;
   const country = location ? countryName(location.countryCode, locale) : null;
@@ -109,14 +116,14 @@ export function YouScreen() {
           gap: space[8],
         }}
       >
-        <View className="gap-2 px-2">
+        <View className="px-2">
           <Text role="title1" accessibilityRole="header">
             {t('settings.title')}
           </Text>
-          <Text role="body" tone="muted">
-            {t('settings.soon')}
-          </Text>
         </View>
+
+        <YourSky settings={settings} today={today} />
+        <JourneySection settings={settings} />
 
         <Section title={t('settings.sections.prayer')}>
           <ListGroup>

@@ -11,13 +11,14 @@ import {
   SunHorizon,
 } from '@phosphor-icons/react';
 import {
+  civilDate,
   defaultMethodFor,
   methods,
   timeNames,
   type HighLatitudeChoice,
   type MethodId,
 } from '@murshid/core';
-import { locationLabel, withLocation, withMethod, type Settings } from '@murshid/data';
+import { locationLabel, placeOf, withLocation, withMethod, type Settings } from '@murshid/data';
 import { localeNames, locales, type Locale } from '@murshid/i18n';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { useId, useState, type ReactNode } from 'react';
@@ -31,10 +32,13 @@ import { Sheet } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { Toggle } from '@/components/ui/toggle';
+import { JourneySection } from '@/components/you/journey-section';
+import { YourSky } from '@/components/you/your-sky';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { countryName, usePrayerName } from '@/lib/format';
 import { locateDevice, locationFromCity } from '@/lib/locate';
 import { updateSettings, useSettings } from '@/lib/settings';
+import { useNow } from '@/lib/use-now';
 
 const highLatitudeChoices: HighLatitudeChoice[] = [
   'auto',
@@ -98,6 +102,13 @@ function Settings_({ settings }: { settings: Settings }) {
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<'denied' | 'failed' | null>(null);
   const simpleId = useId();
+  const now = useNow(60_000);
+  const today = now
+    ? civilDate(
+        now,
+        placeOf(settings)?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+      )
+    : null;
 
   const location = settings.location;
   const country = location ? countryName(location.countryCode, locale) : null;
@@ -120,9 +131,12 @@ function Settings_({ settings }: { settings: Settings }) {
 
   return (
     <Main title={t('settings.title')}>
-      <Text role="body" tone="muted" className="px-2">
-        {t('settings.soon')}
-      </Text>
+      {today ? (
+        <YourSky settings={settings} today={today} />
+      ) : (
+        <Skeleton aria-hidden className="h-96 w-full rounded-card" />
+      )}
+      <JourneySection settings={settings} />
 
       <Section id="location" title={t('settings.sections.prayer')}>
         <ListGroup>

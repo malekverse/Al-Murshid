@@ -403,3 +403,16 @@ The plan, the gate and the owner's part are in `docs/PHASE-6.md`.
 - **Web, production build: 58 Playwright tests pass at 1280 px and 360 px.** New: a visitor goes from the countries to Tunis and takes the city into onboarding; canonical, `hreflang`, JSON-LD, share images, `noindex` on an unknown city; robots and sitemaps; a surah sent whole and taken over without anything moving; an ayah's page and reading on from it. The screenshot run adds the public pages in ar, en and fr, light and dark.
 - **Share images checked by eye:** a surah's calligraphy, Ayat al-Kursi whole on three lines with its number, al-Fatihah 1 in Arabic, a city's times in Arabic, and a page of links in French.
 - **Not done here:** the deployment, search console indexing and PageSpeed Insights on the deployed site, which are the owner's steps (`docs/PHASE-6.md`); and the adhkar and dua pages.
+
+## Phase 7 · Remember, You and seasons (started 2026-10-21)
+
+The plan, the gate and what waits for content are in `docs/PHASE-7.md`.
+
+- **Phase 7 starts with Phase 6's gate open on one item: pages showing as indexed in a search console** (the owner's decision). The site is deployed, verified in Google Search Console and Bing Webmaster Tools, and its sitemaps are submitted; indexing takes days to weeks and nothing in the code changes it. SPEC 12 says never to start a phase with the previous gate open; this is the one exception, recorded here.
+- **Every religious text waits for reviewed content, including the tasbih phrases, the Laylat al-Qadr du'a and the takbir.** SPEC 10 asks each item for a source reference and a reviewer's sign-off, so Phase 7 builds what needs none first: Your Sky, the Journey, seasonal modes, night reflection, the tasbih counter and widgets. Nothing stands in for the missing texts.
+
+### Your Sky and the Journey (built)
+
+- **Your Sky shows Hijri months, like the calendar (SPEC 5.4), with the same ±2 day offset mapping each Hijri day to the day its prayers were logged** (`skyMonth` in core). Alt: Gregorian months, which would make the app's two month views disagree.
+- **Each day is a small night sky in both themes; its lantern glow grows with the prayers logged (one light to five), and a day without prayers stays plain night.** Days still to come show only their number, with no sky. Tapping a day opens its own sky with the lights where Today's hero places them, and the names of the prayers they are for; nothing names the others. Counts appear only with "Show details", a setting kept with the others (`showSkyDetails`).
+- **You opens on Your Sky and the Journey; the settings follow on the same screen.** The Journey shows each track's step, "Change focus" (a sheet of the track's steps; the first prayer step then asks which prayer) and "Step back" (absent on a track's first step). Quran and remembrance can be started and set aside ("Not now"); the prayer track always holds a step.

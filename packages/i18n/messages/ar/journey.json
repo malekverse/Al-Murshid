@@ -12,5 +12,19 @@
     "morning-adhkar": "أذكار الصباح",
     "evening-adhkar": "أذكار الصباح والمساء",
     "tasbih-after-prayer": "التسبيح بعد كل صلاة"
-  }
+  },
+  "title": "رحلتك",
+  "intro": "خطوة صغيرة كل مرة، ويمكنك تغييرها متى شئت.",
+  "tracks": {
+    "prayer": "الصلاة",
+    "quran": "القرآن",
+    "remembrance": "الذكر"
+  },
+  "off": "غير مفعّل الآن",
+  "changeFocus": "غيّر خطوتك",
+  "stepBack": "خطوة إلى الوراء",
+  "start": "ابدأ",
+  "pause": "ليس الآن",
+  "chooseStep": "اختر خطوتك",
+  "focusPrayer": "أي صلاة؟"
 }

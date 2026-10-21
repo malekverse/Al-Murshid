@@ -30,9 +30,8 @@ import { useHijriMonthName } from '@/lib/format';
 import { useAppLocale } from '@/lib/locale';
 import { useSettings } from '@/lib/settings';
 import { useNow } from '@/lib/use-now';
+import { weekStart } from '@/lib/week';
 
-/** The first day of the week per language: Saturday in Arabic, Sunday in English, Monday in French. */
-const weekStart: Record<string, number> = { ar: 6, en: 0, fr: 1 };
 const SWIPE = 48;
 
 /** Runs of consecutive days with the same marked event, e.g. "White days 13-15". */

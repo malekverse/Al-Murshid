@@ -1,0 +1,9 @@
+{
+  "title": "سماؤك",
+  "intro": "كل صلاة تسجّلها تضيف نورًا إلى سماء يومها.",
+  "showDetails": "إظهار التفاصيل",
+  "previous": "الشهر السابق",
+  "next": "الشهر التالي",
+  "lights": "{count, plural, zero {لا أنوار} one {نور واحد} two {نوران} few {# أنوار} many {# نورًا} other {# نور}}",
+  "day": "{date}، {lights}"
+}

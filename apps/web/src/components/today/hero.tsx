@@ -18,7 +18,7 @@ import type { TodayState } from '@/lib/use-today';
 // Where each prayer's light sits in the band of sky above the glass card: a low arc from the
 // start side (Fajr) to the end (Isha), as percentages of that band, so no light hides behind the
 // card. Lights appear only for logged prayers; nothing marks the others (SPEC 3).
-const lightSpots: Record<Prayer, { x: number; y: number }> = {
+export const lightSpots: Record<Prayer, { x: number; y: number }> = {
   fajr: { x: 14, y: 60 },
   dhuhr: { x: 31, y: 34 },
   asr: { x: 50, y: 24 },

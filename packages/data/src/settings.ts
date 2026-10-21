@@ -10,6 +10,7 @@ import {
   methods,
   parseIsoDate,
   prayers,
+  previousStep,
   shouldWelcomeBack,
   startingPrayerStep,
   steps,
@@ -19,6 +20,7 @@ import {
   type JourneyFocus,
   type LatLng,
   type MethodId,
+  type Prayer,
   type PrayerSettings,
   type StartingPoint,
   type Step,
@@ -147,6 +149,8 @@ export const settingsSchema = z.object({
       remembrance: null,
     }),
   simpleView: z.boolean().catch(false),
+  /** Your Sky shows counts only when asked (SPEC 5.7: "Show details"). */
+  showSkyDetails: z.boolean().catch(false),
   /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */
   quran: quranPrefsSchema.catch(() => defaultQuranPrefs()),
   /** The last day the app was opened, and the one before it (for "Welcome back"). */
@@ -250,6 +254,29 @@ export function answerStepOffer(
       [track]: { ...current, ...(accepted ? { step } : {}), lastOfferedOn },
     },
   };
+}
+
+/** The person's own choice of step on a track ("Change focus"); starts an optional track. */
+export function withJourneyStep<T extends Track>(s: Settings, track: T, step: Step<T>): Settings {
+  const current = s.journey[track];
+  return { ...s, journey: { ...s.journey, [track]: { ...current, step } } };
+}
+
+/** One step back on a track: always there, never a failure (SPEC 3). */
+export function stepBackJourney(s: Settings, track: Track): Settings {
+  const current = s.journey[track];
+  if (!current) return s;
+  return withJourneyStep(s, track, previousStep(track, current.step));
+}
+
+/** Stops following an optional track. The prayer track always holds a focus. */
+export function pauseJourneyTrack(s: Settings, track: 'quran' | 'remembrance'): Settings {
+  return { ...s, journey: { ...s.journey, [track]: null } };
+}
+
+/** The prayer held every day on the first step of the prayer track. */
+export function withFocusPrayer(s: Settings, focusPrayer: Prayer): Settings {
+  return { ...s, journey: { ...s.journey, prayer: { ...s.journey.prayer, focusPrayer } } };
 }
 
 /** Records today's first visit, keeping the previous one for "Welcome back". */

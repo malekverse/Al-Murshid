@@ -11,9 +11,13 @@ import {
   locationLabel,
   markOpened,
   parseSettings,
+  pauseJourneyTrack,
   placeOf,
   prayerSettings,
   previousVisit,
+  stepBackJourney,
+  withFocusPrayer,
+  withJourneyStep,
   withLocation,
   withMethod,
   withStartingPoint,
@@ -102,6 +106,23 @@ describe('settings', () => {
     const no = answerStepOffer(s, 'prayer', 'two-prayers', false, today);
     expect(no.journey.prayer).toMatchObject({ step: 'one-prayer', lastOfferedOn: '2026-10-18' });
     expect(answerStepOffer(s, 'quran', 'one-page', true, today)).toBe(s);
+  });
+
+  it('changes focus, steps back and pauses a track, quietly', () => {
+    const s = defaultSettings();
+    const two = withJourneyStep(s, 'prayer', 'two-prayers');
+    expect(two.journey.prayer).toEqual({ step: 'two-prayers', focusPrayer: 'maghrib' });
+    expect(stepBackJourney(two, 'prayer').journey.prayer.step).toBe('one-prayer');
+    expect(stepBackJourney(s, 'prayer').journey.prayer.step).toBe('one-prayer');
+    const quran = withJourneyStep(s, 'quran', 'one-page');
+    expect(quran.journey.quran).toEqual({ step: 'one-page' });
+    expect(stepBackJourney(quran, 'quran').journey.quran).toEqual({ step: 'one-ayah' });
+    expect(stepBackJourney(s, 'quran')).toBe(s);
+    expect(pauseJourneyTrack(quran, 'quran').journey.quran).toBeNull();
+    expect(withFocusPrayer(s, 'fajr').journey.prayer).toEqual({
+      step: 'one-prayer',
+      focusPrayer: 'fajr',
+    });
   });
 
   it('remembers the visit before today for "Welcome back"', () => {

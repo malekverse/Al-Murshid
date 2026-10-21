@@ -16,6 +16,14 @@ export function useRecentLogs(today: CivilDate | null): PrayerLog[] | undefined 
   );
 }
 
+/** Logs between two ISO dates, inclusive (a month of Your Sky), live. */
+export function useLogsBetween(from: string, to: string): PrayerLog[] | undefined {
+  return useLiveQuery(
+    () => db.prayerLogs.where('date').between(from, to, true, true).toArray(),
+    [from, to],
+  );
+}
+
 export async function setPrayerLogged(
   date: CivilDate,
   prayer: Prayer,

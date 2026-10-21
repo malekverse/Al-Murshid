@@ -12,5 +12,19 @@
     "morning-adhkar": "Morning adhkar",
     "evening-adhkar": "Morning and evening adhkar",
     "tasbih-after-prayer": "Tasbih after each prayer"
-  }
+  },
+  "title": "Your Journey",
+  "intro": "One small step at a time. Change it whenever you like.",
+  "tracks": {
+    "prayer": "Prayer",
+    "quran": "Quran",
+    "remembrance": "Remembrance"
+  },
+  "off": "Not following this for now",
+  "changeFocus": "Change focus",
+  "stepBack": "Step back",
+  "start": "Start",
+  "pause": "Not now",
+  "chooseStep": "Choose your focus",
+  "focusPrayer": "Which prayer?"
 }

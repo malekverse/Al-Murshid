@@ -25,9 +25,7 @@ import { cn } from '@/lib/cn';
 import { useHijriMonthName } from '@/lib/format';
 import { useSettings } from '@/lib/settings';
 import { useNow } from '@/lib/use-now';
-
-/** The first day of the week per language: Saturday in Arabic, Sunday in English, Monday in French. */
-const weekStart: Record<string, number> = { ar: 6, en: 0, fr: 1 };
+import { weekStart } from '@/lib/week';
 
 export function CalendarScreen() {
   const settings = useSettings();
