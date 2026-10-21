@@ -1,6 +1,6 @@
 'use client';
 
-import type { PrayerLog, QuranBookmark } from '@murshid/data';
+import type { PrayerLog, QuranBookmark, RamadanLog } from '@murshid/data';
 import Dexie, { type EntityTable } from 'dexie';
 
 // Personal data stays in this browser (SPEC 9): IndexedDB through Dexie. Every table keeps
@@ -14,6 +14,13 @@ export interface PrayerLogRow extends PrayerLog {
 export const db = new Dexie('murshid') as Dexie & {
   prayerLogs: EntityTable<PrayerLogRow, 'key'>;
   bookmarks: EntityTable<QuranBookmark, 'id'>;
+  ramadanLogs: EntityTable<RamadanLog, 'date'>;
 };
 db.version(1).stores({ prayerLogs: 'key, date' });
 db.version(2).stores({ prayerLogs: 'key, date', bookmarks: 'id, [surah+ayah], updatedAt' });
+// Phase 7: Ramadan's fasts and Taraweeh, one row per date.
+db.version(3).stores({
+  prayerLogs: 'key, date',
+  bookmarks: 'id, [surah+ayah], updatedAt',
+  ramadanLogs: 'date',
+});

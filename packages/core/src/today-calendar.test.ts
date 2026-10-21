@@ -3,7 +3,14 @@ import { HIJRI_FIRST, HIJRI_LAST, hijriMonthDays, monthWeeks, shiftHijriMonth } 
 import { fromHijri, toHijri } from './hijri';
 import { defaultSettings, prayerTimes, type Prayer } from './prayer-times';
 import { addDays, isoDate, type CivilDate } from './time';
-import { dayRecords, isRecentLog, todayView, type LoggedPrayer, type TodayInput } from './today';
+import {
+  cardKinds,
+  dayRecords,
+  isRecentLog,
+  todayView,
+  type LoggedPrayer,
+  type TodayInput,
+} from './today';
 
 const tunis = { latitude: 36.8065, longitude: 10.1815, timeZone: 'Africa/Tunis' };
 const settings = { ...defaultSettings, method: 'tunisia' as const };
@@ -198,5 +205,31 @@ describe('Hijri month view', () => {
       expect(weeks.flat().filter(Boolean)).toHaveLength(days.length);
     }
     expect(monthWeeks([], 0)).toEqual([]);
+  });
+});
+
+describe('todayView: seasons (SPEC 5.8)', () => {
+  const r1 = fromHijri({ year: 1448, month: 9, day: 1 });
+  const dh1 = fromHijri({ year: 1448, month: 12, day: 1 });
+  const noon = (d: CivilDate) => plus(timesOn(d).dhuhr, 30);
+
+  it('Ramadan comes first after "Welcome back", with its countdown', () => {
+    const v = view(noon(r1), { cards: [...cardKinds] });
+    expect(v.card).toEqual({ kind: 'ramadan' });
+    expect(v.ramadan?.countdown).toEqual({ kind: 'iftar', at: timesOn(r1).maghrib });
+    const back = view(noon(r1), { cards: [...cardKinds], lastOpenedOn: addDays(r1, -5) });
+    expect(back.card).toEqual({ kind: 'welcome-back' });
+  });
+
+  it('Ramadan mode can be turned off', () => {
+    const v = view(noon(r1), { cards: [...cardKinds], ramadanMode: false });
+    expect(v.ramadan).toBeNull();
+    expect(v.card?.kind).not.toBe('ramadan');
+  });
+
+  it('the first nine days of Dhul Hijjah have their card', () => {
+    const v = view(noon(dh1), { cards: ['dhul-hijjah'] });
+    expect(v.card).toEqual({ kind: 'dhul-hijjah' });
+    expect(v.dhulHijjah).toEqual({ day: 1, arafah: null });
   });
 });

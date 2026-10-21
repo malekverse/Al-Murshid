@@ -15,6 +15,7 @@ import {
   type PrayerSettings,
   type TimeName,
 } from './prayer-times';
+import { dhulHijjahState, ramadanState, type DhulHijjahState, type RamadanState } from './seasons';
 import { addDays, civilDate, daysBetween, isoDate, weekday, type CivilDate } from './time';
 
 /** One "I prayed": the prayer and the calendar day it belongs to. */
@@ -51,9 +52,12 @@ export interface EarlierPrayer {
   jumuah: boolean;
 }
 
+/** In the order SPEC 5.1 ranks them; Today shows the first that applies. */
 export const cardKinds = [
   'welcome-back',
+  'ramadan',
   'jumuah',
+  'dhul-hijjah',
   'morning-adhkar',
   'evening-adhkar',
   'step-offer',
@@ -84,6 +88,8 @@ export interface TodayInput {
   dismissed?: readonly CardKind[];
   /** Cards whose destination exists in this build; others are never shown. */
   cards?: readonly CardKind[];
+  /** Ramadan mode (SPEC 5.8): on by default, the person can turn it off. */
+  ramadanMode?: boolean;
 }
 
 export interface TodayView {
@@ -98,6 +104,10 @@ export interface TodayView {
   earlier: EarlierPrayer[];
   /** One contextual card at most (SPEC 4, 5.1). */
   card: ContextCard | null;
+  /** Ramadan's countdowns and logs, when it is Ramadan and its mode is on (SPEC 5.8). */
+  ramadan: RamadanState | null;
+  /** The first nine days of Dhul Hijjah (SPEC 5.8). */
+  dhulHijjah: DhulHijjahState | null;
 }
 
 const FRIDAY = 5;
@@ -132,6 +142,7 @@ function chooseCard(
   date: CivilDate,
   times: DayTimes,
   logs: readonly LoggedPrayer[],
+  seasons: { ramadan: RamadanState | null; dhulHijjah: DhulHijjahState | null },
 ): ContextCard | null {
   const allowed = (kind: CardKind) =>
     (input.cards ?? cardKinds).includes(kind) && !(input.dismissed ?? []).includes(kind);
@@ -141,11 +152,13 @@ function chooseCard(
   if (allowed('welcome-back') && shouldWelcomeBack(input.lastOpenedOn ?? null, date)) {
     return { kind: 'welcome-back' };
   }
+  if (allowed('ramadan') && seasons.ramadan) return { kind: 'ramadan' };
   // Jumu'ah runs from Thursday's Maghrib to Friday's Maghrib (SPEC 5.1).
   const jumuah =
     (day === THURSDAY && t >= times.maghrib.getTime()) ||
     (day === FRIDAY && t < times.maghrib.getTime());
   if (allowed('jumuah') && jumuah) return { kind: 'jumuah' };
+  if (allowed('dhul-hijjah') && seasons.dhulHijjah) return { kind: 'dhul-hijjah' };
   if (allowed('morning-adhkar') && t >= times.fajr.getTime() && t < times.dhuhr.getTime()) {
     return { kind: 'morning-adhkar' };
   }
@@ -217,15 +230,21 @@ export function todayView(input: TodayInput): TodayView {
     ...prayers.map((p) => ({ date: yesterdayDate, prayer: p, at: yesterday[p] })),
   ].map((e) => ({ ...e, logged: isLogged(e.date, e.prayer), jumuah: isJumuah(e.date, e.prayer) }));
 
+  const offset = input.hijriOffset ?? 0;
+  const seasons = {
+    ramadan: input.ramadanMode === false ? null : ramadanState(now, date, times, tomorrow, offset),
+    dhulHijjah: dhulHijjahState(date, offset),
+  };
   return {
     date,
-    hijri: toHijri(date, input.hijriOffset ?? 0),
+    hijri: toHijri(date, offset),
     times,
     tomorrow,
     rows,
     hero,
     earlier,
-    card: chooseCard(input, date, times, input.logs),
+    card: chooseCard(input, date, times, input.logs, seasons),
+    ...seasons,
   };
 }
 

@@ -45,13 +45,13 @@ async function seed(page: Page, theme = 'light') {
     },
     { s: JSON.stringify(settings), t: theme },
   );
-  // Open the app once so it creates its database (Dexie's version 2 is 20 in IndexedDB), then
+  // Open the app once so it creates its database (Dexie's version n is n × 10 in IndexedDB), then
   // add the logs. Opening it any earlier would create an empty one.
   await page.goto('/en');
   await expect
     .poll(() =>
       page.evaluate(async () =>
-        (await indexedDB.databases()).some((d) => d.name === 'murshid' && d.version === 20),
+        (await indexedDB.databases()).some((d) => d.name === 'murshid' && (d.version ?? 0) >= 10),
       ),
     )
     .toBe(true);

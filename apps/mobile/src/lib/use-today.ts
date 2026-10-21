@@ -12,7 +12,7 @@ import { useRecentLogs } from './prayer-logs';
 import { useSettings } from './settings';
 
 /** Cards whose destination exists on mobile in this build (later phases add the rest). */
-const mobileCards: CardKind[] = ['welcome-back', 'step-offer'];
+const mobileCards: CardKind[] = ['welcome-back', 'ramadan', 'jumuah', 'dhul-hijjah', 'step-offer'];
 
 export interface TodayState {
   settings: Settings;
@@ -42,6 +42,7 @@ export function useToday(now: Date): TodayState | null | undefined {
       journey: journeyFocus(settings),
       dismissed: dismissedToday(settings, date),
       cards: mobileCards,
+      ramadanMode: settings.ramadanMode,
     }),
   };
 }

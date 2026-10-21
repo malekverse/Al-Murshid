@@ -22,6 +22,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { Toggle } from '@/components/ui/toggle';
 import { usePrayerName, useStepLabel, useTimeFormat } from '@/lib/format';
+import type { ReaderPlace } from '@/components/quran/common';
+import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
 import { useColors } from '@/lib/theme';
 
 export interface WelcomeVerse {
@@ -37,6 +39,7 @@ export function ContextCard({
   verse,
   locale,
   focusPrayer,
+  place,
   onDismiss,
   onAnswer,
 }: {
@@ -46,6 +49,8 @@ export function ContextCard({
   verse: WelcomeVerse | null;
   locale: string;
   focusPrayer: Prayer;
+  /** Where links into the Quran open (the person's reading view and edition). */
+  place: ReaderPlace;
   onDismiss: () => void;
   onAnswer: (accepted: boolean) => void;
 }) {
@@ -53,6 +58,14 @@ export function ContextCard({
   const prayerName = usePrayerName();
   const time = useTimeFormat(timeZone);
   const stepLabel = useStepLabel();
+
+  if (card.kind === 'ramadan' && view.ramadan) {
+    return <RamadanCard ramadan={view.ramadan} place={place} onHide={onDismiss} />;
+  }
+  if (card.kind === 'jumuah') return <JumuahCard place={place} onHide={onDismiss} />;
+  if (card.kind === 'dhul-hijjah' && view.dhulHijjah) {
+    return <DhulHijjahCard state={view.dhulHijjah} onHide={onDismiss} />;
+  }
 
   if (card.kind === 'welcome-back') {
     const hero = view.hero;

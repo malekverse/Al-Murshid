@@ -5,7 +5,9 @@
     "in": "بعد <countdown></countdown>",
     "at": "عند {time}",
     "prayedToast": "تمّت. تقبّل الله.",
-    "undo": "تراجع"
+    "undo": "تراجع",
+    "iftar": "الإفطار بعد <countdown></countdown>",
+    "suhoor": "ينتهي السحور بعد <countdown></countdown>"
   },
   "earlier": {
     "link": "صلوات سابقة",
@@ -29,6 +31,27 @@
       "body": "الخطوة التالية: {step}.",
       "accept": "لنبدأ بها",
       "notNow": "ليس الآن"
+    },
+    "hide": "إخفاء لليوم",
+    "ramadan": {
+      "title": "رمضان، اليوم {day}",
+      "lastTen": "العشر الأواخر",
+      "read": "اقرأ الجزء {juz}",
+      "fast": "صيام اليوم",
+      "fasted": "صمت",
+      "notToday": "ليس اليوم",
+      "taraweeh": "التراويح الليلة"
+    },
+    "jumuah": {
+      "title": "الجمعة",
+      "body": "سورة الكهف، والإكثار من الصلاة على النبي ﷺ.",
+      "read": "اقرأ سورة الكهف"
+    },
+    "dhulHijjah": {
+      "title": "العشر الأوائل من ذي الحجة",
+      "day": "اليوم {day}",
+      "arafahTomorrow": "غدًا يوم عرفة، ويصومه كثيرون.",
+      "arafahToday": "اليوم يوم عرفة."
     }
   },
   "noLocation": {

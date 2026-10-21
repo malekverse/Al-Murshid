@@ -5,7 +5,9 @@
     "in": "dans <countdown></countdown>",
     "at": "à {time}",
     "prayedToast": "C’est fait. Qu’Allah l’accepte.",
-    "undo": "Annuler"
+    "undo": "Annuler",
+    "iftar": "Iftar dans <countdown></countdown>",
+    "suhoor": "Fin du sohour dans <countdown></countdown>"
   },
   "earlier": {
     "link": "Prières précédentes",
@@ -29,6 +31,27 @@
       "body": "Étape suivante : {step}.",
       "accept": "Je commence",
       "notNow": "Pas maintenant"
+    },
+    "hide": "Masquer pour aujourd’hui",
+    "ramadan": {
+      "title": "Ramadan, jour {day}",
+      "lastTen": "Les dix dernières nuits",
+      "read": "Lire le juz {juz}",
+      "fast": "Le jeûne du jour",
+      "fasted": "Jeûné",
+      "notToday": "Pas aujourd’hui",
+      "taraweeh": "Tarawih ce soir"
+    },
+    "jumuah": {
+      "title": "Joumou’a",
+      "body": "Sourate Al-Kahf, et beaucoup de prières sur le Prophète ﷺ.",
+      "read": "Lire Al-Kahf"
+    },
+    "dhulHijjah": {
+      "title": "Les dix premiers jours de Dhou al-Hijja",
+      "day": "Jour {day}",
+      "arafahTomorrow": "Demain, c’est le jour d’Arafa, que beaucoup jeûnent.",
+      "arafahToday": "Aujourd’hui, c’est le jour d’Arafa."
     }
   },
   "noLocation": {

@@ -14,7 +14,7 @@ import { useRecentLogs } from './prayer-logs';
 import { useSettings } from './settings';
 
 /** Cards whose destination exists on web in this build (SPEC 5.1 lists more for later phases). */
-const webCards: CardKind[] = ['welcome-back', 'step-offer'];
+const webCards: CardKind[] = ['welcome-back', 'ramadan', 'jumuah', 'dhul-hijjah', 'step-offer'];
 
 export interface TodayState {
   settings: Settings;
@@ -48,6 +48,7 @@ export function useToday(now: Date | null): TodayState | null | undefined {
       journey: journeyFocus(settings),
       dismissed: dismissedToday(settings, date),
       cards: webCards,
+      ramadanMode: settings.ramadanMode,
     }),
   };
 }

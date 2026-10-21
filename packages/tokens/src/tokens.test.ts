@@ -5,6 +5,7 @@ import {
   contrastRequirements,
   glassToneFor,
   parseColor,
+  ramadanNight,
   sky,
   space,
   typeScale,
@@ -21,9 +22,9 @@ describe('color contrast (WCAG 2.2 AA)', () => {
     }
   }
 
-  it('glass keeps ink and muted ink at 4.5:1 over every sky stop', () => {
+  it('glass keeps ink and muted ink at 4.5:1 over every sky stop, Ramadan’s nights too', () => {
     // Blur averages the sky behind a card; the flat stop color is the worst case.
-    for (const stop of Object.values(sky)) {
+    for (const stop of [...Object.values(sky), ramadanNight]) {
       for (const backdrop of [stop.top, stop.bottom]) {
         const tone = glassToneFor(backdrop);
         const glass = parseColor(colors[tone].surfaceGlass);

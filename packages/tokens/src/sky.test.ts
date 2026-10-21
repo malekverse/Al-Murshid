@@ -3,6 +3,7 @@ import {
   fromOklab,
   mixOklab,
   periodSun,
+  ramadanNight,
   prayerGlyph,
   prayers,
   sky,
@@ -94,5 +95,14 @@ describe('prayer glyphs', () => {
       expect(sun.cx).toBeLessThanOrEqual(22);
     }
     expect(prayerGlyph('dhuhr').sun.cy).toBeLessThan(prayerGlyph('asr').sun.cy);
+  });
+});
+
+describe('Ramadan nights', () => {
+  it('glow with a lantern horizon at night, and the day is unchanged', () => {
+    const night = periodSun.night;
+    expect(skyAt(night, { ramadan: true })).toMatchObject(ramadanNight);
+    expect(skyAt(night, { ramadan: true }).bottom).not.toBe(skyAt(night).bottom);
+    expect(skyAt(periodSun.dhuhr, { ramadan: true })).toEqual(skyAt(periodSun.dhuhr));
   });
 });

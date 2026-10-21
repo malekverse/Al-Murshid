@@ -72,12 +72,29 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
   const time = useTimeFormat(place.timeZone);
 
   const sun = sunPosition(now, place);
-  const tone = glassToneFor(skyAt(sun).bottom);
+  const ramadan = view.ramadan;
+  const tone = glassToneFor(skyAt(sun, { ramadan: ramadan !== null }).bottom);
   const hero = view.hero;
   const name = prayerName(hero.prayer, hero.jumuah);
   const target = hero.mode === 'now' ? hero.endsAt : hero.at;
   const seconds = Math.max(0, (target.getTime() - now.getTime()) / 1000);
   const countdown = () => <Countdown seconds={seconds} />;
+  // Ramadan's own countdown (SPEC 5.8): to iftar during the fast, then to suhoor's end.
+  const fastEnd = ramadan?.countdown
+    ? ramadan.countdown.kind === 'iftar'
+      ? ramadan.countdown.at
+      : ramadan.countdown.until
+    : null;
+  const fastLine =
+    ramadan?.countdown && fastEnd
+      ? t.rich(ramadan.countdown.kind === 'iftar' ? 'today.hero.iftar' : 'today.hero.suhoor', {
+          countdown: () => (
+            <Countdown seconds={Math.max(0, (fastEnd.getTime() - now.getTime()) / 1000)} />
+          ),
+        })
+      : null;
+  // The same moment twice (Asr until Maghrib, Isha until Fajr): Ramadan's words take the line.
+  const merged = fastEnd?.getTime() === target.getTime();
   const loggedToday = new Set(
     view.rows.filter((r) => r.status === 'logged').map((r) => r.name as Prayer),
   );
@@ -90,7 +107,7 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
   });
 
   return (
-    <SkyBackground sun={sun} className="rounded-sheet">
+    <SkyBackground sun={sun} ramadan={ramadan !== null} className="rounded-sheet">
       <SkyLights logged={loggedToday} day={tone === 'light'} />
       <div className="relative flex min-h-96 flex-col justify-end p-4 pt-24 md:p-6 md:pt-32">
         <div data-theme={tone}>
@@ -118,12 +135,19 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
                   {arabicPrayerName(hero.prayer, hero.jumuah)}
                 </Text>
               )}
-              <Text role="headline" tone="muted" className="tabular">
-                {hero.mode === 'now'
-                  ? t.rich('today.hero.left', { countdown })
-                  : t.rich('today.hero.in', { countdown })}
+              <Text role="headline" tone={merged ? 'default' : 'muted'} className="tabular">
+                {merged
+                  ? fastLine
+                  : hero.mode === 'now'
+                    ? t.rich('today.hero.left', { countdown })
+                    : t.rich('today.hero.in', { countdown })}
                 {hero.mode === 'next' && <> · {t('today.hero.at', { time: time(hero.at) })}</>}
               </Text>
+              {fastLine && !merged && (
+                <Text role="callout" className="tabular">
+                  {fastLine}
+                </Text>
+              )}
             </div>
 
             <AnimatePresence mode="wait" initial={false}>

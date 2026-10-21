@@ -20,6 +20,12 @@ export const sky: Record<SkyPeriod, SkyStop> = {
   night: { top: '#0B1020', bottom: '#1C2541' },
 };
 
+/**
+ * Ramadan's nights (SPEC 5.8: "a lantern-lit night theme"): the same deep sky above, and a warm
+ * lantern glow along the horizon instead of the night's blue.
+ */
+export const ramadanNight: SkyStop = { top: '#0B1020', bottom: '#3A2A1E' };
+
 /** Color of stars and the faint horizon line drawn over the sky. */
 export const starlight = '#F7F4EE';
 
@@ -74,7 +80,7 @@ function axis({ altitude, noonAltitude }: SunPosition): number {
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
-export function skyAt(sun: SunPosition): SkyState {
+export function skyAt(sun: SunPosition, options: { ramadan?: boolean } = {}): SkyState {
   const x = axis(sun);
   // Stops ordered from low to high on the axis.
   const stops = sun.rising ? morning : [...evening].reverse();
@@ -97,8 +103,10 @@ export function skyAt(sun: SunPosition): SkyState {
 
   const span = to[0] - from[0];
   const t = span === 0 ? 0 : smooth(clamp01((x - from[0]) / span));
-  const a = sky[from[1]];
-  const b = sky[to[1]];
+  const stop = (period: SkyPeriod) =>
+    period === 'night' && options.ramadan ? ramadanNight : sky[period];
+  const a = stop(from[1]);
+  const b = stop(to[1]);
 
   // Stars: fade in from -6° to -15° in the evening, out from -12° to -5° at dawn.
   const stars = sun.rising

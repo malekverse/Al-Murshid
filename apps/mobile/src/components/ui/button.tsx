@@ -33,6 +33,8 @@ export interface ButtonProps {
   size?: Size;
   loading?: boolean;
   disabled?: boolean;
+  /** For a choice among buttons: announced as selected (web's aria-pressed). */
+  selected?: boolean;
   icon?: ReactNode;
   className?: string;
 }
@@ -45,6 +47,7 @@ export function Button({
   size = 'md',
   loading = false,
   disabled = false,
+  selected,
   icon,
   className = '',
 }: ButtonProps) {
@@ -53,7 +56,7 @@ export function Button({
     <PressableScale
       accessibilityRole="button"
       accessibilityLabel={children}
-      accessibilityState={{ disabled: inert, busy: loading }}
+      accessibilityState={{ disabled: inert, busy: loading, selected }}
       disabled={inert}
       onPress={onPress}
       className={`flex-row items-center justify-center gap-2 rounded-full ${box[variant]} ${sizes[size]} ${disabled ? 'opacity-40' : ''} ${className}`}

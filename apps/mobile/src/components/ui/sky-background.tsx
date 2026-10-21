@@ -36,6 +36,8 @@ const STARS = (() => {
 
 export interface SkyBackgroundProps {
   sun: SunPosition;
+  /** Ramadan's lantern-lit nights (SPEC 5.8). */
+  ramadan?: boolean;
   style?: ViewStyle;
   children?: ReactNode;
 }
@@ -45,13 +47,13 @@ export interface SkyBackgroundProps {
  * the sun altitude and glide to each new value over the ambient duration. With Reduce Motion
  * it becomes the static gradient of the current period and stars hold still.
  */
-export function SkyBackground({ sun, style, children }: SkyBackgroundProps) {
+export function SkyBackground({ sun, ramadan, style, children }: SkyBackgroundProps) {
   const reduce = useReducedMotion();
   const [size, setSize] = useState({ width: 0, height: 0 });
   const state = useMemo(() => {
-    const live = skyAt(sun);
-    return reduce ? skyAt(periodSun[live.period]) : live;
-  }, [sun, reduce]);
+    const live = skyAt(sun, { ramadan });
+    return reduce ? skyAt(periodSun[live.period], { ramadan }) : live;
+  }, [sun, reduce, ramadan]);
 
   const top = useSharedValue(state.top);
   const bottom = useSharedValue(state.bottom);

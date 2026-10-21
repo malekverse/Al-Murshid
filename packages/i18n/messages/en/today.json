@@ -5,7 +5,9 @@
     "in": "in <countdown></countdown>",
     "at": "at {time}",
     "prayedToast": "Prayed. May Allah accept it.",
-    "undo": "Undo"
+    "undo": "Undo",
+    "iftar": "Iftar in <countdown></countdown>",
+    "suhoor": "Suhoor ends in <countdown></countdown>"
   },
   "earlier": {
     "link": "Earlier prayers",
@@ -29,6 +31,27 @@
       "body": "Next step: {step}.",
       "accept": "Let’s begin",
       "notNow": "Not now"
+    },
+    "hide": "Hide for today",
+    "ramadan": {
+      "title": "Ramadan, day {day}",
+      "lastTen": "The last ten nights",
+      "read": "Read juz {juz}",
+      "fast": "Today’s fast",
+      "fasted": "Fasted",
+      "notToday": "Not today",
+      "taraweeh": "Taraweeh tonight"
+    },
+    "jumuah": {
+      "title": "Jumu’ah",
+      "body": "Surah Al-Kahf, and many blessings upon the Prophet ﷺ.",
+      "read": "Read Al-Kahf"
+    },
+    "dhulHijjah": {
+      "title": "The first ten days of Dhul Hijjah",
+      "day": "Day {day}",
+      "arafahTomorrow": "Tomorrow is the Day of Arafah, a day many fast.",
+      "arafahToday": "Today is the Day of Arafah."
     }
   },
   "noLocation": {

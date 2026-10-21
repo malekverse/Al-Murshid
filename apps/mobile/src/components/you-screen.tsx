@@ -256,6 +256,22 @@ export function YouScreen() {
           </ListGroup>
         </Section>
 
+        <Section title={t('settings.sections.seasons')}>
+          <ListGroup>
+            <ListRow
+              title={t('settings.ramadanMode.label')}
+              subtitle={t('settings.ramadanMode.note')}
+              control={
+                <Toggle
+                  checked={settings.ramadanMode}
+                  onChange={(on) => updateSettings((s) => ({ ...s, ramadanMode: on }))}
+                  label={t('settings.ramadanMode.label')}
+                />
+              }
+            />
+          </ListGroup>
+        </Section>
+
         <Section title={t('settings.sections.about')}>
           <View className="gap-2 rounded-card border border-card-edge bg-surface p-4">
             <Text role="callout">{t('settings.about.noRulings')}</Text>

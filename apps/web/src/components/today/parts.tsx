@@ -24,6 +24,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
 import { Toggle } from '@/components/ui/toggle';
 import { Link } from '@/i18n/navigation';
+import type { ReaderPlace } from '@/components/quran/common';
+import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
 import { usePrayerName, useTimeFormat } from '@/lib/format';
 
 const MotionLink = motion.create(Link);
@@ -52,6 +54,7 @@ export function ContextCard({
   verse,
   locale,
   focusPrayer,
+  place,
   onDismiss,
   onAnswer,
 }: {
@@ -61,6 +64,8 @@ export function ContextCard({
   verse: WelcomeVerse;
   locale: string;
   focusPrayer: Prayer;
+  /** Where links into the Quran open (the person's reading view and edition). */
+  place: ReaderPlace;
   onDismiss: () => void;
   onAnswer: (accepted: boolean) => void;
 }) {
@@ -96,6 +101,14 @@ export function ContextCard({
         </Button>
       </Card>
     );
+  }
+
+  if (card.kind === 'ramadan' && view.ramadan) {
+    return <RamadanCard ramadan={view.ramadan} place={place} onHide={onDismiss} />;
+  }
+  if (card.kind === 'jumuah') return <JumuahCard place={place} onHide={onDismiss} />;
+  if (card.kind === 'dhul-hijjah' && view.dhulHijjah) {
+    return <DhulHijjahCard state={view.dhulHijjah} onHide={onDismiss} />;
   }
 
   if (card.kind === 'step-offer') {

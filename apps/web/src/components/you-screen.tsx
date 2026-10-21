@@ -102,6 +102,7 @@ function Settings_({ settings }: { settings: Settings }) {
   const [locating, setLocating] = useState(false);
   const [locateError, setLocateError] = useState<'denied' | 'failed' | null>(null);
   const simpleId = useId();
+  const ramadanId = useId();
   const now = useNow(60_000);
   const today = now
     ? civilDate(
@@ -259,6 +260,23 @@ function Settings_({ settings }: { settings: Settings }) {
                 checked={settings.simpleView}
                 onChange={(on) => updateSettings((s) => ({ ...s, simpleView: on }))}
                 labelledBy={simpleId}
+              />
+            }
+          />
+        </ListGroup>
+      </Section>
+
+      <Section title={t('settings.sections.seasons')}>
+        <ListGroup>
+          <ListRow
+            title={t('settings.ramadanMode.label')}
+            subtitle={t('settings.ramadanMode.note')}
+            titleId={ramadanId}
+            control={
+              <Toggle
+                checked={settings.ramadanMode}
+                onChange={(on) => updateSettings((s) => ({ ...s, ramadanMode: on }))}
+                labelledBy={ramadanId}
               />
             }
           />

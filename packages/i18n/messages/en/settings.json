@@ -4,7 +4,8 @@
     "prayer": "Prayer times",
     "reminders": "Reminders",
     "appearance": "Appearance",
-    "about": "About"
+    "about": "About",
+    "seasons": "Seasons"
   },
   "location": {
     "label": "Location",
@@ -91,5 +92,9 @@
   "about": {
     "sources": "Prayer times: adhan-js. Cities: GeoNames (CC BY 4.0). Quran text and font: King Fahd Complex, via QUL.",
     "noRulings": "Al-Murshid does not issue religious rulings."
+  },
+  "ramadanMode": {
+    "label": "Ramadan mode",
+    "note": "Countdowns to suhoor and iftar, the day’s juz, and a lantern-lit night sky."
   }
 }

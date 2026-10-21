@@ -175,13 +175,34 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
   const time = useTimeFormat(place.timeZone);
 
   const sun = sunPosition(now, place);
-  const tone = glassToneFor(skyAt(sun).bottom);
+  const ramadan = view.ramadan;
+  const tone = glassToneFor(skyAt(sun, { ramadan: ramadan !== null }).bottom);
   const palette = colors[tone];
   const hero = view.hero;
   const name = prayerName(hero.prayer, hero.jumuah);
   const target = hero.mode === 'now' ? hero.endsAt : hero.at;
   const seconds = Math.max(0, (target.getTime() - now.getTime()) / 1000);
   const countdown = () => <Countdown key="countdown" seconds={seconds} role="headline" />;
+  // Ramadan's own countdown (SPEC 5.8): to iftar during the fast, then to suhoor's end.
+  const fastEnd = ramadan?.countdown
+    ? ramadan.countdown.kind === 'iftar'
+      ? ramadan.countdown.at
+      : ramadan.countdown.until
+    : null;
+  const fastLine =
+    ramadan?.countdown && fastEnd
+      ? t.rich(ramadan.countdown.kind === 'iftar' ? 'today.hero.iftar' : 'today.hero.suhoor', {
+          countdown: () => (
+            <Countdown
+              key="ramadan"
+              role="headline"
+              seconds={Math.max(0, (fastEnd.getTime() - now.getTime()) / 1000)}
+            />
+          ),
+        })
+      : null;
+  // The same moment twice (Asr until Maghrib, Isha until Fajr): Ramadan's words take the line.
+  const merged = fastEnd?.getTime() === target.getTime();
   const loggedToday = new Set(
     view.rows.filter((r) => r.status === 'logged').map((r) => r.name as Prayer),
   );
@@ -194,7 +215,11 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
   });
 
   return (
-    <SkyBackground sun={sun} style={{ borderRadius: radius.sheet, overflow: 'hidden' }}>
+    <SkyBackground
+      sun={sun}
+      ramadan={ramadan !== null}
+      style={{ borderRadius: radius.sheet, overflow: 'hidden' }}
+    >
       <SkyLights logged={loggedToday} day={tone === 'light'} />
       <View className="min-h-96 justify-end p-4 pt-24">
         <GlassCard tone={tone} className="gap-6 p-6">
@@ -224,10 +249,12 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
               </Text>
             )}
             <View className="flex-row flex-wrap items-baseline gap-2">
-              <Inline color={palette.inkMuted}>
-                {hero.mode === 'now'
-                  ? t.rich('today.hero.left', { countdown })
-                  : t.rich('today.hero.in', { countdown })}
+              <Inline color={merged ? palette.ink : palette.inkMuted}>
+                {merged
+                  ? fastLine
+                  : hero.mode === 'now'
+                    ? t.rich('today.hero.left', { countdown })
+                    : t.rich('today.hero.in', { countdown })}
               </Inline>
               {hero.mode === 'next' && (
                 <Text role="headline" tone="muted">
@@ -235,6 +262,7 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
                 </Text>
               )}
             </View>
+            {fastLine && !merged && <Inline color={palette.ink}>{fastLine}</Inline>}
           </View>
 
           {justLogged ? (

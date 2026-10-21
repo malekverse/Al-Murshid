@@ -15,6 +15,15 @@ export const prayerLogs = sqliteTable(
   (t) => [primaryKey({ columns: [t.date, t.prayer] })],
 );
 
+/** Ramadan's fasts and Taraweeh (SPEC 5.8), one row per date. */
+export const ramadanLogs = sqliteTable('ramadan_logs', {
+  date: text('date').primaryKey(),
+  /** True for "fasted", false for "not today", null until the person says. */
+  fasted: integer('fasted', { mode: 'boolean' }),
+  taraweeh: integer('taraweeh', { mode: 'boolean' }).notNull().default(false),
+  updatedAt: text('updated_at').notNull(),
+});
+
 /** Quran bookmarks (SPEC 9's quran_bookmarks, local side). Removing keeps a tombstone. */
 export const quranBookmarks = sqliteTable('quran_bookmarks', {
   id: text('id').primaryKey(),

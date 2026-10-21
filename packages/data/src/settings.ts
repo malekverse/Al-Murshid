@@ -149,6 +149,8 @@ export const settingsSchema = z.object({
       remembrance: null,
     }),
   simpleView: z.boolean().catch(false),
+  /** Ramadan mode (SPEC 5.8): automatic by the Hijri date unless turned off. */
+  ramadanMode: z.boolean().catch(true),
   /** Your Sky shows counts only when asked (SPEC 5.7: "Show details"). */
   showSkyDetails: z.boolean().catch(false),
   /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */

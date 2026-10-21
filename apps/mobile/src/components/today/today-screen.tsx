@@ -38,6 +38,7 @@ import {
   Tools,
   type WelcomeVerse,
 } from './parts';
+import { readerPlace } from '@/components/quran/common';
 
 /**
  * When the device location is in use and the phone has moved more than about 50 km or into
@@ -232,6 +233,7 @@ export function TodayScreen() {
               verse={verse}
               locale={locale}
               focusPrayer={settings.journey.prayer.focusPrayer}
+              place={readerPlace(settings.quran)}
               onDismiss={() => updateSettings((s) => dismissCard(s, view.card!.kind, today))}
               onAnswer={(accepted) => {
                 const card = view.card;

@@ -18,6 +18,8 @@ export default defineConfig({
         'src/khatmah.ts',
         'src/recitation.ts',
         'src/recitation-check.ts',
+        'src/seasons.ts',
+        'src/your-sky.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

@@ -33,6 +33,8 @@ const STARS = (() => {
 
 export interface SkyBackgroundProps {
   sun: SunPosition;
+  /** Ramadan's lantern-lit nights (SPEC 5.8). */
+  ramadan?: boolean;
   className?: string;
   children?: ReactNode;
 }
@@ -42,13 +44,13 @@ export interface SkyBackgroundProps {
  * itself transitions slowly between updates. With Reduce Motion it becomes the static
  * gradient of the current period and the stars stop twinkling.
  */
-export function SkyBackground({ sun, className, children }: SkyBackgroundProps) {
+export function SkyBackground({ sun, ramadan, className, children }: SkyBackgroundProps) {
   const reduce = useReducedMotion();
   const grainId = useId();
   const state = useMemo(() => {
-    const live = skyAt(sun);
-    return reduce ? skyAt(periodSun[live.period]) : live;
-  }, [sun, reduce]);
+    const live = skyAt(sun, { ramadan });
+    return reduce ? skyAt(periodSun[live.period], { ramadan }) : live;
+  }, [sun, reduce, ramadan]);
 
   const style = {
     '--sky-top': state.top,
