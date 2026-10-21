@@ -35,11 +35,12 @@ const serwist = new Serwist({
       }),
     },
     {
-      // Page fonts never change (versioned with the mushaf); keep every one opened.
-      matcher: ({ url }) => url.pathname.startsWith('/fonts/quran-v2/'),
+      // Page fonts never change (pinned by hash with each edition); keep every one opened, from
+      // this site or the asset CDN (NEXT_PUBLIC_ASSET_BASE_URL), for all three editions.
+      matcher: ({ url }) => /\/fonts\/quran-v[124]\/p\d+\.ttf$/.test(url.pathname),
       handler: new CacheFirst({
         cacheName: 'quran-page-fonts',
-        plugins: [new ExpirationPlugin({ maxEntries: 604, purgeOnQuotaError: true })],
+        plugins: [new ExpirationPlugin({ maxEntries: 3 * 604, purgeOnQuotaError: true })],
       }),
     },
     {

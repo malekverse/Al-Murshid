@@ -50,6 +50,11 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - The site deploys to Netlify from `main` (every push spends free-plan credits). A public route with params
   sets `export const instant = false`, and client components that read the address sit in `<Suspense>`:
   otherwise Netlify answers 500 for pages rendered on request.
+- Mushaf page fonts on the live site come from the `al-murshid-assets` Cloudflare Worker
+  (`https://al-murshid-assets.malek-magraoui3.workers.dev`, set as `NEXT_PUBLIC_ASSET_BASE_URL` on Netlify).
+  To change them: a folder with `fonts/quran-<edition>/p<n>.ttf` and a `_headers` file (CORS, immutable cache),
+  then `npx wrangler deploy --name al-murshid-assets --assets <folder> --compatibility-date 2026-10-01`;
+  rerun it if the upload drops, it resumes.
 - If a CSS change is missing from a production build, Turbopack's build cache is stale: delete
   `apps/web/.next/cache/turbopack` and build again.
 - Share images (`opengraph-image.tsx`) draw text through `apps/web/src/lib/og`, shaped with HarfBuzz:

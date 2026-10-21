@@ -385,6 +385,8 @@ The plan, the gate and the owner's part are in `docs/PHASE-6.md`.
 - **On Netlify a page rendered on request may not read the address or its params outside Suspense: it answers 500, where `next start` renders it anyway.** The first deploy failed every city and ayah page not prerendered. The recitation host now sits in Suspense, and the public routes with params set `instant = false`, as the reader routes did before Phase 6 moved them.
 - **Netlify serves `public/` without next.config's headers, so `apps/web/netlify.toml` gives the Hafs font its long cache.**
 - **The free plan's 300 credits a month are a hard cap: past it, the whole site pauses until the next month.** Each production deploy and every gigabyte served draws on them, which is why the 450 MB of mushaf page fonts need their own host.
+- **The mushaf page fonts are served by a Cloudflare Worker with static assets (`al-murshid-assets`, free plan), and the web app reads them from `NEXT_PUBLIC_ASSET_BASE_URL`.** All three editions, 1,812 files and 470 MB, uploaded unchanged after each was checked against its pinned SHA-256, with `Access-Control-Allow-Origin: *` and a year's immutable cache from a `_headers` file. Static assets on Workers cost no requests or bandwidth on the free plan, unlike Netlify's credits. Alt: GitHub Pages (1 GB site limit, about 100 GB a month), or R2 (needs a payment method on file even for its free tier).
+- **The service worker keeps the page fonts of all three editions, from the site or the font host.** It matched only the 1421H edition's path on this site before.
 
 ### Adhkar and duas
 
