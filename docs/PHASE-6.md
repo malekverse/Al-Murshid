@@ -24,10 +24,9 @@ along the way go to `docs/DECISIONS.md`.
 - **Deployed (2026-10-21):** https://al-murshid-pro.netlify.app on Netlify's free plan, with the
   mushaf page fonts on a Cloudflare Worker. Verified in Google Search Console and Bing Webmaster
   Tools, sitemaps submitted. PageSpeed Insights on the live site: 95 to 100 except al-Baqarah (78).
-- **Open for the gate:** pages showing as indexed in a search console, which takes days to weeks;
-  and al-Baqarah's Performance (78, LCP 4.2 s), the longest surah sent whole. The owner decides
-  whether long surahs may stay below 95, or are sent in parts with the rest loading as the reader
-  scrolls.
+- **Open for the gate:** pages showing as indexed in a search console, which takes days to weeks.
+  Long surahs stay whole and may score below 95 (al-Baqarah 78, LCP 4.2 s): the owner's decision,
+  2026-10-21.
 - **Waiting on content:** the adhkar and dua pages (below).
 
 ## Where it starts (measured 2026-10-19, production build)
@@ -125,6 +124,8 @@ follow as soon as the content is in (with Phase 7's Remember screens).
 
 ## Open items for the owner
 
-- Hosting account, domain, and search console verification (step 7).
-- Adhkar and duas: IslamHouse permission and a reviewer.
-- The asset CDN for mushaf page fonts and audio (Cloudflare R2), carried over from Phase 5.
+- Adhkar and duas: IslamHouse's written permission and a reviewer.
+- Recitation audio still streams from its publishers; hosting it ourselves waits for each
+  reciter's rights (carried over from Phase 5). The mushaf page fonts are on a Cloudflare Worker.
+- A custom domain, if wanted: the canonical addresses, sitemaps and search console properties
+  follow `NEXT_PUBLIC_SITE_URL`.
