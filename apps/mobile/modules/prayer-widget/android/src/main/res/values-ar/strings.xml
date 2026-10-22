@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's names (SPEC 5.9). What the widgets show comes from packages/i18n. -->
+<resources>
+  <string name="prayer_widget_small_label">الصلاة التالية</string>
+  <string name="prayer_widget_small_description">الصلاة التالية والوقت المتبقي، في سماء الساعة.</string>
+  <string name="prayer_widget_medium_label">مواقيت الصلاة</string>
+  <string name="prayer_widget_medium_description">صلوات اليوم، والتالية منها والوقت المتبقي.</string>
+  <string name="prayer_widget_empty">تظهر مواقيت الصلاة بعد فتح المرشد.</string>
+  <!-- The widget picker's preview: a sample evening. -->
+  <string name="prayer_widget_sample_name">العشاء</string>
+  <string name="prayer_widget_sample_time">7:52 م</string>
+  <string name="prayer_widget_sample_countdown">بعد 1:20</string>
+  <string name="prayer_widget_sample_row0_name">الفجر</string>
+  <string name="prayer_widget_sample_row0_time">5:12 ص</string>
+  <string name="prayer_widget_sample_row1_name">الظهر</string>
+  <string name="prayer_widget_sample_row1_time">12:08 م</string>
+  <string name="prayer_widget_sample_row2_name">العصر</string>
+  <string name="prayer_widget_sample_row2_time">3:44 م</string>
+  <string name="prayer_widget_sample_row3_name">المغرب</string>
+  <string name="prayer_widget_sample_row3_time">6:31 م</string>
+  <string name="prayer_widget_sample_row4_name">العشاء</string>
+  <string name="prayer_widget_sample_row4_time">7:52 م</string>
+</resources>

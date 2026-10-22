@@ -1,0 +1,36 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <!-- The home-screen widgets (SPEC 5.9): small and medium. -->
+    <receiver
+      android:name="expo.modules.prayerwidget.SmallPrayerWidget"
+      android:exported="true"
+      android:label="@string/prayer_widget_small_label">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/prayer_widget_small_info" />
+    </receiver>
+    <receiver
+      android:name="expo.modules.prayerwidget.MediumPrayerWidget"
+      android:exported="true"
+      android:label="@string/prayer_widget_medium_label">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+      </intent-filter>
+      <meta-data
+        android:name="android.appwidget.provider"
+        android:resource="@xml/prayer_widget_medium_info" />
+    </receiver>
+    <!-- The minute tick, and a change of time or time zone. -->
+    <receiver
+      android:name="expo.modules.prayerwidget.PrayerWidgetTicker"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.TIME_SET" />
+        <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+      </intent-filter>
+    </receiver>
+  </application>
+</manifest>

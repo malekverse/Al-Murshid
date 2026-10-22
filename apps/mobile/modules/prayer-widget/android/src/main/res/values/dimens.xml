@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- radius.sheet in packages/tokens. -->
+  <dimen name="prayer_widget_radius">28dp</dimen>
+  <!-- space[4] and space[2] in packages/tokens. -->
+  <dimen name="prayer_widget_padding">16dp</dimen>
+  <dimen name="prayer_widget_gap">8dp</dimen>
+</resources>

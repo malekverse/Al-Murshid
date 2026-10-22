@@ -21,7 +21,8 @@ interface LocaleState {
 
 const LocaleContext = createContext<LocaleState | null>(null);
 
-function initialLocale(): Locale {
+/** The app's language: the one chosen in You, else the device's (also outside React). */
+export function storedLocale(): Locale {
   const stored = storage.getString(keys.locale);
   if (isLocale(stored)) return stored;
   return matchLocale(getLocales().map((l) => l.languageTag));
@@ -45,7 +46,7 @@ function persistNativeDirection(locale: Locale) {
  */
 export function AppLocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => {
-    const value = initialLocale();
+    const value = storedLocale();
     persistNativeDirection(value);
     return value;
   });

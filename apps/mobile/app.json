@@ -84,7 +84,29 @@
       ],
       "./plugins/with-local-cleartext",
       "./plugins/with-short-native-build-paths",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-widgets",
+        {
+          "groupIdentifier": "group.com.malekverse.almurshid",
+          "bundleIdentifier": "com.malekverse.almurshid.ExpoWidgetsTarget",
+          "widgets": [
+            {
+              "name": "PrayerWidget",
+              "displayName": "Al-Murshid",
+              "description": "The next prayer and the time left.",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "accessoryRectangular",
+                  "accessoryInline"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

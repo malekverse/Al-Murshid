@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Text on the night sky before the first data (colors.dark in packages/tokens). -->
+  <color name="prayer_widget_ink">#F2EFE8</color>
+  <color name="prayer_widget_muted">#A39F96</color>
+  <color name="prayer_widget_accent">#E8B25A</color>
+</resources>

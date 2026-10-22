@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The widget picker's names (SPEC 5.9). What the widgets show comes from packages/i18n. -->
+<resources>
+  <string name="prayer_widget_small_label">Prochaine prière</string>
+  <string name="prayer_widget_small_description">La prochaine prière et le temps restant, dans le ciel de l’heure.</string>
+  <string name="prayer_widget_medium_label">Horaires de prière</string>
+  <string name="prayer_widget_medium_description">Les prières du jour, la prochaine et le temps restant.</string>
+  <string name="prayer_widget_empty">Ouvrez Al-Murshid pour voir les horaires de prière.</string>
+  <!-- The widget picker's preview: a sample evening. -->
+  <string name="prayer_widget_sample_name">Icha</string>
+  <string name="prayer_widget_sample_time">19:52</string>
+  <string name="prayer_widget_sample_countdown">dans 1:20</string>
+  <string name="prayer_widget_sample_row0_name">Fajr</string>
+  <string name="prayer_widget_sample_row0_time">05:12</string>
+  <string name="prayer_widget_sample_row1_name">Dhuhr</string>
+  <string name="prayer_widget_sample_row1_time">12:08</string>
+  <string name="prayer_widget_sample_row2_name">Asr</string>
+  <string name="prayer_widget_sample_row2_time">15:44</string>
+  <string name="prayer_widget_sample_row3_name">Maghrib</string>
+  <string name="prayer_widget_sample_row3_time">18:31</string>
+  <string name="prayer_widget_sample_row4_name">Icha</string>
+  <string name="prayer_widget_sample_row4_time">19:52</string>
+</resources>

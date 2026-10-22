@@ -22,6 +22,7 @@ export default defineConfig({
         'src/your-sky.ts',
         'src/reflection.ts',
         'src/tasbih.ts',
+        'src/widget.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

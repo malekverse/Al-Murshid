@@ -16,3 +16,4 @@ export * from './your-sky';
 export * from './seasons';
 export * from './reflection';
 export * from './tasbih';
+export * from './widget';

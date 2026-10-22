@@ -2,6 +2,7 @@ import * as BackgroundTask from 'expo-background-task';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import { handleReminderResponse, rescheduleReminders } from './reminders';
+import { syncWidgets } from './widgets';
 
 // Background work, defined at module scope so it exists when the OS wakes the app (the app's
 // entry, index.ts, imports this module before Expo Router).
@@ -47,6 +48,7 @@ TaskManager.defineTask<Notifications.NotificationTaskPayload>(
 TaskManager.defineTask(REFRESH_TASK, async () => {
   try {
     await rescheduleReminders();
+    await syncWidgets();
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch {
     return BackgroundTask.BackgroundTaskResult.Failed;

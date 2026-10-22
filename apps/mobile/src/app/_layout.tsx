@@ -32,6 +32,7 @@ import {
 import { resumeDownloads } from '@/lib/quran-files';
 import { useSettings } from '@/lib/settings';
 import { restoreTheme } from '@/lib/theme';
+import { syncWidgets } from '@/lib/widgets';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
@@ -101,6 +102,40 @@ function ReminderSync() {
   return null;
 }
 
+/**
+ * Writes the coming week for the home-screen widgets (SPEC 5.9): on every return to the app, and
+ * whenever the language or a setting that moves the prayer times changes.
+ */
+function WidgetSync() {
+  const s = useSettings();
+  const { locale } = useAppLocale();
+  const key = JSON.stringify([
+    locale,
+    s.onboarded,
+    s.location,
+    s.method,
+    s.asr,
+    s.highLatitude,
+    s.adjustments,
+    s.hijriOffset,
+    s.ramadanMode,
+  ]);
+
+  useEffect(() => {
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void syncWidgets();
+    });
+    return () => appState.remove();
+  }, []);
+
+  useEffect(() => {
+    const id = setTimeout(() => void syncWidgets(), 800);
+    return () => clearTimeout(id);
+  }, [key]);
+
+  return null;
+}
+
 function Root() {
   const { direction } = useAppLocale();
   const { theme } = useUniwind();
@@ -113,6 +148,7 @@ function Root() {
       <LocaleProvider direction={direction}>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <ReminderSync />
+        <WidgetSync />
         <ToastProvider>
           {/* One recitation for the whole app, so listening carries on across screens. */}
           <RecitationProvider>

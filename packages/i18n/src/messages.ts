@@ -9,6 +9,7 @@ import arGlossary from '../messages/ar/glossary.json';
 import arJourney from '../messages/ar/journey.json';
 import arReflection from '../messages/ar/reflection.json';
 import arRemember from '../messages/ar/remember.json';
+import arWidgets from '../messages/ar/widgets.json';
 import arNotifications from '../messages/ar/notifications.json';
 import arOnboarding from '../messages/ar/onboarding.json';
 import arPlaces from '../messages/ar/places.json';
@@ -26,6 +27,7 @@ import enGlossary from '../messages/en/glossary.json';
 import enJourney from '../messages/en/journey.json';
 import enReflection from '../messages/en/reflection.json';
 import enRemember from '../messages/en/remember.json';
+import enWidgets from '../messages/en/widgets.json';
 import enNotifications from '../messages/en/notifications.json';
 import enOnboarding from '../messages/en/onboarding.json';
 import enPlaces from '../messages/en/places.json';
@@ -43,6 +45,7 @@ import frGlossary from '../messages/fr/glossary.json';
 import frJourney from '../messages/fr/journey.json';
 import frReflection from '../messages/fr/reflection.json';
 import frRemember from '../messages/fr/remember.json';
+import frWidgets from '../messages/fr/widgets.json';
 import frNotifications from '../messages/fr/notifications.json';
 import frOnboarding from '../messages/fr/onboarding.json';
 import frPlaces from '../messages/fr/places.json';
@@ -64,6 +67,7 @@ const en = {
   journey: enJourney,
   reflection: enReflection,
   remember: enRemember,
+  widgets: enWidgets,
   notifications: enNotifications,
   onboarding: enOnboarding,
   places: enPlaces,
@@ -86,6 +90,7 @@ export const messages: Record<Locale, Messages> = {
     journey: arJourney,
     reflection: arReflection,
     remember: arRemember,
+    widgets: arWidgets,
     notifications: arNotifications,
     onboarding: arOnboarding,
     places: arPlaces,
@@ -106,6 +111,7 @@ export const messages: Record<Locale, Messages> = {
     journey: frJourney,
     reflection: frReflection,
     remember: frRemember,
+    widgets: frWidgets,
     notifications: frNotifications,
     onboarding: frOnboarding,
     places: frPlaces,

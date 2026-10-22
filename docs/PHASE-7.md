@@ -7,6 +7,14 @@ widgets, and Remember's tasbih, adhkar, duas and 99 Names. Decisions made along 
 Started with Phase 6's gate still open on one item, pages showing as indexed in a search console,
 which only time brings (the owner's decision, 2026-10-21).
 
+## Status (2026-10-22)
+
+All five steps are built on web and Android and logged in `docs/DECISIONS.md`. Open:
+
+- An EAS build on an iPhone: the iOS widgets (home and lock screen) and the app lock with Face ID
+  have not run yet; the iOS project cannot be generated on Windows.
+- The reviewed content listed below.
+
 ## Gate
 
 - The polish checklist (SPEC 11) on every new screen, on web and Android, in ar and en, light and

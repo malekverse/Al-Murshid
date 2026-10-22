@@ -11,6 +11,7 @@ import { allReflectionRows, deleteReflectionKey, openReflections } from './refle
 import { rescheduleReminders } from './reminders';
 import { readSettings } from './settings';
 import { storage } from './storage';
+import { clearWidgets } from './widgets';
 
 // Privacy and data (SPEC 5.7): everything this phone keeps, exported as one JSON file shared
 // through the system sheet, or deleted in one confirmed action. There are no accounts yet, so
@@ -61,4 +62,5 @@ export async function deleteEverything() {
   await forgetYouLock();
   storage.clearAll();
   await rescheduleReminders();
+  await clearWidgets();
 }
