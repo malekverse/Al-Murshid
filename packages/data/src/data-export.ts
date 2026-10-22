@@ -7,6 +7,7 @@ import type { QuranBookmark, ReadingPosition, StoredKhatmah } from './quran';
 import type { RamadanLog } from './ramadan-log';
 import type { Reflection } from './reflection';
 import type { Settings } from './settings';
+import type { TasbihDay } from './tasbih';
 
 export const EXPORT_FORMAT = 'al-murshid-export';
 export const EXPORT_VERSION = 1;
@@ -19,6 +20,7 @@ export interface ExportData {
   readingPosition: ReadingPosition | null;
   khatmah: StoredKhatmah | null;
   reflections: readonly Reflection[];
+  tasbihDaily: readonly TasbihDay[];
 }
 
 const byDate = <T extends { date: string }>(rows: readonly T[]) =>
@@ -53,6 +55,7 @@ export function buildExport(
     readingPosition: data.readingPosition,
     khatmah: data.khatmah,
     reflections: byDate(data.reflections),
+    tasbihDaily: byDate(data.tasbihDaily),
   };
 }
 

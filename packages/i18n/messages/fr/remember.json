@@ -1,0 +1,23 @@
+{
+  "title": "Rappel",
+  "coming": "Les adhkar, les invocations et les 99 Noms viendront ici une fois leurs textes relus.",
+  "tasbih": {
+    "title": "Tasbih",
+    "body": "Comptez votre dhikr, avec ou sans objectif.",
+    "today": "Aujourd’hui : {count}",
+    "count": "Compter",
+    "hint": "Touchez n’importe où pour compter",
+    "of": "sur {target}",
+    "reached": "Objectif atteint",
+    "target": {
+      "label": "Objectif",
+      "value": "Objectif : {target}",
+      "none": "Aucun",
+      "custom": "Personnalisé",
+      "customLabel": "Objectif personnalisé",
+      "set": "Valider"
+    },
+    "reset": "Remettre le compteur à zéro",
+    "resetDone": "Compteur remis à zéro."
+  }
+}

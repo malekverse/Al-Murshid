@@ -11,11 +11,12 @@ import { forgetReflectionKey, openReflections } from './reflections';
 
 /** Downloads everything as "al-murshid-2026-10-21.json". */
 export async function exportEverything(settings: Settings, now = new Date()) {
-  const [prayerLogs, ramadanLogs, quranBookmarks, rows] = await Promise.all([
+  const [prayerLogs, ramadanLogs, quranBookmarks, rows, tasbihDaily] = await Promise.all([
     db.prayerLogs.toArray(),
     db.ramadanLogs.toArray(),
     db.bookmarks.toArray(),
     db.reflections.toArray(),
+    db.tasbihDaily.toArray(),
   ]);
   const reflections = (await openReflections(rows)).flatMap((e) =>
     e.reflection ? [e.reflection] : [],
@@ -35,6 +36,12 @@ export async function exportEverything(settings: Settings, now = new Date()) {
       readingPosition: readingPosition.read(),
       khatmah: khatmahStore.read(),
       reflections,
+      tasbihDaily: tasbihDaily.map(({ date, phrase, count, updatedAt }) => ({
+        date,
+        phrase,
+        count,
+        updatedAt,
+      })),
     },
     { exportedAt: now, platform: 'web' },
   );

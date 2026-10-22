@@ -1,11 +1,11 @@
 import { touchTarget } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useEffect } from 'react';
 import { View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import { useAppLocale } from '@/lib/locale';
+import { haptics } from '@/lib/haptics';
 
 export interface SliderProps {
   value: number;
@@ -49,7 +49,7 @@ export function Slider({
     const stepped = Math.round(raw / step) * step;
     const next = Math.min(max, Math.max(min, Number(stepped.toFixed(6))));
     if (next !== value) {
-      Haptics.selectionAsync();
+      haptics.selection();
       onChange(next);
     }
   };

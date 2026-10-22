@@ -26,11 +26,8 @@
     "cancel": "Annuler",
     "done": "Terminé",
     "change": "Modifier",
-    "notNow": "Pas maintenant"
-  },
-  "soon": {
-    "quran": "Le lecteur du Coran arrive bientôt, si Dieu le veut.",
-    "remember": "Adhkar, invocations et tasbih arrivent bientôt, si Dieu le veut."
+    "notNow": "Pas maintenant",
+    "undo": "Annuler"
   },
   "offline": {
     "title": "Vous êtes hors ligne",

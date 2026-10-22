@@ -1,0 +1,23 @@
+{
+  "title": "Remember",
+  "coming": "Adhkar, duas and the 99 Names will come here once their texts are reviewed.",
+  "tasbih": {
+    "title": "Tasbih",
+    "body": "Count your dhikr, with a target or without.",
+    "today": "Today: {count}",
+    "count": "Count",
+    "hint": "Tap anywhere to count",
+    "of": "of {target}",
+    "reached": "Target reached",
+    "target": {
+      "label": "Target",
+      "value": "Target: {target}",
+      "none": "None",
+      "custom": "Custom",
+      "customLabel": "Custom target",
+      "set": "Set"
+    },
+    "reset": "Reset the count",
+    "resetDone": "Count reset."
+  }
+}

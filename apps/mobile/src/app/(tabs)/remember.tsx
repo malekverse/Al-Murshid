@@ -1,5 +1,5 @@
-import { Soon } from '@/components/soon';
+import { RememberHome } from '@/components/remember/remember-home';
 
 export default function Remember() {
-  return <Soon what="remember" illustration="notes" />;
+  return <RememberHome />;
 }

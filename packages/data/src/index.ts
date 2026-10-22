@@ -4,3 +4,4 @@ export * from './settings';
 export * from './ramadan-log';
 export * from './reflection';
 export * from './data-export';
+export * from './tasbih';

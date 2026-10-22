@@ -114,5 +114,9 @@
       "confirmBody": "Tout ce que vous avez gardé dans Al-Murshid sur cet appareil est effacé définitivement. Exportez d’abord si vous voulez une copie.",
       "confirm": "Tout effacer"
     }
+  },
+  "haptics": {
+    "label": "Retours haptiques",
+    "note": "De légères vibrations pour les touches, les interrupteurs et le tasbih."
   }
 }

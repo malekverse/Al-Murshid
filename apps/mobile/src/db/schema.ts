@@ -34,6 +34,18 @@ export const reflections = sqliteTable('reflections', {
   updatedAt: text('updated_at').notNull(),
 });
 
+/** Tasbih's daily totals (SPEC 9's tasbih_daily, local side): one row per date and phrase. */
+export const tasbihDaily = sqliteTable(
+  'tasbih_daily',
+  {
+    date: text('date').notNull(),
+    phrase: text('phrase').notNull(),
+    count: integer('count').notNull().default(0),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.date, t.phrase] })],
+);
+
 /** Quran bookmarks (SPEC 9's quran_bookmarks, local side). Removing keeps a tombstone. */
 export const quranBookmarks = sqliteTable('quran_bookmarks', {
   id: text('id').primaryKey(),

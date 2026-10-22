@@ -4,7 +4,7 @@ import { getCalendars } from 'expo-localization';
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
-import { db, prayerLogs, quranBookmarks, ramadanLogs, reflections } from '@/db';
+import { db, prayerLogs, quranBookmarks, ramadanLogs, reflections, tasbihDaily } from '@/db';
 import { forgetYouLock } from './app-lock';
 import { khatmahStore, readingPosition } from './quran';
 import { allReflectionRows, deleteReflectionKey, openReflections } from './reflections';
@@ -30,6 +30,7 @@ export async function exportEverything(dialogTitle: string, now = new Date()) {
       readingPosition: readingPosition.read(),
       khatmah: khatmahStore.read(),
       reflections: opened.flatMap((e) => (e.reflection ? [e.reflection] : [])),
+      tasbihDaily: db.select().from(tasbihDaily).all(),
     },
     { exportedAt: now, platform: Platform.OS === 'ios' ? 'ios' : 'android' },
   );
@@ -54,6 +55,7 @@ export async function deleteEverything() {
     tx.delete(ramadanLogs).run();
     tx.delete(quranBookmarks).run();
     tx.delete(reflections).run();
+    tx.delete(tasbihDaily).run();
   });
   await deleteReflectionKey();
   await forgetYouLock();

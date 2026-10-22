@@ -2,7 +2,6 @@ import type { Word } from '@murshid/content/quran';
 import { bookmarkColors, bookmarkEnd, type QuranBookmark } from '@murshid/data';
 import { space, typeScale } from '@murshid/tokens';
 import * as Clipboard from 'expo-clipboard';
-import * as Haptics from 'expo-haptics';
 import { BookmarkSimple } from 'phosphor-react-native/src/icons/BookmarkSimple';
 import { BookOpenText } from 'phosphor-react-native/src/icons/BookOpenText';
 import { Copy } from 'phosphor-react-native/src/icons/Copy';
@@ -31,6 +30,7 @@ import { markColor, useReaderTheme } from './common';
 import { PassageSheet, type PassageTarget } from './passage-sheet';
 import type { PassagePlan } from './recitation';
 import { TafsirSheet } from './tafsir-sheet';
+import { haptics } from '@/lib/haptics';
 
 export interface WordTarget {
   word: Word;
@@ -234,7 +234,7 @@ export function AyahActions({
                   accessibilityLabel={`${t('actions.bookmark')}: ${t(`bookmarks.colors.${c}`)}`}
                   onPress={() => {
                     setBookmark(mark?.surah ?? target.surah, mark?.ayah ?? target.ayah, c);
-                    void Haptics.selectionAsync();
+                    haptics.selection();
                     close();
                   }}
                   className={`size-touch items-center justify-center rounded-full ${mark?.color === c ? 'border-2 border-focus' : ''}`}

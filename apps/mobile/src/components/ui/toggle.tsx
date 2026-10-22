@@ -1,5 +1,4 @@
 import { spring } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, {
@@ -9,6 +8,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useAppLocale } from '@/lib/locale';
+import { haptics } from '@/lib/haptics';
 
 export interface ToggleProps {
   checked: boolean;
@@ -42,7 +42,7 @@ export function Toggle({ checked, onChange, label, disabled = false }: TogglePro
       disabled={disabled}
       hitSlop={8}
       onPress={() => {
-        Haptics.selectionAsync();
+        haptics.selection();
         onChange(!checked);
       }}
       className={`min-h-touch justify-center ${disabled ? 'opacity-40' : ''}`}

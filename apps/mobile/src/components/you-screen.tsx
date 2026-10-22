@@ -282,6 +282,17 @@ export function YouScreen({ focus = null }: { focus?: string | null }) {
                 />
               }
             />
+            <ListRow
+              title={t('settings.haptics.label')}
+              subtitle={t('settings.haptics.note')}
+              control={
+                <Toggle
+                  checked={settings.haptics}
+                  onChange={(on) => updateSettings((s) => ({ ...s, haptics: on }))}
+                  label={t('settings.haptics.label')}
+                />
+              }
+            />
           </ListGroup>
         </Section>
 

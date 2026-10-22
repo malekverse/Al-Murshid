@@ -1,6 +1,5 @@
 import { surah as surahInfo } from '@murshid/content/quran';
 import { bookmarkColors, bookmarkEnd, type BookmarkColor, type QuranBookmark } from '@murshid/data';
-import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useFormatter, useTranslations } from 'use-intl';
@@ -14,6 +13,7 @@ import { Toggle } from '@/components/ui/toggle';
 import { setBookmark } from '@/lib/quran';
 import { markColor, useReaderTheme } from './common';
 import type { PassagePlan } from './recitation';
+import { haptics } from '@/lib/haptics';
 
 const timesOptions = ['1', '2', '3', '5', '10'] as const;
 
@@ -152,7 +152,7 @@ function PassageForm({
                   accessibilityLabel={t(`bookmarks.colors.${c}`)}
                   onPress={() => {
                     setColor(c);
-                    void Haptics.selectionAsync();
+                    haptics.selection();
                   }}
                   className={`size-touch items-center justify-center rounded-full ${color === c ? 'border-2 border-focus' : ''}`}
                 >
@@ -167,7 +167,7 @@ function PassageForm({
           <Button
             onPress={() => {
               setBookmark(target.surah, target.ayah, color, to);
-              void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              haptics.success();
               onClose();
             }}
           >

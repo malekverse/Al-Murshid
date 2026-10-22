@@ -26,11 +26,8 @@
     "cancel": "Cancel",
     "done": "Done",
     "change": "Change",
-    "notNow": "Not now"
-  },
-  "soon": {
-    "quran": "The Quran reader is coming soon, God willing.",
-    "remember": "Adhkar, duas and tasbih are coming soon, God willing."
+    "notNow": "Not now",
+    "undo": "Undo"
   },
   "offline": {
     "title": "You are offline",

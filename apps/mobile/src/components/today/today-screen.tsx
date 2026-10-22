@@ -10,7 +10,6 @@ import {
   type Settings,
 } from '@murshid/data';
 import { duration, space } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,6 +39,7 @@ import {
   type WelcomeVerse,
 } from './parts';
 import { readerPlace } from '@/components/quran/common';
+import { haptics } from '@/lib/haptics';
 
 /**
  * When the device location is in use and the phone has moved more than about 50 km or into
@@ -137,7 +137,7 @@ export function TodayScreen() {
   const log = (date: CivilDate, prayer: Prayer) => {
     setJustLogged(prayer);
     setPrayerLogged(date, prayer, true);
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    haptics.success();
     toast(t('today.hero.prayedToast'), {
       label: t('today.hero.undo'),
       onPress: () => setPrayerLogged(date, prayer, false),

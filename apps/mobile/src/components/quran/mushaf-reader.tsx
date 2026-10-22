@@ -15,7 +15,6 @@ import {
 import { khatmahDay, readThrough } from '@murshid/core';
 import { bookmarkCovering, translationFor, translationLanguage } from '@murshid/data';
 import { space } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, View } from 'react-native';
@@ -35,6 +34,7 @@ import { MushafPage } from './mushaf-page';
 import { AudioBar, ReaderBar } from './reader-bars';
 import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { useRecitation } from './recitation';
+import { haptics } from '@/lib/haptics';
 
 const SWIPE = 60;
 
@@ -126,7 +126,7 @@ export function MushafReader({ startPage }: { startPage: number }) {
 
   const go = (next: number) => {
     const p = Math.min(pageCount, Math.max(1, next));
-    if (p !== page) void Haptics.selectionAsync();
+    if (p !== page) haptics.selection();
     setPage(p);
   };
 
@@ -212,7 +212,7 @@ export function MushafReader({ startPage }: { startPage: number }) {
                 variant="secondary"
                 onPress={() => {
                   khatmahStore.write({ ...plan, ...readThrough(plan, day.to, today) });
-                  void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  haptics.success();
                 }}
               >
                 {t('khatmah.markRead')}

@@ -1,6 +1,5 @@
 import { hiddenWord, hideModes, type HideMode } from '@murshid/data';
 import { colors, memorizeBar, type ThemeName } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useState, type ReactNode } from 'react';
 import {
   Text as RNText,
@@ -14,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet } from '@/components/ui/sheet';
 import { useReaderTheme } from './common';
 import { Choice, setQuranPrefs } from './reading-settings';
+import { haptics } from '@/lib/haptics';
 
 // Memorizing (Phase 5b): words or ayah markers hidden in every view, each keeping its exact
 // place, so nothing reflows. A tap reveals one; holding shows the whole ayah while held.
@@ -109,7 +109,7 @@ export function VeiledWord({
         hidden
           ? () => {
               memorize.reveal(id);
-              void Haptics.selectionAsync();
+              haptics.selection();
             }
           : onPress
       }
@@ -158,7 +158,7 @@ export function MemorizeSheet({
               selected={memorize.mode === mode}
               onPress={() => {
                 setQuranPrefs({ hide: mode });
-                void Haptics.selectionAsync();
+                haptics.selection();
                 onClose();
               }}
             />

@@ -1,6 +1,6 @@
 'use client';
 
-import { spring } from '@murshid/tokens';
+import { duration, easing, spring } from '@murshid/tokens';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo } from 'react';
@@ -30,7 +30,16 @@ export function RollingNumber({ value, className }: { value: string; className?:
                 className="inline-block"
                 initial={reduce ? { opacity: 0 } : { y: '0.6em', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={reduce ? { opacity: 0 } : { y: '-0.6em', opacity: 0 }}
+                // The old digit leaves quickly, so fast changes (tasbih taps) never pile up.
+                exit={
+                  reduce
+                    ? { opacity: 0 }
+                    : {
+                        y: '-0.6em',
+                        opacity: 0,
+                        transition: { duration: duration.quick / 1000, ease: easing.exit },
+                      }
+                }
                 transition={{ type: 'spring', ...spring.snappy }}
               >
                 {ch}

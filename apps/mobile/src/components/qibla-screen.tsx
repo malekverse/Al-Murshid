@@ -7,7 +7,6 @@ import {
 } from '@murshid/core';
 import { locationLabel, placeOf } from '@murshid/data';
 import { fonts, space, spring } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { ArrowLeft } from 'phosphor-react-native/src/icons/ArrowLeft';
@@ -30,6 +29,7 @@ import { Text } from './ui/text';
 import { useAppLocale } from '@/lib/locale';
 import { useSettings } from '@/lib/settings';
 import { useColors } from '@/lib/theme';
+import { haptics } from '@/lib/haptics';
 
 // The Qibla (SPEC 5.3): a full-screen compass toward the Kaaba using true north. The heading
 // passes a low-pass filter and a spring so the dial never jitters; the screen warms as the
@@ -179,8 +179,7 @@ export function QiblaScreen() {
   // One medium haptic when the phone comes into alignment (SPEC 6.5).
   const wasAligned = useRef(false);
   useEffect(() => {
-    if (aligned && !wasAligned.current)
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (aligned && !wasAligned.current) haptics.medium();
     wasAligned.current = aligned;
   }, [aligned]);
 

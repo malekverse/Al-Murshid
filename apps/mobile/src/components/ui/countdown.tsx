@@ -1,7 +1,7 @@
-import { spring } from '@murshid/tokens';
+import { duration, easing, spring } from '@murshid/tokens';
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown, FadeOutUp } from 'react-native-reanimated';
 import { useLocale, useTranslations } from 'use-intl';
 import { Text, type TextProps } from './text';
 
@@ -10,9 +10,8 @@ const isDigit = (ch: string) => /\p{Nd}/u.test(ch);
 const enter = FadeInDown.springify()
   .stiffness(spring.snappy.stiffness)
   .damping(spring.snappy.damping);
-const exit = FadeOutUp.springify()
-  .stiffness(spring.snappy.stiffness)
-  .damping(spring.snappy.damping);
+// The old digit leaves quickly, so fast changes (tasbih taps) never pile up.
+const exit = FadeOutUp.duration(duration.quick).easing(Easing.bezier(...easing.exit));
 
 /**
  * Digits roll one by one when they change (SPEC 6.4). Numbers keep left-to-right order in

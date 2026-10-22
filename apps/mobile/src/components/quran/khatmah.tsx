@@ -8,7 +8,6 @@ import {
   type KhatmahGoal,
 } from '@murshid/core';
 import { uuid } from '@murshid/data';
-import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -21,6 +20,7 @@ import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { khatmahStore } from '@/lib/quran';
 import { useToday } from './common';
+import { haptics } from '@/lib/haptics';
 
 // The khatmah (SPEC 5.5): today's portion, a progress ring, and a plan that recalculates quietly.
 // Behind or ahead, nothing is ever shown as owed.
@@ -97,7 +97,7 @@ function PlanSheet({
         <Button
           onPress={() => {
             khatmahStore.write({ id: uuid(), ...startKhatmah(goal, today) });
-            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            haptics.success();
             onClose();
           }}
         >
@@ -195,7 +195,7 @@ export function KhatmahCard() {
               variant="ghost"
               onPress={() => {
                 khatmahStore.write({ ...plan, ...readThrough(plan, day.to, today) });
-                void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                haptics.success();
               }}
             >
               {t('markRead')}

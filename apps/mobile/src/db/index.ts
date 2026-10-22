@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
-import { prayerLogs, quranBookmarks, ramadanLogs, reflections } from './schema';
+import { prayerLogs, quranBookmarks, ramadanLogs, reflections, tasbihDaily } from './schema';
 
 // The personal database (SPEC 8.3): expo-sqlite with Drizzle for queries. Migrations are plain
 // SQL run in order and tracked with SQLite's user_version, so nothing needs a bundler plugin.
@@ -40,6 +40,14 @@ const migrations = [
      sealed TEXT NOT NULL,
      updated_at TEXT NOT NULL
    );`,
+  // Phase 7: tasbih's daily totals.
+  `CREATE TABLE IF NOT EXISTS tasbih_daily (
+     date TEXT NOT NULL,
+     phrase TEXT NOT NULL,
+     count INTEGER NOT NULL DEFAULT 0,
+     updated_at TEXT NOT NULL,
+     PRIMARY KEY (date, phrase)
+   );`,
 ];
 
 const sqlite = openDatabaseSync('murshid.db', { enableChangeListener: true });
@@ -57,6 +65,6 @@ function migrate() {
 migrate();
 
 export const db = drizzle(sqlite, {
-  schema: { prayerLogs, quranBookmarks, ramadanLogs, reflections },
+  schema: { prayerLogs, quranBookmarks, ramadanLogs, reflections, tasbihDaily },
 });
-export { prayerLogs, quranBookmarks, ramadanLogs, reflections };
+export { prayerLogs, quranBookmarks, ramadanLogs, reflections, tasbihDaily };

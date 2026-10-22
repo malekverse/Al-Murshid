@@ -114,5 +114,9 @@
       "confirmBody": "Everything you have kept in Al-Murshid on this device is deleted for good. Export first if you want a copy.",
       "confirm": "Delete everything"
     }
+  },
+  "haptics": {
+    "label": "Haptics",
+    "note": "Gentle vibrations for taps, toggles and tasbih."
   }
 }

@@ -14,6 +14,7 @@ import {
   shouldWelcomeBack,
   startingPrayerStep,
   steps,
+  TASBIH_MAX,
   timeNames,
   type CardKind,
   type CivilDate,
@@ -157,6 +158,10 @@ export const settingsSchema = z.object({
   reflectionPrompt: z.boolean().catch(true),
   /** The evening whose invitation was set aside ("Not tonight"). */
   reflectionSetAside: isoDateString.nullable().catch(null),
+  /** Tasbih's target (SPEC 5.6): 33, 99, 100, a custom one, or none (null). */
+  tasbihTarget: z.number().int().min(1).max(TASBIH_MAX).nullable().catch(33),
+  /** One setting turns every haptic off (SPEC 6.5). */
+  haptics: z.boolean().catch(true),
   /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */
   quran: quranPrefsSchema.catch(() => defaultQuranPrefs()),
   /** The last day the app was opened, and the one before it (for "Welcome back"). */

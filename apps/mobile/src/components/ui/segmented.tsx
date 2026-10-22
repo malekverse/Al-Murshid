@@ -1,10 +1,10 @@
 import { duration } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { PressableScale } from './pressable-scale';
 import { Text } from './text';
+import { haptics } from '@/lib/haptics';
 
 export interface SegmentOption<V extends string> {
   value: V;
@@ -72,7 +72,7 @@ export function Segmented<V extends string>({
           selected={option.value === value}
           onSelect={() => {
             if (option.value === value) return;
-            Haptics.selectionAsync();
+            haptics.selection();
             onChange(option.value);
           }}
         />

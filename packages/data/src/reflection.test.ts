@@ -78,6 +78,10 @@ describe('export', () => {
           { date: '2026-10-18', gratitude: 'b', intention: '', note: '', updatedAt: at },
           { date: '2026-10-17', gratitude: 'a', intention: '', note: '', updatedAt: at },
         ],
+        tasbihDaily: [
+          { date: '2026-10-18', phrase: 'free', count: 99, updatedAt: at },
+          { date: '2026-10-17', phrase: 'free', count: 33, updatedAt: at },
+        ],
       },
       { exportedAt: new Date(at), platform: 'web' },
     );
@@ -96,6 +100,7 @@ describe('export', () => {
     expect(file.quranBookmarks.map((b) => b.surah)).toEqual([2, 18]);
     expect(file.quranBookmarks[0]).not.toHaveProperty('deleted');
     expect(file.reflections.map((r) => r.gratitude)).toEqual(['a', 'b']);
+    expect(file.tasbihDaily.map((d) => d.count)).toEqual([33, 99]);
     expect(exportFileName(sunday)).toBe('al-murshid-2026-10-18.json');
   });
 });

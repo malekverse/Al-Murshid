@@ -1,5 +1,4 @@
 import { spring } from '@murshid/tokens';
-import * as Haptics from 'expo-haptics';
 import { useState } from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
 import Animated, {
@@ -13,6 +12,7 @@ import { useLocale, useTranslations } from 'use-intl';
 import { RollingNumber } from './countdown';
 import { ProgressRing } from './progress-ring';
 import { Text } from './text';
+import { haptics } from '@/lib/haptics';
 
 export interface DhikrCardProps {
   /** Verbatim Arabic from packages/content, never generated or edited. */
@@ -57,12 +57,12 @@ export function DhikrCard({
     const next = count + 1;
     setCount(next);
     if (next === target) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      haptics.medium();
       if (!reduce)
         scale.set(withSequence(withSpring(0.985, spring.soft), withSpring(1, spring.soft)));
       onComplete?.();
     } else {
-      Haptics.selectionAsync();
+      haptics.selection();
     }
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { PrayerLog, QuranBookmark, RamadanLog } from '@murshid/data';
+import type { PrayerLog, QuranBookmark, RamadanLog, TasbihDay } from '@murshid/data';
 import Dexie, { type EntityTable } from 'dexie';
 
 // Personal data stays in this browser (SPEC 9): IndexedDB through Dexie. Every table keeps
@@ -20,6 +20,12 @@ export interface ReflectionRow {
   updatedAt: string;
 }
 
+/** A day's tasbih total for one phrase (SPEC 9's tasbih_daily, local side). */
+export interface TasbihDayRow extends TasbihDay {
+  /** "2026-10-21:free" */
+  key: string;
+}
+
 /** Keys WebCrypto made in this browser, stored as non-extractable CryptoKey objects. */
 export interface SecretRow {
   name: string;
@@ -32,6 +38,7 @@ export const db = new Dexie('murshid') as Dexie & {
   ramadanLogs: EntityTable<RamadanLog, 'date'>;
   reflections: EntityTable<ReflectionRow, 'date'>;
   secrets: EntityTable<SecretRow, 'name'>;
+  tasbihDaily: EntityTable<TasbihDayRow, 'key'>;
 };
 db.version(1).stores({ prayerLogs: 'key, date' });
 db.version(2).stores({ prayerLogs: 'key, date', bookmarks: 'id, [surah+ayah], updatedAt' });
@@ -48,4 +55,13 @@ db.version(4).stores({
   ramadanLogs: 'date',
   reflections: 'date',
   secrets: 'name',
+});
+// Phase 7: tasbih's daily totals.
+db.version(5).stores({
+  prayerLogs: 'key, date',
+  bookmarks: 'id, [surah+ayah], updatedAt',
+  ramadanLogs: 'date',
+  reflections: 'date',
+  secrets: 'name',
+  tasbihDaily: 'key, date',
 });
