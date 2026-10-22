@@ -8,7 +8,13 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   // The stylesheet travels in the page (about 11 KB compressed): one round trip less before the
   // first paint, which most visitors from search see on their first and only page (Phase 6).
-  experimental: { inlineCss: true },
+  experimental: {
+    inlineCss: true,
+    // Netlify restores .next/cache before every build, and Turbopack's cache in it grows with each
+    // one until loading it runs the build machine out of memory (exit 137). There, build from
+    // scratch; locally and in CI the cache still saves minutes.
+    turbopackFileSystemCacheForBuild: process.env.NETLIFY !== 'true',
+  },
   partialPrefetching: true,
   reactCompiler: true,
   // HarfBuzz finds its WebAssembly beside itself: loaded as published, not bundled.

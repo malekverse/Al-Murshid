@@ -103,7 +103,7 @@ test('no target, or a custom one', async ({ page }) => {
   await expect(page.getByText('Target reached', { exact: true }).first()).toBeVisible();
 });
 
-for (const locale of ['ar', 'en']) {
+for (const locale of ['ar', 'en', 'fr']) {
   for (const theme of ['light', 'dark']) {
     test(`Tasbih ${locale} ${theme}`, async ({ page }, info) => {
       await seed(page, theme);
@@ -114,7 +114,7 @@ for (const locale of ['ar', 'en']) {
         path: `e2e/.screens/${info.project.name}/${locale}-${theme}-remember.png`,
       });
       await page.goto(`/${locale}/remember/tasbih`);
-      const count = page.getByRole('button', { name: /^(Count|العدّ)/ });
+      const count = page.getByRole('button', { name: /^(Count|Compter|العدّ)/ });
       for (let i = 0; i < 12; i++) await count.click();
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({

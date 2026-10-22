@@ -211,7 +211,7 @@ test('delete everything on this device, after one confirmation', async ({ page }
   if (left.databases.includes('murshid')) expect(await storedReflections(page)).toEqual([]);
 });
 
-for (const locale of ['ar', 'en']) {
+for (const locale of ['ar', 'en', 'fr']) {
   for (const theme of ['light', 'dark']) {
     test(`Night reflection ${locale} ${theme}`, async ({ page }, info) => {
       await at(page, SUNDAY_NIGHT, theme);

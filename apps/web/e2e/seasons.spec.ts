@@ -130,7 +130,7 @@ test('Dhul Hijjah: the eve of Arafah', async ({ page }) => {
   await expect(card).toContainText('Tomorrow is the Day of Arafah');
 });
 
-for (const locale of ['ar', 'en']) {
+for (const locale of ['ar', 'en', 'fr']) {
   for (const theme of ['light', 'dark']) {
     test(`Ramadan night ${locale} ${theme}`, async ({ page }, info) => {
       await at(page, NIGHT_21, theme);

@@ -19,7 +19,17 @@ const settings = {
   previousOpenedOn: '2026-10-17',
 };
 
-const screens = ['', '/you', '/qibla', '/calendar', '/quran', '/quran/2/255', '/quran/page/50'];
+const screens = [
+  '',
+  '/you',
+  '/remember',
+  '/remember/tasbih',
+  '/qibla',
+  '/calendar',
+  '/quran',
+  '/quran/2/255',
+  '/quran/page/50',
+];
 
 for (const locale of ['ar', 'en', 'fr']) {
   for (const theme of ['light', 'dark']) {
@@ -54,6 +64,36 @@ for (const locale of ['ar', 'en', 'fr']) {
       }
     });
   }
+}
+
+// Phase 7's screens on a tablet and a wide screen (SPEC 11: 360 dp, a tablet, 1280 and 1920 px),
+// Arabic first.
+for (const [size, viewport] of [
+  ['tablet', { width: 768, height: 1024 }],
+  ['wide', { width: 1920, height: 1080 }],
+] as const) {
+  test.describe(size, () => {
+    test.use({ viewport });
+    test(`${size} ar light`, async ({ page }, info) => {
+      test.skip(info.project.name !== 'desktop', 'One run is enough at a fixed size.');
+      await page.clock.setSystemTime(new Date('2026-10-18T14:30:00Z'));
+      await page.addInitScript(
+        (s) => localStorage.setItem('murshid-settings', s),
+        JSON.stringify(settings),
+      );
+      for (const path of ['', '/you', '/remember', '/remember/tasbih']) {
+        await page.goto(`/ar${path}`);
+        await expect(page.locator('h1').first()).toBeVisible();
+        await expect(page.locator('main#main').first()).toHaveCSS('opacity', '1');
+        await page.evaluate(() => document.fonts.ready);
+        const name = path.slice(1).replaceAll('/', '-') || 'today';
+        await page.screenshot({
+          path: `e2e/.screens/${size}/ar-light-${name}.png`,
+          fullPage: true,
+        });
+      }
+    });
+  });
 }
 
 // The reading views of Phase 5b, in Arabic first and English: the 1441H mushaf and the verse view
