@@ -21,6 +21,8 @@ function quranPaths(): string[] {
 async function placePaths(): Promise<string[]> {
   const places = await loadPlaces();
   return [
+    // The landing page (Phase 7c) leads the places file: both are ways in from search.
+    '/about',
     '/prayer-times',
     ...places.countries.flatMap((c) => [
       `/prayer-times/${c.slug}`,

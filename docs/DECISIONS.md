@@ -522,3 +522,17 @@ The owner's go-ahead (2026-10-23): build Fajr Rise without stopping to ask. Plan
 - **Challenges at this step: sums (three levels) or the star order, steps, shaking, and scanning "your spot".** Move waits for a pose prototype that works in Fajr's dim light, Aloud for the reviewed dua for waking (PHASE-7B). A phone that cannot count steps, or a refused permission, offers sums instead; a spot challenge without a saved code becomes the puzzle.
 - **Sums read left to right and the keypad is never mirrored, in every language; digits follow the person's digits.**
 - **The sound is the phone's alarm sound or the soft tone; the adhan joins with its recordings,** as for the reminders.
+
+## Phase 7c · Identity and home (2026-10-24)
+
+Plan: `docs/PHASE-7C.md`. Started on the owner's instruction to keep going, with Phase 7b's gate
+open on what needs a real phone (PHASE-7B).
+
+### The landing page
+
+- **`/[locale]/about` is a day you scroll through: the live sky, then Fajr, Dhuhr, Asr, Maghrib and Isha, each under its own sky with something real in it (the ring screen drawn with the app's tokens, Al-Fatiha from `packages/content` in the King Fahd Complex font, a tasbih that counts, a month of lights, the reflection's three fields), then the privacy promise, the languages and the way in.** Each band starts from the colour the one above ends on, so scrolling reads as the day passing. Text sits on glass in the band's own tone, never on the gradient. Alt: a feature grid (the category's usual page).
+- **The hero's sky and countdown come from the browser's time zone alone: the most populous city of each zone (`packages/content/places/zones.json`, 356 zones, from the GeoNames table the apps carry, built by `pnpm --filter @murshid/content zones`), loaded after the page is on screen.** No location prompt and no IP lookup (principle 5). Before it arrives, and without script, the sky is Fajr's. The prayer method is the city's country default. Alt: asking for the location (a prompt on a first visit), an IP geolocation service (a third party).
+- **Two client islands only, both without an animation library:** the sky (core's prayer times and sun, tokens) and a tasbih ring drawn with CSS; durations through `Intl.DurationFormat`, with minutes as the fallback. Islands get their templates raw from the server, since public pages send no message catalog.
+- **The star field became a hook-free component (`ui/star-field.tsx`) shared by the app's living sky and the landing page.**
+- **The mark (`ui/mark.tsx`): one eight-pointed star from the lattice in lantern light over the horizon arc,** first used in the landing page's header and closing; the app icon follows in step 2.
+- **The landing page leads the places sitemap and joins the Lighthouse budget checks (`/ar/about`, `/en/about`).**

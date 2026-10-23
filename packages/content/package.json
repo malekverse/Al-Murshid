@@ -6,13 +6,15 @@
   "exports": {
     ".": "./src/index.ts",
     "./quran": "./src/quran-api.ts",
-    "./cities": "./src/cities.ts"
+    "./cities": "./src/cities.ts",
+    "./zones": "./places/zones.json"
   },
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
     "test": "vitest run",
     "cities": "tsx scripts/import-cities.ts",
+    "zones": "tsx scripts/build-zones.ts",
     "quran": "tsx scripts/build-quran.ts",
     "quran:check": "tsx scripts/build-quran.ts --check",
     "fonts": "tsx scripts/install-page-fonts.ts"

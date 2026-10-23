@@ -1,6 +1,7 @@
 // Message catalogs, imported statically so both bundlers (Turbopack and Metro) include them.
 // Add a namespace: create messages/<locale>/<ns>.json for every locale and list it here.
 
+import arAbout from '../messages/ar/about.json';
 import arCalendar from '../messages/ar/calendar.json';
 import arCommon from '../messages/ar/common.json';
 import arComponents from '../messages/ar/components.json';
@@ -20,6 +21,7 @@ import arSettings from '../messages/ar/settings.json';
 import arShowcase from '../messages/ar/showcase.json';
 import arSky from '../messages/ar/sky.json';
 import arToday from '../messages/ar/today.json';
+import enAbout from '../messages/en/about.json';
 import enCalendar from '../messages/en/calendar.json';
 import enCommon from '../messages/en/common.json';
 import enComponents from '../messages/en/components.json';
@@ -39,6 +41,7 @@ import enSettings from '../messages/en/settings.json';
 import enShowcase from '../messages/en/showcase.json';
 import enSky from '../messages/en/sky.json';
 import enToday from '../messages/en/today.json';
+import frAbout from '../messages/fr/about.json';
 import frCalendar from '../messages/fr/calendar.json';
 import frCommon from '../messages/fr/common.json';
 import frComponents from '../messages/fr/components.json';
@@ -62,6 +65,7 @@ import type { Locale } from './locales';
 
 /** The English catalog is the type reference; the i18n check keeps the others in sync. */
 const en = {
+  about: enAbout,
   calendar: enCalendar,
   common: enCommon,
   components: enComponents,
@@ -86,6 +90,7 @@ export type Messages = typeof en;
 
 export const messages: Record<Locale, Messages> = {
   ar: {
+    about: arAbout,
     calendar: arCalendar,
     common: arCommon,
     components: arComponents,
@@ -108,6 +113,7 @@ export const messages: Record<Locale, Messages> = {
   },
   en,
   fr: {
+    about: frAbout,
     calendar: frCalendar,
     common: frCommon,
     components: frComponents,

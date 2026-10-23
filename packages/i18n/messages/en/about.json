@@ -1,0 +1,71 @@
+{
+  "seo": {
+    "title": "Al-Murshid: a calm companion for the five moments of your day",
+    "description": "Prayer times you can trust, the Quran as it is printed, remembrance, and Fajr Rise, the alarm that gets you up for Fajr. No ads, no trackers, in Arabic, English and French."
+  },
+  "nav": {
+    "label": "Al-Murshid",
+    "prayerTimes": "Prayer times",
+    "quran": "Quran",
+    "open": "Open the app"
+  },
+  "hero": {
+    "title": "A calm companion for the five moments of your day.",
+    "body": "Prayer times you can trust, the Quran as it is printed, remembrance, and an alarm that gets you up for Fajr. No ads, no trackers, no account needed.",
+    "open": "Open Al-Murshid",
+    "times": "Prayer times near you",
+    "next": "{name} in {duration}",
+    "now": "Now: {name}, {duration} left",
+    "place": "The sky in {place} right now",
+    "change": "Another city"
+  },
+  "day": {
+    "title": "The day, in five lights",
+    "body": "Al-Murshid leads with what matters now, then gets out of the way."
+  },
+  "moments": {
+    "fajr": {
+      "title": "Rise for Fajr",
+      "body": "Fajr Rise follows Fajr every day and keeps ringing until you’re really up: a few sums, a walk, or a code you keep away from your bed. Hold for ten seconds to turn it off, any morning you need to."
+    },
+    "dhuhr": {
+      "title": "The Quran, as it is printed",
+      "body": "Four editions of the mushaf with their own pages and fonts, tajweed colors, word-by-word meanings, and recitations you can keep for offline."
+    },
+    "asr": {
+      "title": "Remember Allah, anywhere",
+      "body": "The whole screen counts, with a light touch for every bead. Try it here.",
+      "tap": "Tap to count",
+      "count": "Count {count}"
+    },
+    "maghrib": {
+      "title": "Your sky, not a score",
+      "body": "Each prayer you log adds a light to that day’s sky. No streaks, no red marks, nothing to lose."
+    },
+    "isha": {
+      "title": "Your evenings stay yours",
+      "body": "A short reflection after Isha: one gratitude, one intention, a note. Sealed on your phone, behind your lock if you like."
+    }
+  },
+  "promise": {
+    "title": "Private by design",
+    "items": {
+      "ads": "No ads, ever",
+      "trackers": "No trackers",
+      "account": "No account needed",
+      "device": "Your prayers and notes stay on your device"
+    }
+  },
+  "everywhere": {
+    "title": "In your language, on your phone and the web",
+    "body": "Arabic, English and French from the first screen. Widgets on your home and lock screens. Everything works offline."
+  },
+  "closing": {
+    "title": "Begin with the next prayer.",
+    "open": "Open Al-Murshid",
+    "stores": "The Android and iPhone apps are on their way to the stores."
+  },
+  "footer": {
+    "sources": "Prayer times are calculated on your device. City names: GeoNames (CC BY 4.0)."
+  }
+}

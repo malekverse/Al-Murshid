@@ -1,0 +1,71 @@
+{
+  "seo": {
+    "title": "Al-Murshid : un compagnon serein pour les cinq moments de votre journée",
+    "description": "Des horaires de prière fiables, le Coran tel qu’il est imprimé, le rappel d’Allah, et le Réveil du Fajr, l’alarme qui vous lève pour le Fajr. Sans publicité ni traceurs, en arabe, anglais et français."
+  },
+  "nav": {
+    "label": "Al-Murshid",
+    "prayerTimes": "Horaires de prière",
+    "quran": "Coran",
+    "open": "Ouvrir l’application"
+  },
+  "hero": {
+    "title": "Un compagnon serein pour les cinq moments de votre journée.",
+    "body": "Des horaires de prière fiables, le Coran tel qu’il est imprimé, le rappel d’Allah, et une alarme qui vous lève pour le Fajr. Sans publicité, sans traceurs, sans compte.",
+    "open": "Ouvrir Al-Murshid",
+    "times": "Horaires de prière près de chez vous",
+    "next": "{name} dans {duration}",
+    "now": "Maintenant : {name}, encore {duration}",
+    "place": "Le ciel à {place} en ce moment",
+    "change": "Une autre ville"
+  },
+  "day": {
+    "title": "La journée, en cinq lumières",
+    "body": "Al-Murshid commence par ce qui compte maintenant, puis vous laisse à votre journée."
+  },
+  "moments": {
+    "fajr": {
+      "title": "Se lever pour le Fajr",
+      "body": "Le Réveil du Fajr suit l’heure du Fajr chaque jour et sonne jusqu’à ce que vous soyez vraiment debout : quelques calculs, quelques pas, ou un code gardé loin de votre lit. Maintenez dix secondes pour l’arrêter, chaque fois que vous en avez besoin."
+    },
+    "dhuhr": {
+      "title": "Le Coran, tel qu’il est imprimé",
+      "body": "Quatre éditions du mushaf avec leurs pages et leurs polices, les couleurs du tajwid, le sens de chaque mot, et des récitations à garder hors ligne."
+    },
+    "asr": {
+      "title": "Se rappeler d’Allah, partout",
+      "body": "Tout l’écran compte, avec une touche légère pour chaque grain. Essayez ici.",
+      "tap": "Touchez pour compter",
+      "count": "Compter {count}"
+    },
+    "maghrib": {
+      "title": "Votre ciel, pas un score",
+      "body": "Chaque prière notée ajoute une lumière au ciel de ce jour. Pas de séries, pas de marques rouges, rien à perdre."
+    },
+    "isha": {
+      "title": "Vos soirées restent à vous",
+      "body": "Une courte réflexion après l’Isha : une gratitude, une intention, une note. Scellée sur votre téléphone, derrière votre verrou si vous le souhaitez."
+    }
+  },
+  "promise": {
+    "title": "Privé dès la conception",
+    "items": {
+      "ads": "Jamais de publicité",
+      "trackers": "Aucun traceur",
+      "account": "Aucun compte nécessaire",
+      "device": "Vos prières et vos notes restent sur votre appareil"
+    }
+  },
+  "everywhere": {
+    "title": "Dans votre langue, sur votre téléphone et sur le web",
+    "body": "Arabe, anglais et français dès le premier écran. Des widgets sur l’écran d’accueil et de verrouillage. Tout fonctionne hors ligne."
+  },
+  "closing": {
+    "title": "Commencez par la prochaine prière.",
+    "open": "Ouvrir Al-Murshid",
+    "stores": "Les applications Android et iPhone sont en route vers les stores."
+  },
+  "footer": {
+    "sources": "Les horaires de prière sont calculés sur votre appareil. Noms des villes : GeoNames (CC BY 4.0)."
+  }
+}
