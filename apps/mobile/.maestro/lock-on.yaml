@@ -9,6 +9,8 @@ name: Lock You (turn on)
     element:
       id: you-lock
     direction: DOWN
+    timeout: 90000
+    centerElement: true
 - tapOn:
     id: you-lock
 - tapOn:

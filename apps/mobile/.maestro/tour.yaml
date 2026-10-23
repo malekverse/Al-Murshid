@@ -40,8 +40,12 @@ name: Tour ${LOCALE} ${THEME}
 - tapOn: "${LOCALE == 'ar' ? 'أنت' : 'You'}"
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-you
+# Privacy is far down You, and each step reads the whole screen: give it time, and stop with the
+# toggle in the middle, clear of the floating tab bar.
 - scrollUntilVisible:
     element:
       id: you-lock
     direction: DOWN
+    timeout: 90000
+    centerElement: true
 - takeScreenshot: ${LOCALE}-${THEME}-privacy
