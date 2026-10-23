@@ -82,6 +82,10 @@ jobs:
     name: iOS Simulator screenshots
     runs-on: macos-latest
     timeout-minutes: 90
+    env:
+      # On a slow machine Maestro's XCTest driver can take minutes to start: wait up to five.
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: 300000
+      MAESTRO_CLI_NO_ANALYTICS: 1
     steps:
       - uses: actions/checkout@v7
       - uses: maxim-lobanov/setup-xcode@v1
@@ -142,12 +146,14 @@ jobs:
       - name: Tour in Arabic and English, light and dark
         working-directory: apps/mobile/.maestro
         run: |
-          # Every tour runs, so one failure still leaves the others' screenshots.
+          # Every tour runs, so one failure still leaves the others' screenshots. A tour that fails
+          # gets a second try: the simulator's driver sometimes stalls on a busy machine.
+          tour() { maestro test -e LOCALE="$1" -e THEME="$2" tour.yaml; }
           status=0
           for theme in light dark; do
             xcrun simctl ui "$UDID" appearance "$theme"
             for locale in ar en; do
-              maestro test -e LOCALE="$locale" -e THEME="$theme" tour.yaml || status=1
+              tour "$locale" "$theme" || tour "$locale" "$theme" || status=1
             done
           done
           exit $status
@@ -168,10 +174,13 @@ jobs:
         if: always()
         with:
           name: ios-simulator-screens
-          # Maestro saves screenshots beside the flows, and what it saw when a step failed in ~/.maestro.
+          # Maestro saves screenshots beside the flows, and what it saw when a step failed in ~/.maestro
+          # with its own logs (the simulator's log runs to a hundred megabytes and stays behind).
           path: |
             apps/mobile/.maestro/*.png
             ~/.maestro/tests/**/*.png
             ~/.maestro/tests/**/*.json
+            ~/.maestro/tests/**/logs/maestro.log
+            ~/.maestro/tests/**/logs/device-xctest.log
           if-no-files-found: ignore
           retention-days: 14
