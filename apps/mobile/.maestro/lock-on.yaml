@@ -1,0 +1,17 @@
+# The app lock, part 1 (SPEC 5.7): turn it on, allow Face ID, and leave the prompt up. The workflow
+# then answers it with a matching face (simctl), and lock-check.yaml carries on.
+appId: com.malekverse.almurshid
+name: Lock You (turn on)
+---
+- launchApp
+- tapOn: You
+- scrollUntilVisible:
+    element:
+      id: you-lock
+    direction: DOWN
+- tapOn:
+    id: you-lock
+- tapOn:
+    text: OK
+    optional: true
+- takeScreenshot: lock-prompt

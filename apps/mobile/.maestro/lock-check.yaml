@@ -1,0 +1,16 @@
+# The app lock, part 2: the lock is on, and a fresh start asks again before You opens. The workflow
+# then sends a matching face, and lock-open.yaml checks You opened.
+appId: com.malekverse.almurshid
+name: Lock You (asks again)
+---
+- assertVisible:
+    id: you-lock
+    checked: true
+- takeScreenshot: lock-on
+- launchApp:
+    stopApp: true
+- tapOn: You
+- extendedWaitUntil:
+    visible: Your space is locked
+    timeout: 15000
+- takeScreenshot: lock-locked

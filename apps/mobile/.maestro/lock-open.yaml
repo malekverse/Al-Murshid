@@ -1,0 +1,8 @@
+# The app lock, part 3: after the matching face, You is open.
+appId: com.malekverse.almurshid
+name: Lock You (opens)
+---
+- extendedWaitUntil:
+    visible: Your Sky
+    timeout: 15000
+- takeScreenshot: lock-open

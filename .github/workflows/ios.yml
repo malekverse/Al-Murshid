@@ -1,9 +1,10 @@
 name: iOS build
 
-# The iOS app, built on GitHub's macOS machines (free for public repositories), unsigned: an .ipa to
-# sideload with a free Apple ID (Sideloadly, AltStore), since the development machine is Windows and
-# EAS device builds need a paid Apple Developer membership. The JavaScript is bundled in (Release),
-# so the app runs on its own.
+# The iOS app, built on GitHub's macOS machines (free for public repositories), since the
+# development machine is Windows and EAS device builds need a paid Apple Developer membership. One job
+# makes an unsigned .ipa (Release, JavaScript bundled in) to sideload with a free Apple ID; the other
+# runs the app in the iOS Simulator with Maestro and keeps screenshots in Arabic and English, light
+# and dark, and of the Face ID lock.
 
 on:
   workflow_dispatch:
@@ -14,6 +15,7 @@ on:
       - 'packages/**'
       - 'pnpm-lock.yaml'
       - '.github/workflows/ios.yml'
+      - 'apps/mobile/.maestro/**'
 
 env:
   EXPO_NO_TELEMETRY: 1
@@ -74,4 +76,97 @@ jobs:
         with:
           name: Al-Murshid-unsigned-ipa
           path: apps/mobile/ios/Al-Murshid-unsigned.ipa
+          retention-days: 14
+
+  simulator:
+    name: iOS Simulator screenshots
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate the iOS project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform ios --no-install
+        env:
+          CI: 1
+      - name: Install CocoaPods
+        working-directory: apps/mobile/ios
+        run: pod install
+
+      - name: Build for the simulator
+        working-directory: apps/mobile/ios
+        run: |
+          set -o pipefail
+          workspace=$(ls -d *.xcworkspace | head -1)
+          xcodebuild -quiet \
+            -workspace "$workspace" -scheme "${workspace%.xcworkspace}" \
+            -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Boot an iPhone with Face ID enrolled, and install the app
+        working-directory: apps/mobile/ios
+        run: |
+          udid=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          runtimes = json.load(sys.stdin)['devices']
+          for runtime in sorted((r for r in runtimes if 'iOS' in r), reverse=True):
+              phones = [d for d in runtimes[runtime] if d['name'].startswith('iPhone')]
+              if phones:
+                  print(phones[0]['udid'])
+                  break
+          ")
+          echo "UDID=$udid" >> "$GITHUB_ENV"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+          xcrun simctl install "$udid" build/Build/Products/Release-iphonesimulator/*.app
+          xcrun simctl spawn "$udid" notifyutil -s com.apple.BiometricKit.enrollmentChanged '1'
+          xcrun simctl spawn "$udid" notifyutil -p com.apple.BiometricKit.enrollmentChanged
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Tour in Arabic and English, light and dark
+        working-directory: apps/mobile/.maestro
+        run: |
+          mkdir -p shots
+          cd shots
+          for theme in light dark; do
+            xcrun simctl ui "$UDID" appearance "$theme"
+            for locale in ar en; do
+              maestro test -e LOCALE="$locale" -e THEME="$theme" ../tour.yaml
+            done
+          done
+
+      - name: The Face ID lock
+        continue-on-error: true
+        working-directory: apps/mobile/.maestro/shots
+        run: |
+          match() { sleep 3; xcrun simctl spawn "$UDID" notifyutil -p com.apple.BiometricKit_Sim.pearl.match; }
+          xcrun simctl ui "$UDID" appearance light
+          maestro test ../lock-on.yaml
+          match
+          maestro test ../lock-check.yaml
+          match
+          maestro test ../lock-open.yaml
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ios-simulator-screens
+          path: apps/mobile/.maestro/shots
+          if-no-files-found: ignore
           retention-days: 14

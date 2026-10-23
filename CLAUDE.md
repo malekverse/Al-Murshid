@@ -14,7 +14,11 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 ## Working here
 
 - Dev machine is Windows: there is no iOS simulator. Verify on web and the Android emulator
-  (`Medium_Phone` AVD); iOS is checked through EAS builds on a device.
+  (`Medium_Phone` AVD). iOS: the `iOS build` workflow (GitHub Actions, macOS, free for this public
+  repo) runs on pushes touching the app: it runs the app in the iOS Simulator with the Maestro flows in
+  `apps/mobile/.maestro` (screenshots in the `ios-simulator-screens` artifact) and builds an unsigned
+  Release .ipa. A phone only installs it once Apple signs it: Sideloadly with an Apple ID (free, 7 days)
+  or an EAS build with the paid Apple Developer membership.
 - Android builds need JDK 17+: use Android Studio's bundled JBR (`JAVA_HOME="C:/Program Files/Android/Android Studio/jbr"`),
   and `ANDROID_HOME="$LOCALAPPDATA/Android/Sdk"` (there is no local.properties, so Gradle cannot find the SDK otherwise).
 - The repo stays in OneDrive, so paths are long: keep pnpm's `nodeLinker: hoisted` and the

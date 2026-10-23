@@ -325,6 +325,7 @@ export function YouScreen({ focus = null }: { focus?: string | null }) {
                   disabled={lockable !== true && lock.enabled !== true}
                   onChange={(on) => void setYouLock(on, t('reflection.lock.prompt'))}
                   label={t('reflection.lock.label')}
+                  testID="you-lock"
                 />
               }
             />

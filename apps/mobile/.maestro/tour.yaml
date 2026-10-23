@@ -1,0 +1,46 @@
+# The iOS tour (SPEC 11 polish checklist): onboarding by city, then Today, the Quran, Remember and
+# the tasbih, You and its privacy section, with a screenshot of each. Run with LOCALE (ar or en) and
+# THEME (light or dark); the iOS build workflow runs it on the simulator.
+appId: com.malekverse.almurshid
+name: Tour ${LOCALE} ${THEME}
+---
+- launchApp:
+    clearState: true
+- tapOn: "${LOCALE == 'ar' ? 'العربية' : 'English'}"
+- tapOn: "${LOCALE == 'ar' ? 'اختيار مدينة' : 'Choose a city'}"
+- tapOn: "${LOCALE == 'ar' ? 'المدينة' : 'City'}"
+- inputText: Tunis
+- tapOn:
+    text: "${LOCALE == 'ar' ? '.*Tunis Governorate.*' : 'Tunis, Tunisia'}"
+- tapOn: "${LOCALE == 'ar' ? 'متابعة' : 'Continue'}"
+- tapOn: "${LOCALE == 'ar' ? 'أصلّي في أغلب الأيام' : 'I pray most days'}"
+- tapOn: "${LOCALE == 'ar' ? 'ليس الآن' : 'Not now'}"
+- extendedWaitUntil:
+    visible: "${LOCALE == 'ar' ? 'صلّيتُ' : 'I prayed'}"
+    timeout: 30000
+- takeScreenshot: ${LOCALE}-${THEME}-today
+
+- tapOn: "${LOCALE == 'ar' ? 'القرآن' : 'Quran'}"
+- waitForAnimationToEnd
+- takeScreenshot: ${LOCALE}-${THEME}-quran
+
+- tapOn: "${LOCALE == 'ar' ? 'الذِّكر' : 'Remember'}"
+- waitForAnimationToEnd
+- takeScreenshot: ${LOCALE}-${THEME}-remember
+- tapOn: "${LOCALE == 'ar' ? 'التسبيح' : 'Tasbih'}"
+- tapOn:
+    point: 50%,55%
+    repeat: 12
+    delay: 150
+- waitForAnimationToEnd
+- takeScreenshot: ${LOCALE}-${THEME}-tasbih
+- tapOn: "${LOCALE == 'ar' ? 'رجوع' : 'Back'}"
+
+- tapOn: "${LOCALE == 'ar' ? 'أنت' : 'You'}"
+- waitForAnimationToEnd
+- takeScreenshot: ${LOCALE}-${THEME}-you
+- scrollUntilVisible:
+    element:
+      id: you-lock
+    direction: DOWN
+- takeScreenshot: ${LOCALE}-${THEME}-privacy

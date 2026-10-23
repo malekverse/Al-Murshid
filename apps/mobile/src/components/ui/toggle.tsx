@@ -15,13 +15,15 @@ export interface ToggleProps {
   onChange: (checked: boolean) => void;
   label: string;
   disabled?: boolean;
+  /** For end-to-end tests (Maestro). */
+  testID?: string;
 }
 
 // Track 56 x 32, thumb 24 with a 4 px inset: the thumb travels 24 px.
 const TRAVEL = 24;
 
 /** On/off switch with a light haptic (SPEC 6.5). The thumb travels toward the reading end. */
-export function Toggle({ checked, onChange, label, disabled = false }: ToggleProps) {
+export function Toggle({ checked, onChange, label, disabled = false, testID }: ToggleProps) {
   const { direction } = useAppLocale();
   const reduce = useReducedMotion();
   const sign = direction === 'rtl' ? -1 : 1;
@@ -39,6 +41,7 @@ export function Toggle({ checked, onChange, label, disabled = false }: TogglePro
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked, disabled }}
+      testID={testID}
       disabled={disabled}
       hitSlop={8}
       onPress={() => {
