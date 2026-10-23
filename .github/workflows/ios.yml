@@ -142,31 +142,36 @@ jobs:
       - name: Tour in Arabic and English, light and dark
         working-directory: apps/mobile/.maestro
         run: |
-          mkdir -p shots
-          cd shots
+          # Every tour runs, so one failure still leaves the others' screenshots.
+          status=0
           for theme in light dark; do
             xcrun simctl ui "$UDID" appearance "$theme"
             for locale in ar en; do
-              maestro test -e LOCALE="$locale" -e THEME="$theme" ../tour.yaml
+              maestro test -e LOCALE="$locale" -e THEME="$theme" tour.yaml || status=1
             done
           done
+          exit $status
 
       - name: The Face ID lock
         continue-on-error: true
-        working-directory: apps/mobile/.maestro/shots
+        working-directory: apps/mobile/.maestro
         run: |
           match() { sleep 3; xcrun simctl spawn "$UDID" notifyutil -p com.apple.BiometricKit_Sim.pearl.match; }
           xcrun simctl ui "$UDID" appearance light
-          maestro test ../lock-on.yaml
+          maestro test lock-on.yaml
           match
-          maestro test ../lock-check.yaml
+          maestro test lock-check.yaml
           match
-          maestro test ../lock-open.yaml
+          maestro test lock-open.yaml
 
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ios-simulator-screens
-          path: apps/mobile/.maestro/shots
+          # Maestro saves screenshots beside the flows, and what it saw when a step failed in ~/.maestro.
+          path: |
+            apps/mobile/.maestro/*.png
+            ~/.maestro/tests/**/*.png
+            ~/.maestro/tests/**/*.json
           if-no-files-found: ignore
           retention-days: 14

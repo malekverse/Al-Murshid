@@ -27,7 +27,8 @@ name: Tour ${LOCALE} ${THEME}
 - tapOn: "${LOCALE == 'ar' ? 'الذِّكر' : 'Remember'}"
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-remember
-- tapOn: "${LOCALE == 'ar' ? 'التسبيح' : 'Tasbih'}"
+# On iOS the whole card is one element, its label the title and the description together.
+- tapOn: "${LOCALE == 'ar' ? 'التسبيح.*' : 'Tasbih.*'}"
 - tapOn:
     point: 50%,55%
     repeat: 12
