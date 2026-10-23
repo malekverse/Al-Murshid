@@ -1,8 +1,14 @@
-# The app lock, part 3: after the matching face, You is open.
+# The app lock, part 3: with a matching face, You opens. If the first prompt has gone by the time
+# this flow starts, Unlock asks again.
 appId: com.malekverse.almurshid
 name: Lock You (opens)
 ---
+- runFlow:
+    when:
+      visible: Unlock
+    commands:
+      - tapOn: Unlock
 - extendedWaitUntil:
     visible: Your Sky
-    timeout: 15000
+    timeout: 60000
 - takeScreenshot: lock-open

@@ -1,16 +1,13 @@
-# The app lock, part 2: the lock is on, and a fresh start asks again before You opens. The workflow
-# then sends a matching face, and lock-open.yaml checks You opened.
+# The app lock, part 2: a fresh start asks again before You opens. Once this flow has photographed
+# the locked screen, the workflow sends a matching face, and lock-open.yaml checks You opened.
 appId: com.malekverse.almurshid
 name: Lock You (asks again)
 ---
-- assertVisible:
-    id: you-lock
-    checked: true
-- takeScreenshot: lock-on
 - launchApp:
     stopApp: true
 - tapOn: You
+# While the Face ID sheet is up, only the sheet is visible to Maestro; the locked screen once it goes.
 - extendedWaitUntil:
-    visible: Your space is locked
+    visible: 'Face ID|Your space is locked'
     timeout: 15000
 - takeScreenshot: lock-locked

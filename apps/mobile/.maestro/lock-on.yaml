@@ -1,5 +1,5 @@
-# The app lock, part 1 (SPEC 5.7): turn it on, allow Face ID, and leave the prompt up. The workflow
-# then answers it with a matching face (simctl), and lock-check.yaml carries on.
+# The app lock, part 1 (SPEC 5.7): turn it on and answer Face ID. Once this flow has photographed
+# the prompt, the workflow sends a matching face (simctl) until the lock is on.
 appId: com.malekverse.almurshid
 name: Lock You (turn on)
 ---
@@ -17,3 +17,10 @@ name: Lock You (turn on)
     text: OK
     optional: true
 - takeScreenshot: lock-prompt
+# The switch reads 1 once it is on.
+- extendedWaitUntil:
+    visible:
+      id: you-lock
+      text: '1'
+    timeout: 60000
+- takeScreenshot: lock-on

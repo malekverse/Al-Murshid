@@ -162,12 +162,19 @@ jobs:
         continue-on-error: true
         working-directory: apps/mobile/.maestro
         run: |
-          match() { sleep 3; xcrun simctl spawn "$UDID" notifyutil -p com.apple.BiometricKit_Sim.pearl.match; }
+          # The simulator's "Matching Face", which a flow cannot send. A helper sends one every two
+          # seconds while a flow waits on Face ID, from the moment the flow has photographed the
+          # prompt (Maestro writes the screenshot into ~/.maestro/tests as it goes).
+          match() { xcrun simctl spawn "$UDID" notifyutil -p com.apple.BiometricKit_Sim.pearl.match || true; }
+          shot() { find ~/.maestro/tests -name "$1.png" 2>/dev/null | grep -q .; }
+          faces() { until shot "$1"; do sleep 1; done; while :; do match; sleep 2; done; }
+          trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
           xcrun simctl ui "$UDID" appearance light
+          faces lock-prompt & helper=$!
           maestro test lock-on.yaml
-          match
+          kill $helper
           maestro test lock-check.yaml
-          match
+          faces lock-locked &
           maestro test lock-open.yaml
 
       - uses: actions/upload-artifact@v7
