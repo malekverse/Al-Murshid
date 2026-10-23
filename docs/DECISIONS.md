@@ -536,3 +536,8 @@ open on what needs a real phone (PHASE-7B).
 - **The star field became a hook-free component (`ui/star-field.tsx`) shared by the app's living sky and the landing page.**
 - **The mark (`ui/mark.tsx`): one eight-pointed star from the lattice in lantern light over the horizon arc,** first used in the landing page's header and closing; the app icon follows in step 2.
 - **The landing page leads the places sitemap and joins the Lighthouse budget checks (`/ar/about`, `/en/about`).**
+
+### The mark and the icons
+
+- **The icons are drawn in code from the tokens (`design/scripts/make_brand.py`): the lattice's star {8/3} in the night lantern over a canvas-white horizon arc, on the Fajr sky with a soft lantern glow.** The same geometry as the web's `Mark` and the star puzzle (whose inner radius is now the lattice's own, cos(3π/8)/cos(π/8)). Outputs: the app icon, iOS's dark and tinted variants, Android's adaptive background, foreground and monochrome layers (inside the safe zone), the splash mark (lantern on both canvases), the notification icon, the favicon, the Apple touch icon and the install icons. Small sizes draw the mark larger so it still reads at 48 px. Alt: the temporary sun icon, or AI images (exact shapes and colors are code's job, per GEMINI_PROMPTS).
+- **The app-target Swift file imports the Fajr Rise module as `internal`,** like the import Expo generates for every module; an implicit one is ambiguous to Swift 6 (the first iOS build's only error).

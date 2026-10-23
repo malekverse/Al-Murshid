@@ -13,9 +13,10 @@ import { useColors } from '@/lib/theme';
 const LIT_MS = duration.gentle + duration.quick;
 const GAP_MS = duration.standard;
 
-// The eight-pointed star of the lattice (SPEC 6.3), as one polygon.
+// The eight-pointed star of the lattice (SPEC 6.3), {8/3}, as one polygon.
+const INNER = Math.cos((3 * Math.PI) / 8) / Math.cos(Math.PI / 8);
 const STAR = Array.from({ length: 16 }, (_, k) => {
-  const r = k % 2 === 0 ? 22 : 10;
+  const r = k % 2 === 0 ? 22 : 22 * INNER;
   const a = (Math.PI / 8) * k - Math.PI / 2;
   return `${(24 + r * Math.cos(a)).toFixed(2)},${(24 + r * Math.sin(a)).toFixed(2)}`;
 }).join(' ');

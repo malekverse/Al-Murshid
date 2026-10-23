@@ -2,8 +2,10 @@
 // over the horizon arc of the prayer glyphs: the guide above the day. No hooks, so server pages
 // draw it without a script. Colors come from the theme through currentColor and the lantern token.
 
+// The lattice's star {8/3}: its inner radius is cos(3π/8) / cos(π/8) of the outer.
+const INNER = Math.cos((3 * Math.PI) / 8) / Math.cos(Math.PI / 8);
 const STAR = Array.from({ length: 16 }, (_, k) => {
-  const r = k % 2 === 0 ? 15 : 6.6;
+  const r = k % 2 === 0 ? 15 : 15 * INNER;
   const a = (Math.PI / 8) * k - Math.PI / 2;
   return `${(32 + r * Math.cos(a)).toFixed(2)},${(26 + r * Math.sin(a)).toFixed(2)}`;
 }).join(' ');

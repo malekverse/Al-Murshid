@@ -6,7 +6,8 @@ import ActivityKit
 import AlarmKit
 import AppIntents
 import CryptoKit
-import FajrRise
+// Internal, like the import Expo generates for every module (ExpoModulesProvider.swift).
+internal import FajrRise
 import Foundation
 import SwiftUI
 
