@@ -1,0 +1,77 @@
+name: iOS build
+
+# The iOS app, built on GitHub's macOS machines (free for public repositories), unsigned: an .ipa to
+# sideload with a free Apple ID (Sideloadly, AltStore), since the development machine is Windows and
+# EAS device builds need a paid Apple Developer membership. The JavaScript is bundled in (Release),
+# so the app runs on its own.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/ios.yml'
+
+env:
+  EXPO_NO_TELEMETRY: 1
+  TURBO_TELEMETRY_DISABLED: 1
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Unsigned iOS app
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Generate the iOS project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform ios --no-install
+        env:
+          CI: 1
+      - name: Install CocoaPods
+        working-directory: apps/mobile/ios
+        run: pod install
+
+      - name: Build the app and its widget, without signing
+        working-directory: apps/mobile/ios
+        run: |
+          set -o pipefail
+          workspace=$(ls -d *.xcworkspace | head -1)
+          xcodebuild -quiet \
+            -workspace "$workspace" -scheme "${workspace%.xcworkspace}" \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package the .ipa
+        working-directory: apps/mobile/ios
+        run: |
+          app=$(ls -d build/Build/Products/Release-iphoneos/*.app | head -1)
+          echo "Built $app with: $(ls "$app/PlugIns" 2>/dev/null | tr '\n' ' ')"
+          mkdir -p Payload
+          cp -R "$app" Payload/
+          zip -qry Al-Murshid-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Al-Murshid-unsigned-ipa
+          path: apps/mobile/ios/Al-Murshid-unsigned.ipa
+          retention-days: 14
