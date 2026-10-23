@@ -86,6 +86,26 @@
       "./plugins/with-short-native-build-paths",
       "expo-sharing",
       [
+        "expo-camera",
+        {
+          "cameraPermission": "Al-Murshid uses the camera only for Fajr Rise, to scan your spot or count squats. Nothing is recorded or sent.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "./modules/fajr-rise/app.plugin.js",
+        {
+          "alarmKitUsage": "Al-Murshid rings Fajr Rise, the alarm you set for Fajr, even in silent mode."
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Al-Murshid counts your steps only to stop the Fajr Rise alarm. Nothing is recorded."
+        }
+      ],
+      [
         "expo-widgets",
         {
           "groupIdentifier": "group.com.malekverse.almurshid",

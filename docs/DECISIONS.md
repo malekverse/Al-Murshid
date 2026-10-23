@@ -487,3 +487,38 @@ alarm that only stops once the person is awake. Teardown: `docs/COMPETITION.md`;
 - **The landing page is `/[locale]/about`, a Server Component page; the app keeps `/[locale]`.** Whether a visitor has onboarded is only known in the browser, so the landing page and Today cannot share one address and stay fast. Alt: the landing page at `/[locale]` with the app moved.
 - **Masjids come from OpenStreetMap.** Free, with ODbL attribution; Google Places is paid past its free tier and sends every search to Google. Alt: Google Places.
 - **Reviewed content is a track alongside every phase, and finding the reviewer is now the most urgent item.** Ameen's lead today is mostly content (adhkar, duas, daily hadith), and launch is blocked without sign-off. Alt: waiting for Phase 9.
+
+## Phase 7b · Fajr Rise (2026-10-23)
+
+The owner's go-ahead (2026-10-23): build Fajr Rise without stopping to ask. Plan: `docs/PHASE-7B.md`.
+
+### Engine
+
+- **`packages/core/src/rise.ts` plans every alarm and backup as data (100% covered); a local Expo module, `apps/mobile/modules/fajr-rise`, only arms, rings and cancels.** The same split as the reminders and the widgets, so the rules (the anchors, "never before Fajr", weekdays, backups, a snoozed or unanswered morning restarting) are tested once for both platforms, across a DST change and a time-zone change. Alt: the timing logic in Kotlin and Swift.
+- **Ten backups, two minutes apart, cancelled only when the challenge is done or the alarm turned off; a morning's state (done, or restarting at a time after a snooze or an unanswered "Still up?") is kept for the last six mornings.** Nothing depends on the platform reporting a dismissal.
+- **The plan is rebuilt with the reminders (launch, return, settings that move the times, the twice-daily background task), a week ahead plus yesterday,** so a morning that rings past midnight in another time zone keeps its backups.
+- **Rebuilding the reminders now cancels only reminders, by id; Fajr Rise's "Still up?" (`<morning>-still-up`) stays.** The reminders used to cancel every pending notification. "Delete everything" clears the alarms and any "Still up?".
+- **The settings live in MMKV (`rise`, `rise-mornings`), not encrypted:** times, weekdays, a barcode's value, nothing personal. They never sync: an alarm belongs to one phone.
+
+### Android
+
+- **Alarm clocks (`setAlarmClock`) with the exact-alarm permission, asked in setup; without it, `setAndAllowWhileIdle`, and setup says the alarm may be a few minutes late.** The receiver checks the alarm is still in the stored plan, so one finished or replaced never rings; boot, an app update and a change of the permission arm them again.
+- **A foreground service (type `mediaPlayback`, allowed to start from an alarm clock) plays on the alarm audio stream: it fades in from 12% over 30 seconds, vibrates, raises the alarm volume to half if it was lower (and puts it back), and stops itself after 30 minutes.** If Android refuses the service, an insistent notification on an alarm-sound channel rings instead. Verified on the emulator: the service started from `ALARM_MANAGER_ALARM_CLOCK` and took audio focus as `USAGE_ALARM`.
+- **The app shows over the lock screen only while an alarm rings:** a `ReactActivityLifecycleListener` (`FajrRisePackage`) sets show-when-locked and turn-screen-on for the alarm's full-screen intent, before the first frame, and both are cleared as soon as the person is up, turns it off, or the ring ends on its own; after the challenge the phone asks to be unlocked. Nobody can use the app over the lock screen otherwise.
+- **Once the ring screen is up, the notification is re-posted quietly (no full-screen intent, no new alert).** When the phone is in use Android shows a full-screen alarm as a heads-up that stays put; on the emulator it covered the clock and the screen took no touches until it was swiped away.
+- **While the challenge is worked on the sound drops to 30%, and returns to full after 20 seconds without a touch.**
+
+### iOS
+
+- **AlarmKit (iOS 26 and later) rings through silent mode and Focus; its alert has the system's stop button and "Wake up", whose App Intent opens the app on the ring screen. Before iOS 26 Fajr Rise is not offered (SPEC 5.10).**
+- **The AlarmKit code and the intent (`modules/fajr-rise/ios-app/FajrRiseAlarms.swift`) are compiled into the app target by the module's config plugin; the Expo module reaches them by class name through an `@objc` protocol.** iOS reads App Intents only from the app's own code, and an intent inside a CocoaPods library may never be found. Alt: everything in the pod (risks a dead "Wake up" button).
+- **Each alarm's AlarmKit id is derived from its plan id and time,** so an unchanged plan schedules nothing new and a moved Fajr replaces its alarm.
+- **Checked by the `iOS build` workflow with `rise.yaml`** (setup, the permission, trying the challenge, a test alarm and its "Wake up"); a real iPhone confirms it in Phase 9.
+
+### The screens
+
+- **Setup: the switch with the next ring ("Rings tomorrow at 5:08 AM"), the permissions it still needs, when (a list: three Arabic labels overflowed segments), the days in the language's week order, the challenge, the sound, "Still up?", one snooze, and "Test the alarm in 10 seconds".** Entry points: Fajr's reminder sheet and You → Reminders.
+- **The ring screen is always in the night theme over the live sky, with one challenge and "Turn off" held for 10 seconds; a screen reader turns it off with one deliberate activation.** The clock there ticks once a minute: a per-second tick starved the JS thread of a debug build.
+- **Challenges at this step: sums (three levels) or the star order, steps, shaking, and scanning "your spot".** Move waits for a pose prototype that works in Fajr's dim light, Aloud for the reviewed dua for waking (PHASE-7B). A phone that cannot count steps, or a refused permission, offers sums instead; a spot challenge without a saved code becomes the puzzle.
+- **Sums read left to right and the keypad is never mirrored, in every language; digits follow the person's digits.**
+- **The sound is the phone's alarm sound or the soft tone; the adhan joins with its recordings,** as for the reminders.

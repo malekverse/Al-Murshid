@@ -259,7 +259,7 @@ An optional alarm for Fajr that moves with the prayer time every day and keeps r
 - **No going back to sleep.** Backup alarms ring every two minutes for 20 minutes until the challenge is done, so stopping the sound from the lock screen is not enough. An optional "Still up?" check five minutes later rings again if it is not answered within two minutes.
 - **Mercy.** A "Turn off" escape is always on screen: hold it for 10 seconds (illness, a sleeping baby, an emergency). No snooze by default; one 5-minute snooze can be turned on. Nothing records how a morning went: no counts, no history, no word about lateness. Afterwards the screen says how long Fajr lasts ("Fajr is here until sunrise at 06:31"), and logging stays the usual "I prayed".
 - **Privacy.** Camera, microphone and motion data are processed in memory on the device, never stored or sent. The camera never looks at prayer, wudu, a prayer mat or a mosque (section 13).
-- **Platforms.** iOS 26 and later through AlarmKit; earlier iOS versions get a notification-based alarm whose setup says plainly that it cannot ring through silent mode. Android through exact alarms, a full-screen alarm screen and a ringing service. Not on web.
+- **Platforms.** iOS 26 and later through AlarmKit; on earlier versions setup says plainly that Fajr Rise needs iOS 26 (a notification cannot ring through silent mode, so it would be an alarm in name only). Android through exact alarms, a full-screen alarm screen and a ringing service. Not on web.
 - **Where.** Fajr's row on Today, Settings → Reminders, the Tools hub, and one offer card in the first week (in the verse of the day's place), never shown again once dismissed.
 
 ### 5.11 Tools hub, greeting and share cards
@@ -545,7 +545,7 @@ Personal data lives on the device first. Supabase adds optional accounts, backup
 
 Every synced row carries `updated_at` (client), `server_updated_at` (set by trigger) and a `deleted` tombstone. All tables cascade on user deletion.
 
-**Local-only in v1:** night reflections, Quran notes, app lock settings, Qibla calibration, and Fajr Rise's alarms with the code saved for "Your spot" (an alarm belongs to one phone, so two synced phones never both ring). They are encrypted at rest on device.
+**Local-only in v1:** night reflections, Quran notes, app lock settings and Qibla calibration, encrypted at rest on device; and Fajr Rise's alarms with the code saved for "Your spot" (an alarm belongs to one phone, so two synced phones never both ring; nothing in them is personal, so they are not encrypted).
 
 **Sync design (simple because the data is simple)**
 

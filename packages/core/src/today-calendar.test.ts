@@ -279,3 +279,31 @@ describe('todayView: night reflection (SPEC 5.7)', () => {
     ).toMatchObject({ kind: 'step-offer' });
   });
 });
+
+describe('todayView: the Fajr Rise offer (SPEC 5.10)', () => {
+  const t = timesOn(sunday);
+  const cards: TodayInput['cards'] = ['fajr-rise', 'night-reflection'];
+
+  it('offers Fajr Rise in the evening, before the night reflection', () => {
+    expect(view(plus(t.maghrib, -5), { cards, riseOffer: true }).card).toBeNull();
+    expect(view(plus(t.maghrib, 5), { cards, riseOffer: true }).card).toEqual({
+      kind: 'fajr-rise',
+    });
+    const reflection = { prompt: true, settled: [] };
+    expect(view(plus(t.isha, 5), { cards, riseOffer: true, reflection }).card).toEqual({
+      kind: 'fajr-rise',
+    });
+    // Set aside for good (or turned on), the evening goes back to the reflection.
+    expect(view(plus(t.isha, 5), { cards, riseOffer: false, reflection }).card).toEqual({
+      kind: 'night-reflection',
+    });
+  });
+
+  it('never in the small hours, and only where the app offers it', () => {
+    const monday = addDays(sunday, 1);
+    expect(view(plus(timesOn(monday).fajr, -30), { cards, riseOffer: true }).card).toBeNull();
+    expect(
+      view(plus(t.maghrib, 5), { cards: ['night-reflection'], riseOffer: true }).card,
+    ).toBeNull();
+  });
+});

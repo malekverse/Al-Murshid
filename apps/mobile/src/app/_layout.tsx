@@ -11,7 +11,7 @@ import {
 } from '@expo-google-fonts/readex-pro';
 import { fonts } from '@murshid/tokens';
 import { useFonts } from 'expo-font';
-import { LocaleProvider, Stack } from 'expo-router';
+import { LocaleProvider, router, Stack, usePathname } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -30,6 +30,7 @@ import {
   wasOpened,
 } from '@/lib/reminders';
 import { resumeDownloads } from '@/lib/quran-files';
+import { handleRiseResponse, rescheduleRise, riseNative, riseSettings } from '@/lib/rise';
 import { useSettings } from '@/lib/settings';
 import { restoreTheme } from '@/lib/theme';
 import { syncWidgets } from '@/lib/widgets';
@@ -49,6 +50,7 @@ Notifications.setNotificationHandler({
 });
 
 function respond(response: Notifications.NotificationResponse) {
+  if (handleRiseResponse(response)) return;
   const result = handleReminderResponse(response);
   // Fajr and Isha open into the night theme (SPEC 6.1), for this visit only.
   if (result?.openInDark && response.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
@@ -103,6 +105,51 @@ function ReminderSync() {
 }
 
 /**
+ * Keeps Fajr Rise's week of alarms in step with Fajr (SPEC 5.10): on every return to the app and
+ * whenever its settings or a setting that moves the prayer times change. An alarm that rings while
+ * the app is open brings the ring screen up at once.
+ */
+function RiseSync() {
+  const s = useSettings();
+  const rise = riseSettings.useValue();
+  const pathname = usePathname();
+  const key = JSON.stringify([
+    s.onboarded,
+    s.location,
+    s.method,
+    s.asr,
+    s.highLatitude,
+    s.adjustments,
+    rise,
+  ]);
+
+  // Coming back while an alarm rings (or from its "Wake up" button on iOS) opens the ring screen.
+  useEffect(() => {
+    const appState = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') return;
+      void rescheduleRise();
+      if (riseNative?.ringing() && pathname !== '/rise') router.push('/rise');
+    });
+    return () => appState.remove();
+  }, [pathname]);
+
+  useEffect(() => {
+    const id = setTimeout(() => void rescheduleRise(), 600);
+    return () => clearTimeout(id);
+  }, [key]);
+
+  useEffect(() => {
+    if (!riseNative) return;
+    const sub = riseNative.addListener('onRing', () => {
+      if (pathname !== '/rise') router.push('/rise');
+    });
+    return () => sub.remove();
+  }, [pathname]);
+
+  return null;
+}
+
+/**
  * Writes the coming week for the home-screen widgets (SPEC 5.9): on every return to the app, and
  * whenever the language or a setting that moves the prayer times changes.
  */
@@ -148,6 +195,7 @@ function Root() {
       <LocaleProvider direction={direction}>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
         <ReminderSync />
+        <RiseSync />
         <WidgetSync />
         <ToastProvider>
           {/* One recitation for the whole app, so listening carries on across screens. */}
@@ -158,7 +206,10 @@ function Root() {
                   headerShown: false,
                   contentStyle: { backgroundColor: 'transparent' },
                 }}
-              />
+              >
+                {/* While the alarm rings, no swipe leads back to the app behind. */}
+                <Stack.Screen name="rise" options={{ gestureEnabled: false, animation: 'fade' }} />
+              </Stack>
             </SheetHost>
           </RecitationProvider>
         </ToastProvider>

@@ -9,6 +9,7 @@ import { forgetYouLock } from './app-lock';
 import { khatmahStore, readingPosition } from './quran';
 import { allReflectionRows, deleteReflectionKey, openReflections } from './reflections';
 import { rescheduleReminders } from './reminders';
+import { clearRise } from './rise';
 import { readSettings } from './settings';
 import { storage } from './storage';
 import { clearWidgets } from './widgets';
@@ -48,7 +49,8 @@ export async function exportEverything(dialogTitle: string, now = new Date()) {
 
 /**
  * Deletes everything this phone keeps for Al-Murshid: logs, bookmarks, reflections and their key,
- * the app lock, settings and the reminders they scheduled. Downloaded recitations stay.
+ * the app lock, settings, and the reminders and Fajr Rise alarms they scheduled. Downloaded
+ * recitations stay.
  */
 export async function deleteEverything() {
   db.transaction((tx) => {
@@ -62,5 +64,6 @@ export async function deleteEverything() {
   await forgetYouLock();
   storage.clearAll();
   await rescheduleReminders();
+  await clearRise();
   await clearWidgets();
 }

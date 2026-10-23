@@ -8,6 +8,7 @@ import arGallery from '../messages/ar/gallery.json';
 import arGlossary from '../messages/ar/glossary.json';
 import arJourney from '../messages/ar/journey.json';
 import arReflection from '../messages/ar/reflection.json';
+import arRise from '../messages/ar/rise.json';
 import arRemember from '../messages/ar/remember.json';
 import arWidgets from '../messages/ar/widgets.json';
 import arNotifications from '../messages/ar/notifications.json';
@@ -26,6 +27,7 @@ import enGallery from '../messages/en/gallery.json';
 import enGlossary from '../messages/en/glossary.json';
 import enJourney from '../messages/en/journey.json';
 import enReflection from '../messages/en/reflection.json';
+import enRise from '../messages/en/rise.json';
 import enRemember from '../messages/en/remember.json';
 import enWidgets from '../messages/en/widgets.json';
 import enNotifications from '../messages/en/notifications.json';
@@ -44,6 +46,7 @@ import frGallery from '../messages/fr/gallery.json';
 import frGlossary from '../messages/fr/glossary.json';
 import frJourney from '../messages/fr/journey.json';
 import frReflection from '../messages/fr/reflection.json';
+import frRise from '../messages/fr/rise.json';
 import frRemember from '../messages/fr/remember.json';
 import frWidgets from '../messages/fr/widgets.json';
 import frNotifications from '../messages/fr/notifications.json';
@@ -66,6 +69,7 @@ const en = {
   glossary: enGlossary,
   journey: enJourney,
   reflection: enReflection,
+  rise: enRise,
   remember: enRemember,
   widgets: enWidgets,
   notifications: enNotifications,
@@ -89,6 +93,7 @@ export const messages: Record<Locale, Messages> = {
     glossary: arGlossary,
     journey: arJourney,
     reflection: arReflection,
+    rise: arRise,
     remember: arRemember,
     widgets: arWidgets,
     notifications: arNotifications,
@@ -110,6 +115,7 @@ export const messages: Record<Locale, Messages> = {
     glossary: frGlossary,
     journey: frJourney,
     reflection: frReflection,
+    rise: frRise,
     remember: frRemember,
     widgets: frWidgets,
     notifications: frNotifications,

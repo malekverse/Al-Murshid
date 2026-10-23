@@ -1,5 +1,6 @@
 import { messages } from '@murshid/i18n';
 import type { PrayerName } from '@murshid/tokens';
+import { Alarm } from 'phosphor-react-native/src/icons/Alarm';
 import { Pressable, View } from 'react-native';
 import { useFormatter, useTranslations } from 'use-intl';
 import { useAppLocale } from '@/lib/locale';
@@ -16,6 +17,11 @@ export interface PrayerRowProps {
   jumuah?: boolean;
   /** The city's time zone; defaults to the device's. */
   timeZone?: string;
+  /**
+   * Fajr Rise's next ring (SPEC 5.10): a small alarm mark, with its time when it is not Fajr's own
+   * (tomorrow's Fajr can differ from today's by a minute, which would read as a mistake).
+   */
+  alarm?: { time: string; showTime: boolean };
   onPress?: () => void;
 }
 
@@ -29,6 +35,7 @@ export function PrayerRow({
   state = 'upcoming',
   jumuah = false,
   timeZone,
+  alarm,
   onPress,
 }: PrayerRowProps) {
   const t = useTranslations();
@@ -42,11 +49,12 @@ export function PrayerRow({
   const timeText = format.dateTime(time, { hour: 'numeric', minute: '2-digit', timeZone });
   const marker = prayer === 'sunrise';
   const current = state === 'current' && !marker;
-  const label = t('components.prayer.row', {
-    name,
-    time: timeText,
-    state: marker ? 'other' : state,
-  });
+  const label = [
+    t('components.prayer.row', { name, time: timeText, state: marker ? 'other' : state }),
+    alarm ? t('rise.row', { time: alarm.time }) : null,
+  ]
+    .filter(Boolean)
+    .join(', ');
 
   const body = (
     <>
@@ -65,6 +73,16 @@ export function PrayerRow({
           </Text>
         )}
       </View>
+      {alarm && (
+        <View className="flex-row items-center gap-1">
+          <Alarm size={14} color={color.lanternInk} />
+          {alarm.showTime && (
+            <Text role="caption" tone="lantern">
+              {alarm.time}
+            </Text>
+          )}
+        </View>
+      )}
       <Text role={marker ? 'callout' : 'body'} tone={marker ? 'muted' : 'default'}>
         {timeText}
       </Text>

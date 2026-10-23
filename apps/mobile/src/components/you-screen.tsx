@@ -37,6 +37,7 @@ import { Segmented } from './ui/segmented';
 import { Sheet } from './ui/sheet';
 import { Text } from './ui/text';
 import { Toggle } from './ui/toggle';
+import { RiseRow } from './rise/rise-row';
 import { JourneySection } from './you/journey-section';
 import { NightReflection } from './you/night-reflection';
 import { YourSky } from './you/your-sky';
@@ -235,6 +236,9 @@ export function YouScreen({ focus = null }: { focus?: string | null }) {
                 onPress={() => setReminderFor(p)}
               />
             ))}
+          </ListGroup>
+          <ListGroup>
+            <RiseRow />
           </ListGroup>
         </Section>
 

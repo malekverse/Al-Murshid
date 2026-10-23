@@ -4,7 +4,7 @@ name: iOS build
 # development machine is Windows and EAS device builds need a paid Apple Developer membership. One job
 # makes an unsigned .ipa (Release, JavaScript bundled in) to sideload with a free Apple ID; the other
 # runs the app in the iOS Simulator with Maestro and keeps screenshots in Arabic and English, light
-# and dark, and of the Face ID lock.
+# and dark, of the Face ID lock, and of Fajr Rise ringing through AlarmKit.
 
 on:
   workflow_dispatch:
@@ -176,6 +176,11 @@ jobs:
           maestro test lock-check.yaml
           faces lock-locked &
           maestro test lock-open.yaml
+
+      - name: Fajr Rise
+        continue-on-error: true
+        working-directory: apps/mobile/.maestro
+        run: maestro test rise.yaml
 
       - uses: actions/upload-artifact@v7
         if: always()

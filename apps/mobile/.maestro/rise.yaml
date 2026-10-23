@@ -1,0 +1,53 @@
+# Fajr Rise on iOS (SPEC 5.10): setup, AlarmKit's permission, the challenge tried, then a test
+# alarm ringing through AlarmKit and its "Wake up" button opening the ring screen. Runs after the
+# tours and the lock, so the app is set up, in English.
+appId: com.malekverse.almurshid
+name: Fajr Rise
+---
+- launchApp
+- tapOn: You
+- scrollUntilVisible:
+    element: 'Fajr Rise.*'
+    direction: DOWN
+    timeout: 90000
+    centerElement: true
+- tapOn: 'Fajr Rise.*'
+- extendedWaitUntil:
+    visible: Wake me for Fajr
+    timeout: 20000
+- takeScreenshot: rise-setup-off
+- tapOn:
+    id: rise-enabled
+# AlarmKit asks once.
+- tapOn:
+    text: Allow
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: rise-setup-on
+- scrollUntilVisible:
+    element: Try it now
+    direction: DOWN
+    timeout: 60000
+    centerElement: true
+- tapOn: Try it now
+- extendedWaitUntil:
+    visible: 'Solve to stop the alarm.*'
+    timeout: 20000
+- takeScreenshot: rise-try
+- tapOn: Close
+- scrollUntilVisible:
+    element: Test the alarm in 10 seconds
+    direction: DOWN
+    timeout: 60000
+    centerElement: true
+- tapOn: Test the alarm in 10 seconds
+- pressKey: Home
+- extendedWaitUntil:
+    visible: Wake up
+    timeout: 40000
+- takeScreenshot: rise-alarm
+- tapOn: Wake up
+- extendedWaitUntil:
+    visible: 'Solve to stop the alarm.*'
+    timeout: 30000
+- takeScreenshot: rise-ring

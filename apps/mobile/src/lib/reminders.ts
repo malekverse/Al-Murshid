@@ -20,6 +20,7 @@ import { AndroidImportance, AndroidNotificationVisibility } from 'expo-notificat
 import { Platform } from 'react-native';
 import { createTranslator } from 'use-intl';
 import { recentLogs, setPrayerLogged } from './prayer-logs';
+import { isRiseNotification } from './rise-ids';
 import { readSettings, updateSettings } from './settings';
 import { keys, storage } from './storage';
 
@@ -41,7 +42,8 @@ function locale(): Locale {
   return isLocale(stored) ? stored : matchLocale(getLocales().map((l) => l.languageTag));
 }
 
-function translator() {
+/** Words for notifications, in the app's language, outside React. */
+export function translator() {
   const l = locale();
   return createTranslator({
     locale: intlLocale(l, getLocales()[0]?.regionCode),
@@ -97,7 +99,13 @@ export async function rescheduleReminders(now = new Date()) {
   const settings = readSettings();
   const place = placeOf(settings);
   const permission = await Notifications.getPermissionsAsync();
-  await Notifications.cancelAllScheduledNotificationsAsync();
+  // Fajr Rise's "Still up?" (lib/rise.ts) is not a reminder: it stays.
+  const pending = await Notifications.getAllScheduledNotificationsAsync();
+  await Promise.all(
+    pending
+      .filter((n) => !isRiseNotification(n.identifier))
+      .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)),
+  );
   if (!place || !settings.onboarded || !permission.granted) return;
 
   const t = translator();

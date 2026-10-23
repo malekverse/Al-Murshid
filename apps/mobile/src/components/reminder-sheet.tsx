@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
 import { useTranslations } from 'use-intl';
 import { ChoiceList } from './choice-list';
+import { RiseRow } from './rise/rise-row';
+import { ListGroup } from './ui/list-row';
 import { Button } from './ui/button';
 import { Sheet } from './ui/sheet';
 import { Text } from './ui/text';
@@ -135,6 +137,11 @@ export function ReminderSheet({ prayer, onClose }: { prayer: Prayer | null; onCl
                 }))}
               />
             </View>
+          )}
+          {prayer === 'fajr' && (
+            <ListGroup>
+              <RiseRow onOpen={onClose} />
+            </ListGroup>
           )}
         </View>
       )}

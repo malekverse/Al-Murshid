@@ -1,0 +1,20 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.malekverse.almurshid'
+version = '1.0.0'
+
+android {
+  namespace "expo.modules.fajrrise"
+  defaultConfig {
+    versionCode 1
+    versionName "1.0.0"
+  }
+}
+
+dependencies {
+  // The same version expo-notifications uses, so the app resolves one.
+  implementation 'androidx.core:core:1.17.0'
+}

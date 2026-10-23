@@ -1,0 +1,170 @@
+{
+  "title": "Fajr Rise",
+  "intro": "An alarm that follows Fajr every day, and stops once you’re really up.",
+  "enabled": "Wake me for Fajr",
+  "next": {
+    "today": "Rings today at {time}",
+    "tomorrow": "Rings tomorrow at {time}",
+    "day": "Rings {day} at {time}",
+    "none": "No alarm in the coming week"
+  },
+  "when": {
+    "label": "When",
+    "anchors": {
+      "fajr": "At Fajr",
+      "before-fajr": "Before Fajr",
+      "before-sunrise": "Before sunrise"
+    },
+    "beforeFajr": "{count, plural, one {# minute before Fajr} other {# minutes before Fajr}}",
+    "beforeSunrise": "{count, plural, one {# minute before sunrise} other {# minutes before sunrise}}",
+    "fewer": "Fewer minutes",
+    "more": "More minutes",
+    "sunriseNote": "Never earlier than Fajr."
+  },
+  "days": {
+    "label": "Days"
+  },
+  "challenge": {
+    "label": "To stop it",
+    "kinds": {
+      "mind": "A small puzzle",
+      "steps": "Walk",
+      "shake": "Shake the phone",
+      "spot": "Scan your spot"
+    },
+    "notes": {
+      "mind": "Sums, or stars to tap in order",
+      "steps": "{count, plural, one {# step} other {# steps}} away from your bed",
+      "shake": "For when getting up is hard",
+      "spot": "A code you keep away from your bed"
+    },
+    "try": "Try it now"
+  },
+  "mind": {
+    "game": "Puzzle",
+    "sums": "Sums",
+    "stars": "Stars",
+    "level": "Difficulty",
+    "levels": {
+      "1": "Easy",
+      "2": "Medium",
+      "3": "Hard"
+    }
+  },
+  "steps": {
+    "label": "Steps",
+    "fewer": "Fewer steps",
+    "more": "More steps"
+  },
+  "spot": {
+    "missing": "Scan a barcode or QR code you’ll keep away from your bed, like a tube of toothpaste in the bathroom.",
+    "saved": "Your spot’s code is saved.",
+    "scan": "Scan a code",
+    "rescan": "Scan another code",
+    "scanTitle": "Scan your spot",
+    "scanHint": "Hold the code inside the frame.",
+    "torch": "Light",
+    "camera": "Fajr Rise needs the camera to read the code. Nothing is recorded.",
+    "allowCamera": "Allow the camera",
+    "openSettings": "Open settings"
+  },
+  "sound": {
+    "label": "Sound",
+    "alarm": "Alarm sound",
+    "soft": "Soft tone"
+  },
+  "stillUp": {
+    "label": "Ask “Still up?”",
+    "note": "Five minutes later. If it goes unanswered, the alarm rings again.",
+    "title": "Still up?",
+    "body": "Tap to say you’re up.",
+    "action": "I’m up"
+  },
+  "snooze": {
+    "label": "Allow one snooze",
+    "note": "Five minutes, once a morning.",
+    "action": "Snooze 5 minutes"
+  },
+  "test": {
+    "action": "Test the alarm in 10 seconds",
+    "done": "Lock your phone. It rings in 10 seconds."
+  },
+  "permissions": {
+    "notifications": "Turn on notifications so the alarm can ring.",
+    "notificationsAction": "Turn on notifications",
+    "exact": "The alarm may ring a few minutes late on this phone. Allow exact timing?",
+    "exactAction": "Allow exact timing",
+    "fullScreen": "Allow the alarm to show over the lock screen when it rings.",
+    "fullScreenAction": "Allow on the lock screen",
+    "unavailable": "This version of the app can’t ring alarms on this phone yet.",
+    "alarms": "Allow Al-Murshid to ring alarms, so Fajr Rise sounds even in silent mode.",
+    "alarmsAction": "Allow alarms",
+    "alarmsDenied": "Alarms are off for Al-Murshid. Turn them on in Settings.",
+    "ios": "Fajr Rise needs iOS 26 or later on this iPhone.",
+    "city": "Fajr Rise needs your city to know when Fajr is.",
+    "cityAction": "Choose a city"
+  },
+  "privacy": "The camera and motion sensors stay on your phone. Nothing is recorded or sent.",
+  "mercy": "You can always turn it off: hold Turn off for 10 seconds.",
+  "ring": {
+    "channel": "Fajr Rise",
+    "notificationTitle": "Fajr Rise",
+    "notificationBody": "It’s time to wake for Fajr.",
+    "off": "Turn off",
+    "offHint": "Hold for 10 seconds",
+    "holding": "Keep holding",
+    "up": "You’re up.",
+    "fajrUntil": "Fajr is here until sunrise at {time}.",
+    "fajrAt": "Fajr is at {time}.",
+    "stillUpSoon": "In five minutes, we’ll ask if you’re still up.",
+    "openToday": "Open Today",
+    "offDone": "Alarm off.",
+    "notRinging": "No alarm is ringing now.",
+    "trying": "Trying the challenge",
+    "close": "Close",
+    "alarmStop": "Silence",
+    "alarmOpen": "Wake up"
+  },
+  "sums": {
+    "prompt": "Solve to stop the alarm",
+    "progress": "{done} of {total}",
+    "answer": "Your answer",
+    "check": "Check",
+    "delete": "Delete",
+    "wrong": "Not quite. Try again."
+  },
+  "stars": {
+    "watch": "Watch the stars light up",
+    "repeat": "Now tap them in the same order",
+    "slip": "Watch once more",
+    "round": "{done} of {total}",
+    "star": "Star {number}"
+  },
+  "walk": {
+    "prompt": "Walk away from your bed",
+    "count": "{count} of {total} steps",
+    "unavailable": "This phone can’t count steps.",
+    "permission": "Fajr Rise needs motion access to count your steps.",
+    "allow": "Allow motion access",
+    "useSums": "Solve sums instead"
+  },
+  "shake": {
+    "prompt": "Shake the phone firmly",
+    "count": "{count} of {total}"
+  },
+  "scan": {
+    "prompt": "Go to your spot and scan its code",
+    "wrong": "That’s a different code. Find the one you saved."
+  },
+  "entry": {
+    "off": "Off",
+    "on": "On · {time}"
+  },
+  "row": "Fajr Rise at {time}",
+  "offer": {
+    "title": "Wake for Fajr?",
+    "body": "Fajr Rise follows Fajr every day, and keeps ringing until you’re really up.",
+    "action": "Set it up",
+    "notNow": "Not now"
+  }
+}

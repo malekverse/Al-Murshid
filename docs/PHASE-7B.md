@@ -8,6 +8,25 @@ It starts when the owner says so. Phase 7's gate is still open on two items that
 outside the code: the iOS widgets and Face ID on a real iPhone (with the Apple membership, Phase
 9), and the reviewed content.
 
+## Status (2026-10-24)
+
+Built: the plan in core, the Android engine, the iOS AlarmKit engine (built and checked in the
+`iOS build` workflow, `rise.yaml`), setup, the ring screen, the sums and the star order, steps,
+shaking, scanning "your spot", "Still up?", one snooze, the escape, the alarm mark on Today's Fajr
+row, the evening offer card, and entry points in Fajr's reminder sheet and You.
+
+Verified on Android (emulator, release build, English and Arabic): the alarm rings from a dark,
+locked screen through the alarm clock and its foreground service, shows the ring screen over the
+lock screen, stops after the three sums ("You're up.") or after holding "Turn off" for 10 seconds,
+and the service ends; the star order plays; setup shows the next ring and the permissions it needs.
+
+Still open:
+
+- **Move** (squats): the pose prototype and its go or no-go in Fajr's dim light.
+- **Aloud**: waits for the reviewed dua for waking.
+- **The printable "your spot" card**: any barcode works meanwhile.
+- **A real iPhone** (Phase 9) and a real Android phone for a week of mornings (the gate).
+
 ## The morning, step by step
 
 1. **Setup** (Fajr's row on Today, Settings → Reminders, or the Tools hub). Choose the time: at
@@ -67,9 +86,12 @@ A local Expo module, `apps/mobile/modules/fajr-rise` (Swift and Kotlin), like `p
 
 - `AlarmManager` schedules each alarm and backup with a fixed date; `NSAlarmKitUsageDescription`
   goes into Info.plist through the module's config plugin, and authorization is asked in setup.
-- The alert shows the system stop button (always present) and a custom button whose App Intent
-  opens the app at `/rise` (`openAppWhenRun`). Stopping from the lock screen silences that ring
-  only; the next backup rings two minutes later.
+- The alert shows the system stop button (always present) and a "Wake up" button whose App Intent
+  opens the app (`openAppWhenRun`), which then shows the ring screen. Stopping from the lock screen
+  silences that ring only; the next backup rings two minutes later.
+- iOS finds App Intents only in the app's own code, so the alarms and the intent
+  (`modules/fajr-rise/ios-app/FajrRiseAlarms.swift`) are compiled into the app target by the
+  module's config plugin; the Expo module reaches them by class name.
 - AlarmKit sounds come from the app bundle, so the adhan recordings and tones ship trimmed for it.
 - The alarm presentation uses the widget extension `expo-widgets` already adds; check whether
   AlarmKit needs its Live Activity there for plain alarms, and add it if so.
@@ -79,9 +101,10 @@ A local Expo module, `apps/mobile/modules/fajr-rise` (Swift and Kotlin), like `p
 
 ### iOS before 26
 
-Time-sensitive local notifications (sound at most 30 seconds) at the alarm time and each backup,
-opening `/rise`. They cannot ring through silent mode, and setup says so plainly. No critical
-alerts: Apple grants them to health and safety apps only.
+Not offered: setup says Fajr Rise needs iOS 26. Notifications cannot ring through silent mode and
+their sound stops after 30 seconds, so a fallback would be an alarm in name only, and its
+notifications would compete with the reminders for iOS's 64 pending ones. No critical alerts
+either: Apple grants them to health and safety apps only.
 
 ### Android
 

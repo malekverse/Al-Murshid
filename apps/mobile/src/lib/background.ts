@@ -2,6 +2,7 @@ import * as BackgroundTask from 'expo-background-task';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import { handleReminderResponse, rescheduleReminders } from './reminders';
+import { handleRiseResponse, rescheduleRise } from './rise';
 import { syncWidgets } from './widgets';
 
 // Background work, defined at module scope so it exists when the OS wakes the app (the app's
@@ -40,7 +41,10 @@ function withData(
 TaskManager.defineTask<Notifications.NotificationTaskPayload>(
   NOTIFICATION_TASK,
   async ({ data }) => {
-    if (data && 'actionIdentifier' in data) handleReminderResponse(withData(data));
+    if (data && 'actionIdentifier' in data) {
+      const response = withData(data);
+      if (!handleRiseResponse(response)) handleReminderResponse(response);
+    }
     return Notifications.BackgroundNotificationTaskResult.NoData;
   },
 );
@@ -48,6 +52,7 @@ TaskManager.defineTask<Notifications.NotificationTaskPayload>(
 TaskManager.defineTask(REFRESH_TASK, async () => {
   try {
     await rescheduleReminders();
+    await rescheduleRise();
     await syncWidgets();
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch {

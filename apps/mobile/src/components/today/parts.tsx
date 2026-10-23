@@ -7,9 +7,11 @@ import {
 } from '@murshid/core';
 import type { Settings } from '@murshid/data';
 import { router } from 'expo-router';
+import { Alarm } from 'phosphor-react-native/src/icons/Alarm';
 import { CalendarBlank } from 'phosphor-react-native/src/icons/CalendarBlank';
 import { Compass } from 'phosphor-react-native/src/icons/Compass';
 import { PencilSimpleLine } from 'phosphor-react-native/src/icons/PencilSimpleLine';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import { useTranslations } from 'use-intl';
 import { AyahText } from '@/components/ui/ayah-text';
@@ -25,7 +27,9 @@ import { Toggle } from '@/components/ui/toggle';
 import { usePrayerName, useStepLabel, useTimeFormat } from '@/lib/format';
 import type { ReaderPlace } from '@/components/quran/common';
 import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
+import { dismissRiseOffer, markRiseOfferShown, nextAlarm, riseSettings } from '@/lib/rise';
 import { useColors } from '@/lib/theme';
+import { useNow } from '@/lib/use-now';
 
 export interface WelcomeVerse {
   text: string;
@@ -117,7 +121,40 @@ export function ContextCard({
   }
 
   if (card.kind === 'night-reflection') return <ReflectionCard onSetAside={onDismiss} />;
+  if (card.kind === 'fajr-rise') return <RiseOfferCard onSetAside={onDismiss} />;
   return null;
+}
+
+/** Fajr Rise's offer, in the evenings of the first week (SPEC 5.10); set aside, it never returns. */
+function RiseOfferCard({ onSetAside }: { onSetAside: () => void }) {
+  const t = useTranslations('rise.offer');
+  const color = useColors();
+  useEffect(() => markRiseOfferShown(), []);
+  return (
+    <Card className="gap-4 p-6">
+      <View className="flex-row items-center gap-3">
+        <Alarm size={24} color={color.lanternInk} />
+        <Text role="headline" accessibilityRole="header" className="flex-1">
+          {t('title')}
+        </Text>
+      </View>
+      <Text role="body" tone="muted">
+        {t('body')}
+      </Text>
+      <View className="flex-row flex-wrap gap-3">
+        <Button onPress={() => router.push('/fajr-rise')}>{t('action')}</Button>
+        <Button
+          variant="ghost"
+          onPress={() => {
+            dismissRiseOffer();
+            onSetAside();
+          }}
+        >
+          {t('notNow')}
+        </Button>
+      </View>
+    </Card>
+  );
 }
 
 /** After Isha (SPEC 5.7): an invitation to You's night reflection, set aside for the night. */
@@ -175,6 +212,10 @@ export function PrayerList({
   onPressRow?: (prayer: Prayer) => void;
 }) {
   const t = useTranslations('today.list');
+  const time = useTimeFormat(timeZone);
+  const rise = riseSettings.useValue();
+  const now = useNow(60_000);
+  const alarm = rise.enabled ? nextAlarm(now) : null;
   return (
     <View className="gap-3">
       <Text role="headline" accessibilityRole="header" className="px-2">
@@ -189,6 +230,11 @@ export function PrayerList({
             state={rowState[row.status]}
             jumuah={row.jumuah}
             timeZone={timeZone}
+            alarm={
+              row.name === 'fajr' && alarm
+                ? { time: time(alarm.at), showTime: rise.anchor !== 'fajr' }
+                : undefined
+            }
             onPress={
               onPressRow && row.name !== 'sunrise'
                 ? () => onPressRow(row.name as Prayer)

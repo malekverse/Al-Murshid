@@ -1,0 +1,170 @@
+{
+  "title": "Réveil du Fajr",
+  "intro": "Une alarme qui suit le Fajr chaque jour, et ne s’arrête que lorsque vous êtes vraiment réveillé.",
+  "enabled": "Me réveiller pour le Fajr",
+  "next": {
+    "today": "Sonne aujourd’hui à {time}",
+    "tomorrow": "Sonne demain à {time}",
+    "day": "Sonne {day} à {time}",
+    "none": "Aucune alarme dans les sept jours à venir"
+  },
+  "when": {
+    "label": "Quand",
+    "anchors": {
+      "fajr": "Au Fajr",
+      "before-fajr": "Avant le Fajr",
+      "before-sunrise": "Avant le lever"
+    },
+    "beforeFajr": "{count, plural, one {# minute avant le Fajr} many {# minutes avant le Fajr} other {# minutes avant le Fajr}}",
+    "beforeSunrise": "{count, plural, one {# minute avant le lever du soleil} many {# minutes avant le lever du soleil} other {# minutes avant le lever du soleil}}",
+    "fewer": "Moins de minutes",
+    "more": "Plus de minutes",
+    "sunriseNote": "Jamais avant le Fajr."
+  },
+  "days": {
+    "label": "Jours"
+  },
+  "challenge": {
+    "label": "Pour l’arrêter",
+    "kinds": {
+      "mind": "Une petite énigme",
+      "steps": "Marcher",
+      "shake": "Secouer le téléphone",
+      "spot": "Scanner votre repère"
+    },
+    "notes": {
+      "mind": "Des calculs, ou des étoiles à toucher dans l’ordre",
+      "steps": "{count, plural, one {# pas} many {# pas} other {# pas}} loin de votre lit",
+      "shake": "Pour les matins où se lever est difficile",
+      "spot": "Un code que vous gardez loin de votre lit"
+    },
+    "try": "Essayer maintenant"
+  },
+  "mind": {
+    "game": "Énigme",
+    "sums": "Calculs",
+    "stars": "Étoiles",
+    "level": "Difficulté",
+    "levels": {
+      "1": "Facile",
+      "2": "Moyen",
+      "3": "Difficile"
+    }
+  },
+  "steps": {
+    "label": "Pas",
+    "fewer": "Moins de pas",
+    "more": "Plus de pas"
+  },
+  "spot": {
+    "missing": "Scannez un code-barres ou un QR code que vous garderez loin de votre lit, comme un tube de dentifrice dans la salle de bain.",
+    "saved": "Le code de votre repère est enregistré.",
+    "scan": "Scanner un code",
+    "rescan": "Scanner un autre code",
+    "scanTitle": "Scanner votre repère",
+    "scanHint": "Placez le code dans le cadre.",
+    "torch": "Lampe",
+    "camera": "Le Réveil du Fajr a besoin de l’appareil photo pour lire le code. Rien n’est enregistré.",
+    "allowCamera": "Autoriser l’appareil photo",
+    "openSettings": "Ouvrir les réglages"
+  },
+  "sound": {
+    "label": "Son",
+    "alarm": "Son d’alarme",
+    "soft": "Tonalité douce"
+  },
+  "stillUp": {
+    "label": "Demander « Toujours debout ? »",
+    "note": "Cinq minutes après. Sans réponse, l’alarme sonne de nouveau.",
+    "title": "Toujours debout ?",
+    "body": "Touchez pour dire que vous êtes réveillé.",
+    "action": "Je suis debout"
+  },
+  "snooze": {
+    "label": "Permettre un rappel",
+    "note": "Cinq minutes, une fois par matin.",
+    "action": "Rappel dans 5 minutes"
+  },
+  "test": {
+    "action": "Tester l’alarme dans 10 secondes",
+    "done": "Verrouillez votre téléphone. Il sonne dans 10 secondes."
+  },
+  "permissions": {
+    "notifications": "Activez les notifications pour que l’alarme puisse sonner.",
+    "notificationsAction": "Activer les notifications",
+    "exact": "L’alarme peut sonner avec quelques minutes de retard sur ce téléphone. Autoriser l’heure exacte ?",
+    "exactAction": "Autoriser l’heure exacte",
+    "fullScreen": "Autorisez l’alarme à s’afficher sur l’écran de verrouillage quand elle sonne.",
+    "fullScreenAction": "Autoriser sur l’écran de verrouillage",
+    "unavailable": "Cette version de l’application ne peut pas encore sonner sur ce téléphone.",
+    "alarms": "Autorisez Al-Murshid à sonner des alarmes, pour que le Réveil du Fajr sonne même en mode silencieux.",
+    "alarmsAction": "Autoriser les alarmes",
+    "alarmsDenied": "Les alarmes sont désactivées pour Al-Murshid. Activez-les dans les Réglages.",
+    "ios": "Le Réveil du Fajr nécessite iOS 26 ou une version ultérieure sur cet iPhone.",
+    "city": "Le Réveil du Fajr a besoin de votre ville pour connaître l’heure du Fajr.",
+    "cityAction": "Choisir une ville"
+  },
+  "privacy": "L’appareil photo et les capteurs de mouvement restent sur votre téléphone. Rien n’est enregistré ni envoyé.",
+  "mercy": "Vous pouvez toujours l’arrêter : maintenez Arrêter pendant 10 secondes.",
+  "ring": {
+    "channel": "Réveil du Fajr",
+    "notificationTitle": "Réveil du Fajr",
+    "notificationBody": "C’est l’heure de se réveiller pour le Fajr.",
+    "off": "Arrêter",
+    "offHint": "Maintenir 10 secondes",
+    "holding": "Continuez",
+    "up": "Vous êtes debout.",
+    "fajrUntil": "Le Fajr dure jusqu’au lever du soleil, à {time}.",
+    "fajrAt": "Le Fajr est à {time}.",
+    "stillUpSoon": "Dans cinq minutes, nous vous demanderons si vous êtes toujours debout.",
+    "openToday": "Ouvrir Aujourd’hui",
+    "offDone": "Alarme arrêtée.",
+    "notRinging": "Aucune alarme ne sonne en ce moment.",
+    "trying": "Essai du défi",
+    "close": "Fermer",
+    "alarmStop": "Silence",
+    "alarmOpen": "Me lever"
+  },
+  "sums": {
+    "prompt": "Résolvez pour arrêter l’alarme",
+    "progress": "{done} sur {total}",
+    "answer": "Votre réponse",
+    "check": "Valider",
+    "delete": "Effacer",
+    "wrong": "Pas tout à fait. Réessayez."
+  },
+  "stars": {
+    "watch": "Regardez les étoiles s’allumer",
+    "repeat": "Touchez-les maintenant dans le même ordre",
+    "slip": "Regardez encore une fois",
+    "round": "{done} sur {total}",
+    "star": "Étoile {number}"
+  },
+  "walk": {
+    "prompt": "Éloignez-vous de votre lit",
+    "count": "{count} pas sur {total}",
+    "unavailable": "Ce téléphone ne compte pas les pas.",
+    "permission": "Le Réveil du Fajr a besoin de l’accès aux mouvements pour compter vos pas.",
+    "allow": "Autoriser les mouvements",
+    "useSums": "Faire des calculs à la place"
+  },
+  "shake": {
+    "prompt": "Secouez fermement le téléphone",
+    "count": "{count} sur {total}"
+  },
+  "scan": {
+    "prompt": "Allez à votre repère et scannez son code",
+    "wrong": "Ce n’est pas le même code. Cherchez celui que vous avez enregistré."
+  },
+  "entry": {
+    "off": "Désactivé",
+    "on": "Activé · {time}"
+  },
+  "row": "Réveil du Fajr à {time}",
+  "offer": {
+    "title": "Se réveiller pour le Fajr ?",
+    "body": "Le Réveil du Fajr suit l’heure du Fajr chaque jour, et sonne jusqu’à ce que vous soyez vraiment debout.",
+    "action": "Le régler",
+    "notNow": "Pas maintenant"
+  }
+}

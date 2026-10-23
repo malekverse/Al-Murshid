@@ -11,6 +11,7 @@ import {
 } from '@murshid/data';
 import { useRecentLogs } from './prayer-logs';
 import { useWrittenNights } from './reflections';
+import { useRiseOffer } from './rise';
 import { useSettings } from './settings';
 
 /** Cards whose destination exists on mobile in this build (later phases add the rest). */
@@ -20,6 +21,7 @@ const mobileCards: CardKind[] = [
   'jumuah',
   'dhul-hijjah',
   'step-offer',
+  'fajr-rise',
   'night-reflection',
 ];
 
@@ -36,6 +38,7 @@ export function useToday(now: Date): TodayState | null | undefined {
   const date = place ? civilDate(now, place.timeZone) : null;
   const logs = useRecentLogs(date);
   const written = useWrittenNights();
+  const riseOffer = useRiseOffer(now);
 
   if (!place || !date) return null;
   if (!logs || !written) return undefined;
@@ -54,6 +57,7 @@ export function useToday(now: Date): TodayState | null | undefined {
       cards: mobileCards,
       ramadanMode: settings.ramadanMode,
       reflection: { prompt: settings.reflectionPrompt, settled: settledNights(settings, written) },
+      riseOffer,
     }),
   };
 }

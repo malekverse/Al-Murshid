@@ -62,6 +62,8 @@ export const cardKinds = [
   'morning-adhkar',
   'evening-adhkar',
   'step-offer',
+  // Fajr Rise's offer (SPEC 5.10), in the evenings of the first week: where one sets an alarm.
+  'fajr-rise',
   // Not ranked by SPEC 5.1; after Isha it comes last, so a step offer is never pushed aside.
   'night-reflection',
 ] as const;
@@ -98,6 +100,8 @@ export interface TodayInput {
    * written or set aside ("2026-10-18").
    */
   reflection?: { prompt: boolean; settled: readonly string[] };
+  /** Whether Fajr Rise may still be offered (off, never set aside, within its first week). */
+  riseOffer?: boolean;
 }
 
 export interface TodayView {
@@ -182,6 +186,9 @@ function chooseCard(
       const step = stepToOffer({ ...focus, today: date, days });
       if (step) return { kind: 'step-offer', track: focus.track, step };
     }
+  }
+  if (allowed('fajr-rise') && input.riseOffer && t >= times.maghrib.getTime()) {
+    return { kind: 'fajr-rise' };
   }
   const reflection = input.reflection;
   if (
