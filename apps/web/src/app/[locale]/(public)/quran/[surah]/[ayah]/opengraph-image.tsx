@@ -13,7 +13,9 @@ export { size } from '@/lib/og/card';
 export const contentType = 'image/png';
 
 // An ayah's share image (Phase 6): the ayah as published when it fits, with its reference.
-export default async function Image({ params }: PageProps<'/[locale]/quran/[surah]/[ayah]'>) {
+export default async function Image({
+  params,
+}: Pick<PageProps<'/[locale]/quran/[surah]/[ayah]'>, 'params'>) {
   const { locale, surah, ayah } = await params;
   const s = Number(surah);
   const a = Number(ayah);

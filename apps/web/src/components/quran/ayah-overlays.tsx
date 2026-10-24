@@ -4,6 +4,7 @@ import {
   BookmarkSimple,
   BookOpenText,
   Copy,
+  ImageSquare,
   Play,
   Repeat,
   ShareNetwork,
@@ -135,7 +136,7 @@ export interface ActionsTarget {
 
 /**
  * What an ayah offers (SPEC 5.5, Phase 5b): play from here, repeat a passage, word by word, a
- * bookmark for the ayah or a passage, copy, share.
+ * bookmark for the ayah or a passage, copy, share as text or as an image (SPEC 5.11).
  */
 export function AyahActions({
   target,
@@ -210,6 +211,34 @@ export function AyahActions({
     }
     onClose();
   };
+  // The image is the ayah's own share card (the page's Open Graph image), as a file where the
+  // browser can share files, downloaded where it cannot.
+  const shareImage = async () => {
+    onClose();
+    const name = `al-murshid-${target.surah}-${target.ayah}.png`;
+    try {
+      const page = new URL(shareUrl(target.surah, target.ayah)).pathname;
+      const res = await fetch(`${page}/card.png`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const file = new File([await res.blob()], name, { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: target.title });
+          return;
+        } catch (e) {
+          // Dismissed: done. Refused (the tap's permission ran out while fetching): download.
+          if (!(e instanceof DOMException) || e.name !== 'NotAllowedError') return;
+        }
+      }
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(file);
+      link.download = name;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 60_000);
+    } catch {
+      toast(t('actions.imageFailed'));
+    }
+  };
 
   return (
     <>
@@ -240,6 +269,7 @@ export function AyahActions({
             <ListRow icon={Translate} title={t('actions.words')} onPress={() => setWords(true)} />
             <ListRow icon={Copy} title={t('actions.copy')} onPress={copy} />
             <ListRow icon={ShareNetwork} title={t('actions.share')} onPress={share} />
+            <ListRow icon={ImageSquare} title={t('actions.shareImage')} onPress={shareImage} />
           </ListGroup>
           <section className="flex flex-col gap-3">
             <Text as="h3" role="callout" tone="muted">

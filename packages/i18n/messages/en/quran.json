@@ -95,6 +95,8 @@
     "copy": "Copy",
     "copied": "Copied",
     "share": "Share",
+    "shareImage": "Share as an image",
+    "imageFailed": "The image could not be made. Try again.",
     "close": "Close",
     "tafsir": "Tafsir"
   },

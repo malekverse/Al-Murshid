@@ -23,9 +23,11 @@ tests and screenshots.
    - Isha: the night reflection, and the privacy promise in plain words.
    - Then the four destinations, the three languages, and the way in: open the app on the web
      now; the phone apps follow their store review.
+
    A Server Component page with small client islands, under the section 11 budgets; the sun's
    path follows the scroll with CSS scroll-driven animation where supported, and each section
    keeps its own sky where not. Reduce Motion turns movement into fades.
+
 2. **The mark and the icons**, made in code (`design/scripts`): one eight-pointed star from the
    lattice rising over the horizon arc; the app icon over the Fajr gradient, the Android adaptive
    and monochrome layers, the splash mark, the favicon and PWA icons, the notification icon; the
@@ -46,3 +48,12 @@ tests and screenshots.
 SPEC 12, Phase 7c: the icon reads at 29 pt on light, dark and tinted home screens; the landing
 page meets the section 11 budgets in `ar`, `en` and `fr`; share cards keep Arabic joined with its
 marks on both platforms.
+
+## Status
+
+- Steps 1–3 built and verified on web and the Android emulator (step 3), in `ar`, `en` and `fr`,
+  light and dark. The landing page holds the section 11 script budget by reading prayer times
+  computed at build time (DECISIONS, "The landing page").
+- Step 4, the ayah card: built on both platforms. The Names, dhikr and duas wait for their
+  reviewed text; seasonal greeting cards follow with step 6's illustrations.
+- Open: alternate icons (no free module chosen yet), steps 5–7.

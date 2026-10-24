@@ -1,10 +1,12 @@
+import { sunPosition } from '@murshid/core';
 import type { Word } from '@murshid/content/quran';
 import { bookmarkColors, bookmarkEnd, type QuranBookmark } from '@murshid/data';
-import { space, typeScale } from '@murshid/tokens';
+import { periodSun, space, typeScale } from '@murshid/tokens';
 import * as Clipboard from 'expo-clipboard';
 import { BookmarkSimple } from 'phosphor-react-native/src/icons/BookmarkSimple';
 import { BookOpenText } from 'phosphor-react-native/src/icons/BookOpenText';
 import { Copy } from 'phosphor-react-native/src/icons/Copy';
+import { ImageSquare } from 'phosphor-react-native/src/icons/ImageSquare';
 import { Play } from 'phosphor-react-native/src/icons/Play';
 import { Repeat } from 'phosphor-react-native/src/icons/Repeat';
 import { ShareNetwork } from 'phosphor-react-native/src/icons/ShareNetwork';
@@ -19,13 +21,15 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { useFormatter, useTranslations } from 'use-intl';
+import { useFormatter, useLocale, useTranslations } from 'use-intl';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
 import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { setBookmark } from '@/lib/quran';
+import { useSettings } from '@/lib/settings';
+import { shareAyahCard } from '@/lib/share-card';
 import { markColor, useReaderTheme } from './common';
 import { PassageSheet, type PassageTarget } from './passage-sheet';
 import type { PassagePlan } from './recitation';
@@ -117,7 +121,7 @@ export interface ActionsTarget {
 
 /**
  * What an ayah offers (SPEC 5.5, Phase 5b): play from here, repeat a passage, word by word, a
- * bookmark for the ayah or a passage, copy, share.
+ * bookmark for the ayah or a passage, copy, share as text or as an image (SPEC 5.11).
  */
 export function AyahActions({
   target,
@@ -133,9 +137,12 @@ export function AyahActions({
   shareUrl: (surah: number, ayah: number) => string | null;
 }) {
   const t = useTranslations('quran');
+  const tc = useTranslations('common');
+  const locale = useLocale();
   const format = useFormatter();
   const toast = useToast();
   const theme = useReaderTheme();
+  const { location } = useSettings();
   const [words, setWords] = useState(false);
   // These sheets outlive the actions, which close as one opens.
   const [passage, setPassage] = useState<PassageTarget | null>(null);
@@ -212,6 +219,24 @@ export function AyahActions({
               onPress={() => {
                 const url = shareUrl(target.surah, target.ayah);
                 void Share.share({ message: url ? `${quote}\n${url}` : quote });
+                close();
+              }}
+            />
+            <ListRow
+              icon={ImageSquare}
+              title={t('actions.shareImage')}
+              onPress={() => {
+                // The card wears the sky above the reader now; Fajr's before a city is chosen.
+                shareAyahCard({
+                  text: target.text,
+                  translation: target.translation,
+                  reference: target.title,
+                  appName: tc('app.name'),
+                  rtl: locale === 'ar',
+                  sun: location ? sunPosition(new Date(), location) : periodSun.fajr,
+                  fileName: `al-murshid-${target.surah}-${target.ayah}.png`,
+                  dialogTitle: t('actions.shareImage'),
+                }).catch(() => toast(t('actions.imageFailed')));
                 close();
               }}
             />

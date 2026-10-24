@@ -54,6 +54,23 @@ test('search, read, look up a word and bookmark an ayah', async ({ page }) => {
   await expect(page.getByRole('link', { name: /Al-Baqarah 255/ })).toBeVisible();
 });
 
+test('share an ayah as an image, downloaded where files cannot be shared', async ({ page }) => {
+  await seed(page);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'canShare', { value: () => false });
+  });
+  await page.goto('/en/quran/112');
+  const ayah = page.getByRole('article', { name: 'Al-Ikhlas, verse 1' });
+  await ayah.getByRole('button', { name: 'Ayah 112:1' }).click();
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Share as an image' }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe('al-murshid-112-1.png');
+  const bytes = await (await file.createReadStream()).toArray();
+  // The ayah's share image, a PNG by its signature.
+  expect(Buffer.concat(bytes).subarray(1, 4).toString()).toBe('PNG');
+});
+
 test('read the Arabic text and memorize it', async ({ page }) => {
   await seed(page);
   await page.goto('/en/quran/112');
