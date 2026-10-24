@@ -17,7 +17,7 @@
     "tokens:check": "pnpm --filter @murshid/tokens check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "content:check": "pnpm --filter @murshid/content quran:check"
+    "content:check": "pnpm --filter @murshid/content quran:check && pnpm --filter @murshid/content remember:check"
   },
   "devDependencies": {
     "prettier": "3.9.10",

@@ -7,6 +7,7 @@
     ".": "./src/index.ts",
     "./quran": "./src/quran-api.ts",
     "./quran-sources": "./src/quran-sources.ts",
+    "./remember": "./src/remember.ts",
     "./cities": "./src/cities.ts",
     "./zones": "./places/zones.json"
   },
@@ -19,7 +20,10 @@
     "quran": "tsx scripts/build-quran.ts",
     "quran:check": "tsx scripts/build-quran.ts --check",
     "fonts": "tsx scripts/install-page-fonts.ts",
-    "quranenc": "tsx scripts/quranenc.ts"
+    "quranenc": "tsx scripts/quranenc.ts",
+    "hadeethenc": "tsx scripts/hadeethenc.ts",
+    "remember": "tsx scripts/build-remember.ts",
+    "remember:check": "tsx scripts/build-remember.ts --check"
   },
   "devDependencies": {
     "@murshid/config": "workspace:*",

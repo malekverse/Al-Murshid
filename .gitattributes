@@ -7,6 +7,7 @@
 
 # Content sources stay byte for byte as published (packages/content/sources.json)
 packages/content/quran/source/** -text
+packages/content/remember/source/** -text
 packages/content/places/** -text
 *.db binary
 

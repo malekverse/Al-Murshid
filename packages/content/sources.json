@@ -694,6 +694,17 @@
       "retrieved": "2026-10-19",
       "license": "Timestamps from QUL; the audio itself streams from the publisher's server. Redistribution rights must be confirmed per reciter before hosting the audio on our own CDN (SPEC 10).",
       "sha256": "206b6f619c1be6327dad8bc6e8b2bb878c94780380841bd86d4ce182e4c0fd05"
+    },
+    {
+      "path": "packages/content/remember/source/hadeethenc.json",
+      "title": "Adhkar and duas: the remembrance chapters of the Encyclopedia of Translated Prophetic Hadiths, in Arabic, English and French (version of 2026-10-24)",
+      "publisher": "HadeethEnc.com",
+      "via": "HadeethEnc.com API",
+      "url": "https://hadeethenc.com",
+      "version": "2026-10-24",
+      "retrieved": "2026-10-24",
+      "license": "HadeethEnc.com Terms and Policies: republished without modification, addition or deletion, crediting the publisher and HadeethEnc.com with the version (HadeethEnc dates its releases), kept up to date (pnpm --filter @murshid/content hadeethenc), notes reported to HadeethEnc, and never next to advertisements. build-remember.ts only tidies line endings.",
+      "sha256": "49180c071603a3122482f4e39294f06d16185b564b75b8639e789cd9b191739d"
     }
   ]
 }

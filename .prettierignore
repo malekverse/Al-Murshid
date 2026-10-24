@@ -10,4 +10,5 @@ apps/mobile/src/uniwind-types.d.ts
 supabase/.temp
 supabase/config.toml
 packages/content/quran/source
+packages/content/remember/source
 packages/content/places
