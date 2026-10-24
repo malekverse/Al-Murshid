@@ -112,12 +112,19 @@ jobs:
         run: |
           set -o pipefail
           workspace=$(ls -d *.xcworkspace | head -1)
-          xcodebuild -quiet \
-            -workspace "$workspace" -scheme "${workspace%.xcworkspace}" \
-            -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            build
+          build() {
+            xcodebuild -quiet \
+              -workspace "$workspace" -scheme "${workspace%.xcworkspace}" \
+              -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath build \
+              "$@" \
+              build
+          }
+          # Signed to run locally (identity "-", no team or profile): an unsigned app carries no
+          # entitlements, and the simulator's keychain then refuses it (errSecMissingEntitlement), which
+          # the app lock needs. Unsigned if Xcode will not sign it.
+          build CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= \
+            || build CODE_SIGNING_ALLOWED=NO
 
       - name: Boot an iPhone with Face ID enrolled, and install the app
         working-directory: apps/mobile/ios
@@ -134,7 +141,9 @@ jobs:
           echo "UDID=$udid" >> "$GITHUB_ENV"
           xcrun simctl boot "$udid"
           xcrun simctl bootstatus "$udid" -b
-          xcrun simctl install "$udid" build/Build/Products/Release-iphonesimulator/*.app
+          app=$(ls -d build/Build/Products/Release-iphonesimulator/*.app | head -1)
+          codesign -d --entitlements - "$app" 2>&1 | head -30 || true
+          xcrun simctl install "$udid" "$app"
           xcrun simctl spawn "$udid" notifyutil -s com.apple.BiometricKit.enrollmentChanged '1'
           xcrun simctl spawn "$udid" notifyutil -p com.apple.BiometricKit.enrollmentChanged
 
@@ -170,12 +179,20 @@ jobs:
           faces() { until shot "$1"; do sleep 1; done; while :; do match; sleep 2; done; }
           trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
           xcrun simctl ui "$UDID" appearance light
+          status=0
           faces lock-prompt & helper=$!
-          maestro test lock-on.yaml
-          kill $helper
-          maestro test lock-check.yaml
-          faces lock-locked &
-          maestro test lock-open.yaml
+          maestro test lock-on.yaml || status=1
+          kill $helper 2>/dev/null || true
+          if [ $status = 0 ]; then maestro test lock-check.yaml || status=1; fi
+          if [ $status = 0 ]; then
+            faces lock-locked &
+            maestro test lock-open.yaml || status=1
+          fi
+          # What the app and the system said about Face ID and the keychain, for when a part fails.
+          xcrun simctl spawn "$UDID" log show --last 15m --style compact \
+            --predicate 'processImagePath CONTAINS[c] "murshid" OR process == "coreauthd" OR process == "biometrickitd"' \
+            | grep -iE "keychain|34018|securestore|authenticat|biometr|pearl|unhandled|rejection" | tail -80 || true
+          exit $status
 
       - name: Fajr Rise
         continue-on-error: true
