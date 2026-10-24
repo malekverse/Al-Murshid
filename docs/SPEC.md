@@ -36,7 +36,7 @@ Al-Murshid is a calm, beautiful companion for the five moments of a Muslim's day
 **Principles (in priority order when they conflict)**
 
 1. **Organized by time, not by feature.** The app always knows where the user is in their day and leads with what matters now.
-2. **One obvious action per screen.** A grandfather and a ten-year-old can both use every screen without explanation.
+2. **One obvious action per screen.** A grandfather and a ten-year-old can both use every screen without explanation. Every feature is simple and practical: plain words, defaults that work with no setup, a permission asked only when its action is tapped, and nothing that silences, pauses or watches until the person turns it on (the owner, 2026-10-24; `docs/PHASE-7D.md`).
 3. **Mercy over metrics.** No guilt, no red "missed" marks, no broken-streak penalties, no scores of faith, no public comparison of worship.
 4. **Calm reverence.** Beauty serves worship. Motion never touches Quran text. Nothing playful or gimmicky around sacred content.
 5. **Private by default.** Fully usable without an account. Worship logs stay on the device unless the user opts into sync. No ads, no third-party trackers, ever.
@@ -264,7 +264,7 @@ An optional alarm for Fajr that moves with the prayer time every day and keeps r
 
 ### 5.11 Tools hub, greeting and share cards
 
-- **Tools hub.** Today's tools row opens a Tools screen with every tool: Qibla, Hijri calendar, Fajr Rise, and later the monthly timetable, masjid, Zakat, Hajj and Umrah and Learn to pray (Phase 12). The user pins up to four to Today's row; the rest stay one tap away. This replaces a fifth tab.
+- **Tools hub.** Today's tools row opens a Tools screen with every tool: Qibla, Hijri calendar, Fajr Rise, then the rak'ah counter, prayer times on a flight, halal places nearby and the ingredient check (Phase 7d), and later the monthly timetable, masjid, Zakat, Hajj and Umrah and Learn to pray (Phase 12). The user pins up to four to Today's row; the rest stay one tap away. This replaces a fifth tab.
 - **Greeting.** Today's hero opens with a short greeting for the time of day in the user's language ("Good morning", "Good evening"); nothing else is added to the hero.
 - **Share cards.** Any ayah, dhikr, dua or Name shares as an image card in the user's language and theme, with its source reference and the app's mark small in a corner. Seasonal greeting cards (Ramadan, Eid, Jumu'ah) carry the user's own words or a greeting from `packages/content`. Cards are drawn on the device (Skia on mobile, the HarfBuzz pipeline in `apps/web/src/lib/og` on web), so Arabic joins and keeps its marks.
 
@@ -571,11 +571,11 @@ Trust is the product: one wrong diacritic in the Quran or one fabricated hadith 
 | Content | Source | Requirement |
 | --- | --- | --- |
 | Quran text (Uthmani, Hafs) | Tanzil or the King Fahd Complex text | Never modified; a CI test compares a hash of the bundled text with the source |
-| Quran fonts, mushaf layouts (Madani 1405H, 1421H and 1441H; Indopak), surah-name font, word by word, transliteration, tafsir, recitation timestamps | [Quranic Universal Library (QUL)](https://qul.tarteel.ai/resources) | QUL resources are meant to be downloaded and packaged with your app (no API); check and record each resource's license and credit |
-| Translations | Per language, chosen from licensed options (for example a short Arabic tafsir such as Al-Muyassar; established English and French translations) | Each translation's copyright checked; written permission where required; license recorded in the content manifest |
+| Quran fonts, mushaf layouts (Madani 1405H, 1421H and 1441H; Indopak), surah-name font, word by word, transliteration, recitation timestamps | [Quranic Universal Library (QUL)](https://qul.tarteel.ai/resources) | QUL resources are meant to be downloaded and packaged with your app (no API); check and record each resource's license and credit |
+| Translations and tafsir | [QuranEnc.com](https://quranenc.com): Saheeh International (English), Muhammad Hamidullah (French), Al-Mukhtasar (Arabic and French) | Published for reuse unchanged, crediting the publisher and QuranEnc.com with the version number, kept up to date, notes reported to QuranEnc; recorded in the content manifest |
 | Recitation audio | Reciters available with timestamps through QUL or the reciter's publisher | Redistribution rights confirmed per reciter before hosting on our CDN |
 | Recitation check model | [`tarteel-ai/whisper-base-ar-quran`](https://huggingface.co/tarteel-ai/whisper-base-ar-quran) (Apache-2.0) | Runs on the device; its output only marks published words and is never shown as Quran text |
-| Adhkar and duas | Authentic hadith (sahih or hasan) with collection, number and grading | Translations written in-house or licensed, then reviewed |
+| Adhkar and duas | [HadeethEnc.com](https://hadeethenc.com): authentic hadith (sahih or hasan) with collection and grading, in Arabic, English and French | Published for reuse on the same terms as QuranEnc; shown unchanged, whole, with grade and source; never written or translated in-house |
 | 99 Names of Allah | The commonly cited list, with a note that the enumeration is scholarly discussion | Meanings and reflections written in-house, then reviewed |
 | Guides: wudu, salah, Hajj and Umrah steps (Phase 12) | A named published guide in each language | Reviewed like adhkar; illustrations show no faces |
 | Prayer calculation | `adhan` methods plus a reviewed country-to-method map | Defaults follow each country's official practice; users can change method and adjust minutes per prayer |
@@ -583,7 +583,7 @@ Trust is the product: one wrong diacritic in the Quran or one fabricated hadith 
 **Content pipeline**
 
 - All content lives in `packages/content` as JSON validated by a schema: `id`, `arabic`, `translations` (en, fr), `transliteration` (en, fr), `reference` (collection, number, grading), `review` (reviewer, date).
-- CI fails if any item lacks a reference, a review record or a translation for a supported locale.
+- CI fails if any item lacks a reference or its source's version. An item its publisher has not yet translated into a supported locale shows the English translation, labeled as such, until the publisher's update adds it. Before launch, CI also fails if any item lacks a review record.
 - A qualified reviewer (an imam or student of knowledge) signs off on every religious text in every language before launch, and on every later change.
 - The country-to-method map covers at least Tunisia, Algeria, Morocco, Egypt, Saudi Arabia and the Gulf, Turkey, France, the UK and North America. Verify each against current official practice and record the source.
 - The About screen lists every source, translator, reciter and license, and states that the app does not issue religious rulings.
@@ -624,7 +624,7 @@ These budgets are release blockers, not goals. Measure them on real mid-range de
 
 ## 12. Build phases and definition of done
 
-Build in nine phases, plus Phase 5b (added by the owner on 2026-10-19) and Phases 7b and 7c (added on 2026-10-23, after studying Ameen), one at a time. Phases 10 to 14 follow launch. A phase is done only when its gate passes; never start the next phase with the previous gate open.
+Build in nine phases, plus Phase 5b (added by the owner on 2026-10-19), Phases 7b and 7c (added on 2026-10-23, after studying Ameen) and Phases 7d and 8b (the owner's picks of practical companions, 2026-10-24), one at a time. Phases 10 to 14 follow launch. A phase is done only when its gate passes; never start the next phase with the previous gate open.
 
 1. **Foundation.** Monorepo, shared configs, CI, `tokens` generating the theme for both apps, `i18n` with all three locales, fonts, Supabase project with migrations and RLS tests.
    - Gate: both apps boot to a token showcase screen in `ar`, `en`, `fr`, light and dark; CI is green.
@@ -646,8 +646,12 @@ Build in nine phases, plus Phase 5b (added by the owner on 2026-10-19) and Phase
    - Gate: on a real Android phone and in the iOS Simulator, the alarm rings at the computed time with the screen locked, the sound off and Do Not Disturb or Focus on, over seven simulated mornings that cross a DST change and a time-zone change; every challenge works offline in `ar`, `en` and `fr`; stopping from the lock screen or force-quitting still brings the next backup; no camera frame or audio reaches storage. A real iPhone confirms it in Phase 9.
 7c. **Identity and home.** The final mark, app icons and alternate icons, the paper-and-light illustrations, surah headers, Today's greeting and Tools hub, share and greeting cards, the landing page, and a first set of store screenshots (5.11, 6.7, section 4).
    - Gate: the icon reads at 29 pt and on light, dark and tinted home screens; the landing page meets the section 11 budgets in `ar`, `en` and `fr`; share cards keep Arabic joined with its marks on both platforms.
+7d. **Practical companions.** Travel times, prayer times in your calendar, "I'm praying", tasbih without looking, bedtime for Fajr, a rak'ah counter, Qibla through the camera, Prayer Pause, prayer times on a flight, halal places nearby, an ingredient check, Quranic Arabic five minutes a day, and Little ones. Each simple enough to use without help (section 2, principle 2). Plan: `docs/PHASE-7D.md`.
+   - Gate: per feature, the polish checklist and an end-to-end flow a first-time user finishes in under 30 seconds; screenshots in `ar`, `en` and `fr`, light and dark.
 8. **Accounts and sync.** Sign-in, sync engine, first-sign-in merge, export, account deletion.
    - Gate: two devices converge after offline edits on both; deletion removes all server rows.
+8b. **Fajr buddy.** Pair with one person; if Fajr Rise is still ringing ten minutes after it began, the buddy sees it and can call. Both opt in, either unpairs in one tap, nothing else is shared or kept (`docs/PHASE-7D.md`).
+   - Gate: RLS tests show a buddy sees only the ringing state, only while paired.
 9. **Hardening and launch.** Performance and accessibility audits, content review sign-off, privacy policy and store privacy labels, store screenshots in three languages, a closed beta of 20 to 50 users.
    - Gate: every section 11 budget met; beta feedback triaged; reviewer sign-off recorded.
 
@@ -673,7 +677,7 @@ Build in nine phases, plus Phase 5b (added by the owner on 2026-10-19) and Phase
 14. **Together.** Family circles and Ask (section 13), a revocable link that shares a hifz plan's progress with one teacher, and more languages (Turkish, Indonesian, Urdu, Bengali).
     - Gate: nothing about a person's worship is visible to anyone without that person's opt-in, verified by RLS tests.
 
-**Content track (alongside every phase).** The largest gap with Ameen is reviewed content, not code: the adhkar and duas (Hisn al-Muslim from a named source), the tasbih phrases, the 99 Names and the dua for waking, then guides and more tafsirs. Import each into `packages/content` with its reference as soon as its source and license are confirmed, and find the reviewer now: launch (Phase 9) is blocked without their sign-off.
+**Content track (alongside every phase).** The largest gap with Ameen is reviewed content, not code: the adhkar and duas (from HadeethEnc.com, section 10), the tasbih phrases, the 99 Names and the dua for waking, then guides and more tafsirs. Import each into `packages/content` with its reference as soon as its source and license are confirmed, and find the reviewer now: launch (Phase 9) is blocked without their sign-off.
 
 **Working rhythm inside a phase:** plan the screen in a few lines, build it, run it on web and both simulators, screenshot it in Arabic and English, apply the polish checklist, then commit in a small, focused change. Record any deviation from this spec in `docs/DECISIONS.md`.
 

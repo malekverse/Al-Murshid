@@ -92,6 +92,7 @@
   },
   "about": {
     "sources": "Horaires : adhan-js. Villes : GeoNames (CC BY 4.0). Texte et police du Coran : Complexe du roi Fahd, via QUL.",
+    "quran": "Traductions et tafsir de QuranEnc.com : Saheeh International (Noor International Center), version {en} ; Muhammad Hamidullah, version {fr} ; Al-Mukhtasar, l’exégèse abrégée du noble Coran (Centre Tafsir d’études coraniques), version arabe {ar}, version française {frTafsir}, anglaise via QUL.",
     "noRulings": "Al-Murshid n’émet pas d’avis religieux."
   },
   "ramadanMode": {

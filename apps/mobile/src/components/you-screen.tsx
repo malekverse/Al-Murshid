@@ -8,6 +8,7 @@ import {
   type MethodId,
   type Prayer,
 } from '@murshid/core';
+import { quranCreditVersions } from '@murshid/content/quran-sources';
 import { locationLabel, placeOf, withLocation, withMethod, type Settings } from '@murshid/data';
 import { localeNames, locales, type Locale } from '@murshid/i18n';
 import { space } from '@murshid/tokens';
@@ -356,6 +357,9 @@ export function YouScreen({ focus = null }: { focus?: string | null }) {
             <Text role="callout">{t('settings.about.noRulings')}</Text>
             <Text role="caption" tone="muted">
               {t('settings.about.sources')}
+            </Text>
+            <Text role="caption" tone="muted">
+              {t('settings.about.quran', quranCreditVersions)}
             </Text>
           </View>
         </Section>

@@ -118,13 +118,21 @@ three languages under terms that allow an app and public pages:
 - sunnah.com's Hisn al-Muslim needs explicit permission for whole collections; Dorar.net's gradings
   are a lookup tool for the reviewer, not data to bundle.
 
-The owner asks IslamHouse for written permission (bundled offline in a free, ad-free app and shown
-on public pages), and the reviewer records each item's collection, number and grading. The pages
-follow as soon as the content is in (with Phase 7's Remember screens).
+The owner asked IslamHouse for written permission (bundled offline in a free, ad-free app and shown
+on public pages), and the reviewer records each item's collection, number and grading.
+
+**Update, 2026-10-24:** no answer came, and the owner chose ready-to-use sources instead.
+HadeethEnc.com publishes its whole encyclopedia for reuse under stated terms (unchanged, credited
+with its version, kept up to date), with an API and full exports in Arabic, English and French. Its
+remembrance chapters (morning and evening, sleep and waking, the house, the mosque, hard times,
+special occasions, during the prayer, and the reported supplications) give about 130 authentic,
+graded hadiths, each shown whole. DECISIONS, "Content sources". The pages follow as soon as the
+content is in (with Phase 7's Remember screens).
 
 ## Open items for the owner
 
-- Adhkar and duas: IslamHouse's written permission and a reviewer.
+- Adhkar and duas: a reviewer for which hadith goes in which collection (the texts come from
+  HadeethEnc unchanged).
 - Recitation audio still streams from its publishers; hosting it ourselves waits for each
   reciter's rights (carried over from Phase 5). The mushaf page fonts are on a Cloudflare Worker.
 - A custom domain, if wanted: the canonical addresses, sitemaps and search console properties

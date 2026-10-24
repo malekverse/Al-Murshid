@@ -277,8 +277,8 @@ describe('index', () => {
 describe('translations and word by word', () => {
   for (const lang of ['en', 'fr'] as const) {
     it(`${lang}: every ayah, its footnotes and one meaning slot per word`, async () => {
-      // One published footnote is empty (Saheeh International at 7:143); the reader shows a
-      // mark only when its note has text.
+      // Every footnote has text (QuranEnc's Saheeh International 1.1.2 filled the one at 7:143
+      // that QUL's copy left empty); the reader still shows a mark only when its note has text.
       const emptyNotes: string[] = [];
       for (const s of surahs) {
         const [tr, text] = await Promise.all([
@@ -296,9 +296,32 @@ describe('translations and word by word', () => {
           expect(tr.m[i]).toHaveLength(text.w[i]!.length - 1);
         });
       }
-      expect(emptyNotes).toEqual(lang === 'en' ? ['7:143'] : []);
+      expect(emptyNotes).toEqual([]);
     });
   }
+
+  it('keeps the held ayahs in the earlier release’s wording (build-quran.ts, held)', async () => {
+    const [fr6, fr42, tafsir79] = await Promise.all([
+      loadTranslation('fr', 6),
+      loadTranslation('fr', 42),
+      loadTafsir('fr', 79),
+    ]);
+    const plain = (segments: (typeof fr6.t)[number]) =>
+      segments.filter((s): s is string => typeof s === 'string').join('');
+    expect(plain(fr6.t[23]!)).toMatch(/^Vois comment ils mentent à eux-mêmes/);
+    expect(plain(fr42.t[2]!)).not.toMatch(/révélations.*révélations/);
+    expect(plain(fr42.t[3]!)).toMatch(/le Très Grand,$/);
+    expect(tafsirOf(tafsir79, 21)?.text).toMatch(/^Mais Pharaon/);
+  });
+
+  it('marks footnotes against their word, numbered within the ayah', async () => {
+    const fr2 = await loadTranslation('fr', 2);
+    const marks = fr2.t[252]!.filter((s) => typeof s !== 'string');
+    expect(marks.map((m) => m[0])).toEqual(['1', '2']);
+    expect(fr2.f[marks[0]![1]]).toMatch(/^Le Saint-Esprit/);
+    const text = fr2.t[252]!.filter((s): s is string => typeof s === 'string').join('');
+    expect(text).not.toMatch(/ [,.]/);
+  });
 
   it('transliterates word by word', async () => {
     const tl = await loadTransliteration(1);

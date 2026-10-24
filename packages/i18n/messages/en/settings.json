@@ -92,6 +92,7 @@
   },
   "about": {
     "sources": "Prayer times: adhan-js. Cities: GeoNames (CC BY 4.0). Quran text and font: King Fahd Complex, via QUL.",
+    "quran": "Translations and tafsir from QuranEnc.com: Saheeh International (Noor International Center), version {en}; Muhammad Hamidullah, version {fr}; Al-Mukhtasar in interpreting the Noble Quran (Tafsir Center for Quranic Studies), Arabic version {ar}, French version {frTafsir}, English via QUL.",
     "noRulings": "Al-Murshid does not issue religious rulings."
   },
   "ramadanMode": {

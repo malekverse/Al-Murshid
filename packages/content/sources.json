@@ -62,6 +62,50 @@
       "sha256": "f366269234e24f322146c043fe5fbf0132990613a94aff4b3f23847f45793ea7"
     },
     {
+      "path": "packages/content/quran/source/quranenc/english_saheeh.json",
+      "title": "Saheeh International, English, with footnotes (version 1.1.2)",
+      "publisher": "Noor International Center (Saheeh International)",
+      "via": "QuranEnc.com API",
+      "url": "https://quranenc.com/en/browse/english_saheeh",
+      "version": "1.1.2",
+      "retrieved": "2026-10-24",
+      "license": "QuranEnc.com Terms and Policies: republished without modification, addition or deletion, crediting the publisher and QuranEnc.com with the version number (1.1.2), kept up to date (pnpm --filter @murshid/content quranenc --check), notes reported to QuranEnc, and never next to advertisements. build-quran.ts only tidies spacing.",
+      "sha256": "8e03ee867f5351120d1ed8c189f23c8e4f30de0834d541619c797ab46ce12399"
+    },
+    {
+      "path": "packages/content/quran/source/quranenc/french_hameedullah.json",
+      "title": "Muhammad Hamidullah, French, with footnotes (version 1.0.2)",
+      "publisher": "Muhammad Hamidullah",
+      "via": "QuranEnc.com API",
+      "url": "https://quranenc.com/en/browse/french_hameedullah",
+      "version": "1.0.2",
+      "retrieved": "2026-10-24",
+      "license": "QuranEnc.com Terms and Policies: republished without modification, addition or deletion, crediting the publisher and QuranEnc.com with the version number (1.0.2), kept up to date (pnpm --filter @murshid/content quranenc --check), notes reported to QuranEnc, and never next to advertisements. build-quran.ts only tidies spacing.",
+      "sha256": "0447fc9a8b4b6bc3258b490fac54646422fe2215c5841612975f5bd9d2c8f83e"
+    },
+    {
+      "path": "packages/content/quran/source/quranenc/arabic_mokhtasar.json",
+      "title": "Al-Mukhtasar in interpreting the Noble Quran, Arabic (version 1.0.0)",
+      "publisher": "Tafsir Center for Quranic Studies",
+      "via": "QuranEnc.com API",
+      "url": "https://quranenc.com/en/browse/arabic_mokhtasar",
+      "version": "1.0.0",
+      "retrieved": "2026-10-24",
+      "license": "QuranEnc.com Terms and Policies: republished without modification, addition or deletion, crediting the publisher and QuranEnc.com with the version number (1.0.0), kept up to date (pnpm --filter @murshid/content quranenc --check), notes reported to QuranEnc, and never next to advertisements. build-quran.ts only tidies spacing.",
+      "sha256": "e4fab85b99abbc1917204b9291bb520bbb864edf40f01cd5d59c263178658363"
+    },
+    {
+      "path": "packages/content/quran/source/quranenc/french_mokhtasar.json",
+      "title": "Al-Mukhtasar in interpreting the Noble Quran, French (version 1.0.0)",
+      "publisher": "Tafsir Center for Quranic Studies",
+      "via": "QuranEnc.com API",
+      "url": "https://quranenc.com/en/browse/french_mokhtasar",
+      "version": "1.0.0",
+      "retrieved": "2026-10-24",
+      "license": "QuranEnc.com Terms and Policies: republished without modification, addition or deletion, crediting the publisher and QuranEnc.com with the version number (1.0.0), kept up to date (pnpm --filter @murshid/content quranenc --check), notes reported to QuranEnc, and never next to advertisements. build-quran.ts only tidies spacing.",
+      "sha256": "84edfe07361d851574d90fef40621bdb9918444b3e99db114f2c5a6dac4b2d11"
+    },
+    {
       "path": "packages/content/quran/source/qpc-v2.json",
       "title": "QPC V2 Glyph - Word by Word (glyph codes for the 1421H page fonts)",
       "publisher": "King Fahd Glorious Quran Printing Complex",
@@ -152,23 +196,13 @@
       "sha256": "5b7a7859b57b03387b9b58fd46dfdcb3792b61cad5e982f0295ac29603958988"
     },
     {
-      "path": "packages/content/quran/source/translations/en-sahih-international-with-footnote-tags.json",
-      "title": "Saheeh International, English, with footnotes",
-      "publisher": "Saheeh International (Dar Abul-Qasim)",
-      "via": "Quranic Universal Library (Tarteel)",
-      "url": "https://qul.tarteel.ai/resources/translation/193",
-      "retrieved": "2026-10-18",
-      "license": "Copyright of the translator and publisher. Included at the owner's choice while written permission is requested; it must be granted before launch (SPEC 10, docs/DECISIONS.md).",
-      "sha256": "7cbed343434258ed8d66aa5481ab0b9ee09ba81e97884e1bc10837db48a5fedc"
-    },
-    {
       "path": "packages/content/quran/source/translations/quran-fr-hamidullah-with-footnote-tags.json",
       "title": "Muhammad Hamidullah, French, with footnotes",
       "publisher": "Muhammad Hamidullah",
       "via": "Quranic Universal Library (Tarteel)",
       "url": "https://qul.tarteel.ai/resources/translation/227",
       "retrieved": "2026-10-18",
-      "license": "Copyright of the translator and publisher. Included at the owner's choice while written permission is requested; it must be granted before launch (SPEC 10, docs/DECISIONS.md).",
+      "license": "An earlier release of the Hamidullah translation QuranEnc publishes (same terms), as QUL distributed it. Used only for 6:24, 42:3 and 42:4, whose text in QuranEnc 1.0.2 is not their own, until QuranEnc corrects them (build-quran.ts, held).",
       "sha256": "f644ff37a191c47e089a2d32156e26735758670a00da44629435524b7aae21c5"
     },
     {
@@ -382,16 +416,6 @@
       "sha256": "de174e33ae14cb581097940de298c8bb9cfa60f7a34d7d0ab0ba2bd5126f912c"
     },
     {
-      "path": "packages/content/quran/source/tafsir/ar-mukhtasar.json",
-      "title": "Al-Mukhtasar in interpreting the Noble Quran, Arabic",
-      "publisher": "Tafsir Center for Quranic Studies",
-      "via": "Quranic Universal Library (Tarteel)",
-      "url": "https://qul.tarteel.ai/resources/tafsir/251",
-      "retrieved": "2026-10-19",
-      "license": "Al-Mukhtasar in interpreting the Noble Quran, by the Tafsir Center for Quranic Studies. Copyright of its publisher; included at the owner's choice while written permission is requested, which must be granted before launch (docs/PHASE-5B.md).",
-      "sha256": "646145a4b8763b2f2249c35e0e6ea614fe9c7f9a46da498c19615a06c5a5fc9f"
-    },
-    {
       "path": "packages/content/quran/source/tafsir/en-mukhtasar.json",
       "title": "Abridged Explanation of the Quran (Al-Mukhtasar), English",
       "publisher": "Tafsir Center for Quranic Studies",
@@ -408,7 +432,7 @@
       "via": "Quranic Universal Library (Tarteel)",
       "url": "https://qul.tarteel.ai/resources/tafsir/259",
       "retrieved": "2026-10-19",
-      "license": "Al-Mukhtasar in interpreting the Noble Quran, by the Tafsir Center for Quranic Studies. Copyright of its publisher; included at the owner's choice while written permission is requested, which must be granted before launch (docs/PHASE-5B.md).",
+      "license": "An earlier release of the French Al-Mukhtasar QuranEnc publishes (same terms), as QUL distributed it. Used only for 79:21, which QuranEnc 1.0.0 attributes to Moses instead of Pharaoh, until QuranEnc corrects it (build-quran.ts, held).",
       "sha256": "d067403f263f1df05bc965e7657ec069e847fa6d0e18cdf52d126497d472c195"
     },
     {

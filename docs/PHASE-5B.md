@@ -208,7 +208,9 @@ asking.
 
 ## Open items for the owner
 
-- Written permission for Al-Mukhtasar (and Al-Muyassar, if used) before launch.
+- Written permission for the English Al-Mukhtasar (and Al-Muyassar, if used) before launch. The
+  Arabic and French ones come from QuranEnc.com under its published terms (DECISIONS, "Content
+  sources", 2026-10-24).
 - Rights for every added reciter before hosting audio on our CDN. Until then audio streams from
   the publishers' servers, as today. Self-hosting all of it would not fit Cloudflare R2's free
   10 GB (a reciter is roughly 0.5 to 1.5 GB).

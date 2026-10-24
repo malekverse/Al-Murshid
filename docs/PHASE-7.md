@@ -26,7 +26,7 @@ All five steps are built on web and Android and logged in `docs/DECISIONS.md`. O
 
 Every religious text comes from `packages/content` with a source reference and a reviewer's
 sign-off (SPEC 10). None of these is in the repository yet, so they come with the reviewed content
-(IslamHouse's Hisn al-Muslim, or another named source), and nothing is shown in their place:
+(HadeethEnc.com since 2026-10-24, DECISIONS "Content sources"), and nothing is shown in their place:
 
 - Adhkar collections and duas by feeling (also Phase 6's public pages).
 - The tasbih phrases (SubhanAllah, Alhamdulillah, Allahu Akbar, La ilaha illa Allah,

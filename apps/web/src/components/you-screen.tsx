@@ -20,6 +20,7 @@ import {
   type HighLatitudeChoice,
   type MethodId,
 } from '@murshid/core';
+import { quranCreditVersions } from '@murshid/content/quran-sources';
 import { locationLabel, placeOf, withLocation, withMethod, type Settings } from '@murshid/data';
 import { localeNames, locales, type Locale } from '@murshid/i18n';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
@@ -322,6 +323,9 @@ function Settings_({ settings }: { settings: Settings }) {
           <Text role="callout">{t('settings.about.noRulings')}</Text>
           <Text role="caption" tone="muted">
             {t('settings.about.sources')}
+          </Text>
+          <Text role="caption" tone="muted">
+            {t('settings.about.quran', quranCreditVersions)}
           </Text>
         </div>
       </Section>

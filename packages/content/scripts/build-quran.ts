@@ -129,7 +129,109 @@ const defaultSeparators = (n: number) => 's'.repeat(Math.max(0, n - 2)) + 'n';
 
 // ---------- Translations and word-by-word ----------
 
+// Translations and tafsir come from QuranEnc (scripts/quranenc.ts). In its files a footnote's mark
+// is "[n]" in the text, and the ayah's footnotes follow as "[n] note", one after another.
+
 type Segment = string | [mark: string, footnote: string];
+interface Translation {
+  segments: Segment[];
+  notes: Record<string, string>;
+}
+interface QuranEncAyah {
+  sura: number;
+  aya: number;
+  translation: string;
+  footnotes: string | null;
+}
+interface QuranEncFile {
+  key: string;
+  version: string;
+  ayahs: QuranEncAyah[];
+}
+/**
+ * QuranEnc's text without its doubled spaces, the spaces before a line break and, in English and
+ * French, the stray space before a comma or a full stop (Hamidullah's 1.0.2 has hundreds): words
+ * untouched. Arabic keeps its punctuation as published, since it quotes ayahs.
+ */
+const tidy = (text: string, latin = true) => {
+  const spaced = text.replace(/ {2,}/g, ' ').replace(/ +\r?\n/g, '\n');
+  return (latin ? spaced.replace(/ +([.,])(?!\d)/g, '$1') : spaced).trim();
+};
+function readQuranEnc(key: string) {
+  const file = read<QuranEncFile>(`quranenc/${key}.json`);
+  assert(file.key === key && file.ayahs.length === total, `${key}: expected every ayah`);
+  return {
+    version: file.version,
+    ayahs: new Map(file.ayahs.map((a) => [`${a.sura}:${a.aya}`, a])),
+  };
+}
+
+/**
+ * Ayahs whose text in QuranEnc's current release is not that ayah's own (reported to QuranEnc,
+ * DECISIONS "Content sources"): Hamidullah's 6:24 carries 6:42, 42:3 repeats its sentence and
+ * 42:4 ends with 42:3's; Al-Mukhtasar's French 79:21 names Moses where the ayah speaks of
+ * Pharaoh. Until QuranEnc's update corrects them they keep the wording of the earlier release of
+ * the same work, as QUL distributed it. The build fails once QuranEnc's text is that wording
+ * again, so no hold outlives its fix.
+ */
+const held: Partial<Record<string, { file: string; keys: string[] }>> = {
+  french_hameedullah: {
+    file: 'translations/quran-fr-hamidullah-with-footnote-tags.json',
+    keys: ['6:24', '42:3', '42:4'],
+  },
+  french_mokhtasar: { file: 'tafsir/fr-mukhtasar.json', keys: ['79:21'] },
+};
+
+function parseNotes(footnotes: string | null, key: string): Map<string, string> {
+  const notes = new Map<string, string>();
+  if (!footnotes?.trim()) return notes;
+  const parts = footnotes.split(/(?:^|\r?\n|<br\s*\/?>)\s*\[\s*(\d+)\s*\]\s*-?\s*/);
+  assert(parts[0]!.trim() === '', `${key}: footnotes do not start with a mark`);
+  for (let i = 1; i < parts.length; i += 2) {
+    assert(!notes.has(parts[i]!), `${key}: footnote ${parts[i]} twice`);
+    notes.set(parts[i]!, cleanFootnote(tidy(parts[i + 1]!), `${key} [${parts[i]}]`));
+  }
+  return notes;
+}
+/**
+ * A QuranEnc translation as text and marks, numbered within the ayah as the reader shows them.
+ * A mark gives its footnote's number, or (in some of Hamidullah's ayahs) its place in the ayah's
+ * footnotes: "[1]" for the first. A footnote with no mark in the text (most of Hamidullah's) is
+ * marked at the ayah's end.
+ */
+function quranEncTranslation(row: QuranEncAyah, key: string): Translation {
+  const notes = parseNotes(row.footnotes, key);
+  const ids = [...notes.keys()];
+  const segments: Segment[] = [];
+  const marked = new Set<string>();
+  // A mark sits against the word it annotates.
+  const t = tidy(row.translation).replace(/ +(?=\[\s*\d+\s*\])/g, '');
+  const marks = [...t.matchAll(/\[\s*(\d+)\s*\]/g)];
+  const byNumber = marks.every((m) => notes.has(m[1]!));
+  assert(
+    byNumber || marks.every((m, i) => Number(m[1]) === i + 1 && i < ids.length),
+    `${key}: its marks do not match its footnotes`,
+  );
+  let last = 0;
+  marks.forEach((m, i) => {
+    const id = byNumber ? m[1]! : ids[i]!;
+    if (m.index > last) segments.push(t.slice(last, m.index));
+    marked.add(id);
+    segments.push([String(marked.size), id]);
+    last = m.index + m[0].length;
+  });
+  if (last < t.length) segments.push(t.slice(last));
+  for (const id of notes.keys()) {
+    if (!marked.has(id)) {
+      marked.add(id);
+      segments.push([String(marked.size), id]);
+    }
+  }
+  for (const s of segments)
+    assert(typeof s !== 'string' || !/[<>]/.test(s), `${key}: unexpected markup`);
+  return { segments, notes: Object.fromEntries(notes) };
+}
+
 interface RawTranslation {
   t: string;
   f: Record<string, string>;
@@ -150,6 +252,7 @@ function parseTranslation(t: string, key: string): Segment[] {
 }
 function cleanFootnote(text: string, id: string): string {
   const clean = text
+    .replace(/\r/g, '')
     .replace(/<\/p>\s*<p>/g, '\n\n')
     .replace(/<\/?p>/g, '')
     .replace(/<br\s*\/?>/g, '\n')
@@ -160,13 +263,35 @@ function cleanFootnote(text: string, id: string): string {
 const plainTranslation = (segments: Segment[]) =>
   segments.filter((s): s is string => typeof s === 'string').join('');
 
+const translationKeys = { en: 'english_saheeh', fr: 'french_hameedullah' } as const;
+function readTranslation(key: string) {
+  const { version, ayahs } = readQuranEnc(key);
+  const hold = held[key];
+  const earlier = hold && read<Record<string, RawTranslation>>(hold.file);
+  const byAyah = new Map<string, Translation>();
+  for (const [k, row] of ayahs) {
+    const current = quranEncTranslation(row, `${key} ${k}`);
+    if (!hold?.keys.includes(k)) {
+      byAyah.set(k, current);
+      continue;
+    }
+    const raw = earlier![k]!;
+    const kept: Translation = {
+      segments: parseTranslation(raw.t, k),
+      notes: Object.fromEntries(Object.entries(raw.f).map(([id, n]) => [id, cleanFootnote(n, id)])),
+    };
+    assert(
+      normalizeLatin(plainTranslation(kept.segments)) !==
+        normalizeLatin(plainTranslation(current.segments)),
+      `${key} ${k}: QuranEnc corrected it; remove the hold`,
+    );
+    byAyah.set(k, kept);
+  }
+  return { key, version, byAyah };
+}
 const translations = {
-  en: read<Record<string, RawTranslation>>(
-    'translations/en-sahih-international-with-footnote-tags.json',
-  ),
-  fr: read<Record<string, RawTranslation>>(
-    'translations/quran-fr-hamidullah-with-footnote-tags.json',
-  ),
+  en: readTranslation(translationKeys.en),
+  fr: readTranslation(translationKeys.fr),
 };
 const meanings = {
   en: read<Record<string, string>>('wbw/english-wbw-translation.json'),
@@ -326,15 +451,11 @@ const sajda = Object.values(
 // ---------- Tafsir (Phase 5b: Al-Mukhtasar) ----------
 
 /**
- * A tafsir file: each ayah key holds its passage ({ text }), or the key of the ayah whose passage
- * covers it. Passages keep their published text; markup is reduced to <b> and <i>, and paragraphs
- * become blank lines.
+ * Arabic and French from QuranEnc. QuranEnc does not publish the English one, so it stays QUL's
+ * copy (its permission is an open item, docs/PHASE-5B.md). Passages keep their published text;
+ * markup is reduced to <b> and <i>, and paragraphs become blank lines.
  */
-const tafsirSources = {
-  ar: 'tafsir/ar-mukhtasar.json',
-  en: 'tafsir/en-mukhtasar.json',
-  fr: 'tafsir/fr-mukhtasar.json',
-} as const;
+const tafsirKeys = { ar: 'arabic_mokhtasar', fr: 'french_mokhtasar' } as const;
 function cleanTafsir(text: string, key: string): string {
   const clean = text
     .replace(/<\/p>\s*<p[^>]*>/g, '\n\n')
@@ -346,7 +467,10 @@ function cleanTafsir(text: string, key: string): string {
   assert(clean.length > 0, `tafsir ${key}: empty passage`);
   return clean;
 }
-/** Per surah, its passages: [first ayah, last ayah, text]. */
+/**
+ * QUL's tafsir files: each ayah key holds its passage ({ text }), or the key of the ayah whose
+ * passage covers it. Per surah, its passages: [first ayah, last ayah, text].
+ */
 function readTafsir(file: string) {
   const raw = read<Record<string, { text: string } | string>>(file);
   const bySurah: [number, number, string][][] = Array.from({ length: 114 }, () => []);
@@ -372,10 +496,53 @@ function readTafsir(file: string) {
   }
   return bySurah;
 }
+/**
+ * QuranEnc's tafsir: a passage that covers several ayahs is repeated under each of them (the Arabic
+ * one opening with its range, "3 - 4 - "), so consecutive ayahs with the same passage become one.
+ */
+function readQuranEncTafsir(key: string) {
+  const { version, ayahs } = readQuranEnc(key);
+  const hold = held[key];
+  const earlier = hold && read<Record<string, { text: string } | string>>(hold.file);
+  const bySurah: [number, number, string][][] = Array.from({ length: 114 }, () => []);
+  const ranges: [string, number, number][] = [];
+  for (let s = 1; s <= 114; s++) {
+    const list = bySurah[s - 1]!;
+    let previous = '';
+    for (let a = 1; a <= ayahCount(s); a++) {
+      const k = `${s}:${a}`;
+      let text = tidy(ayahs.get(k)!.translation, !key.startsWith('arabic_'));
+      const range = /^(\d+)\s*-\s*(\d+)\s*-\s*/.exec(text);
+      if (range) {
+        ranges.push([k, Number(range[1]), Number(range[2])]);
+        text = text.slice(range[0].length);
+      }
+      if (hold?.keys.includes(k)) {
+        const kept = earlier![k];
+        assert(typeof kept === 'object', `${key} ${k}: the earlier release covers it elsewhere`);
+        assert(kept.text.trim() !== text, `${key} ${k}: QuranEnc corrected it; remove the hold`);
+        text = kept.text.trim();
+      }
+      if (text === previous) list.at(-1)![1] = a;
+      else list.push([a, a, cleanTafsir(text, `${key} ${k}`)]);
+      previous = text;
+    }
+  }
+  for (const [k, from, to] of ranges) {
+    const [s, a] = k.split(':').map(Number) as [number, number];
+    const passage = bySurah[s - 1]!.find(([f, l]) => f <= a && a <= l);
+    assert(passage?.[0] === from && passage[1] === to, `${key} ${k}: its range is ${from}–${to}`);
+  }
+  return { key, version, bySurah };
+}
+const tafsirSources = {
+  ar: readQuranEncTafsir(tafsirKeys.ar),
+  fr: readQuranEncTafsir(tafsirKeys.fr),
+};
 const tafsir = {
-  ar: readTafsir(tafsirSources.ar),
-  en: readTafsir(tafsirSources.en),
-  fr: readTafsir(tafsirSources.fr),
+  ar: tafsirSources.ar.bySurah,
+  en: readTafsir('tafsir/en-mukhtasar.json'),
+  fr: tafsirSources.fr.bySurah,
 };
 
 // ---------- Recitations ----------
@@ -452,10 +619,13 @@ for (let s = 1; s <= 114; s++) {
     const at = (table: Record<string, string>) =>
       ws.slice(0, -1).map((_, w) => table[`${key}:${w + 1}`] ?? null);
     for (const l of ['en', 'fr'] as const) {
-      const raw = translations[l][key];
-      assert(raw, `${l}: no translation of ${key}`);
-      lang[l].t.push(parseTranslation(raw.t, key));
-      for (const [id, note] of Object.entries(raw.f)) lang[l].f[id] = cleanFootnote(note, id);
+      const tr = translations[l].byAyah.get(key);
+      assert(tr, `${l}: no translation of ${key}`);
+      lang[l].t.push(tr.segments);
+      for (const [id, note] of Object.entries(tr.notes)) {
+        assert(!(id in lang[l].f), `${l} ${key}: footnote ${id} is already in surah ${s}`);
+        lang[l].f[id] = note;
+      }
       lang[l].m.push(at(meanings[l]));
     }
     translit.push(at(transliteration));
@@ -480,12 +650,24 @@ for (let s = 1; s <= 114; s++) {
   for (let a = 1; a <= ayahCount(s); a++) {
     for (const l of ['en', 'fr'] as const) {
       search[l].push(
-        normalizeLatin(plainTranslation(parseTranslation(translations[l][`${s}:${a}`]!.t, ''))),
+        normalizeLatin(plainTranslation(translations[l].byAyah.get(`${s}:${a}`)!.segments)),
       );
     }
   }
 }
 for (const l of ['ar', 'en', 'fr'] as const) put(`search/${l}.json`, search[l]);
+
+// The versions shown with each credit, as QuranEnc's terms ask (SPEC 10).
+put('sources.json', {
+  translation: {
+    en: { key: translations.en.key, version: translations.en.version },
+    fr: { key: translations.fr.key, version: translations.fr.version },
+  },
+  tafsir: {
+    ar: { key: tafsirSources.ar.key, version: tafsirSources.ar.version },
+    fr: { key: tafsirSources.fr.key, version: tafsirSources.fr.version },
+  },
+});
 
 const reciterIndex = reciters.map(({ id, slug, style }) => {
   const surahFile = read<Record<string, { audio_url: string; duration: number }>>(
