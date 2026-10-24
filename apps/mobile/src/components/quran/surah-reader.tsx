@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { webUrl } from '@/lib/addresses';
 import { useAppLocale } from '@/lib/locale';
 import { saveReadingPosition, useBookmarks, useLoad } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
@@ -63,8 +64,6 @@ export function Basmalah({ size }: { size: number }) {
 }
 
 /** The web app's address, once it is deployed; shares carry a link to the ayah only then. */
-const webUrl = process.env.EXPO_PUBLIC_WEB_URL;
-
 const plainTranslation = (tr: SurahTranslation | undefined, ayah: number) =>
   tr?.t[ayah - 1]?.filter((s): s is string => typeof s === 'string').join('') ?? null;
 
@@ -367,7 +366,7 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
         onClose={() => setActions(null)}
         onPlay={(s, a) => recitation.play(s, a)}
         onRepeat={(s, a, plan) => recitation.play(s, a, plan)}
-        shareUrl={(s, a) => (webUrl ? `${webUrl}/${locale}/quran/${s}/${a}` : null)}
+        shareUrl={(s, a) => `${webUrl}/${locale}/quran/${s}/${a}`}
       />
       <FootnoteSheet note={note} onClose={() => setNote(null)} />
       <ReadingSettings

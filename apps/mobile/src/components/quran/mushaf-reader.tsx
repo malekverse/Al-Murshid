@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Text } from '@/components/ui/text';
+import { webUrl } from '@/lib/addresses';
 import { useAppLocale } from '@/lib/locale';
 import { khatmahStore, saveReadingPosition, useBookmarks, useLoad } from '@/lib/quran';
 import { useSettings } from '@/lib/settings';
@@ -61,7 +62,6 @@ function PageAyahActions({
   const text = useLoad(at ? () => loadSurahText(n) : null, `text/${n}`);
   const extra = useLoad(at ? () => loadTranslation(lang, n) : null, `${lang}/${n}`);
   const translit = useLoad(at ? () => loadTransliteration(n) : null, `translit/${n}`);
-  const webUrl = process.env.EXPO_PUBLIC_WEB_URL;
   let target: ActionsTarget | null = null;
   if (at && text.data) {
     const words = ayahWords(text.data, at.ayah);
@@ -86,7 +86,7 @@ function PageAyahActions({
       onClose={onClose}
       onPlay={(s, a) => recitation.play(s, a)}
       onRepeat={(s, a, plan) => recitation.play(s, a, plan)}
-      shareUrl={(s, a) => (webUrl ? `${webUrl}/${locale}/quran/${s}/${a}` : null)}
+      shareUrl={(s, a) => `${webUrl}/${locale}/quran/${s}/${a}`}
     />
   );
 }

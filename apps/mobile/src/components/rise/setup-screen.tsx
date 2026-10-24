@@ -26,6 +26,7 @@ import { Sheet } from '@/components/ui/sheet';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { Toggle } from '@/components/ui/toggle';
+import { webUrl } from '@/lib/addresses';
 import { useTimeFormat } from '@/lib/format';
 import { haptics } from '@/lib/haptics';
 import { useAppLocale } from '@/lib/locale';
@@ -108,8 +109,6 @@ function usePermissions() {
   }, [refresh]);
   return [state, refresh] as const;
 }
-
-const webUrl = process.env.EXPO_PUBLIC_WEB_URL;
 
 /** Fajr Rise's setup (SPEC 5.10): when, which days, the challenge, the sound, and the checks. */
 export function RiseSetup() {
@@ -413,7 +412,7 @@ export function RiseSetup() {
                 />
               )}
               {/* A card with a code of its own, printed from the web, to scan and leave there. */}
-              {rise.challenge === 'spot' && webUrl && (
+              {rise.challenge === 'spot' && (
                 <Button
                   variant="ghost"
                   onPress={() => void Linking.openURL(`${webUrl}/${locale}/rise/card`)}

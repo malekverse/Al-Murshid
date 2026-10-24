@@ -42,9 +42,13 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
 - If the dev client cannot reach Metro after an adb restart: `adb reverse tcp:8081 tcp:8081`.
 - Quran data: `packages/content/quran/generated` is built from the pinned sources by
   `pnpm --filter @murshid/content quran` (CI runs `pnpm content:check`). The 604 mushaf page fonts are not in
-  git: install each edition's with `pnpm --filter @murshid/content fonts <v1|v2|v4> <unzipped QUL folder>` (web
-  serves them from `public/fonts/quran-<edition>`; the emulator reaches the web dev server with
-  `adb reverse tcp:3000 tcp:3000`). QUL's download links redirect to public files on Tarteel's CDN.
+  git: install each edition's with `pnpm --filter @murshid/content fonts <v1|v2|v4> <unzipped QUL folder>` (the
+  web dev server serves them from `public/fonts/quran-<edition>`). QUL's download links redirect to public
+  files on Tarteel's CDN.
+- The phone's web addresses are in `apps/mobile/src/lib/addresses.ts`: the live site for share links and the
+  Fajr Rise card, the asset Worker for page fonts. To use the web dev server instead, set
+  `EXPO_PUBLIC_WEB_URL` or `EXPO_PUBLIC_ASSET_BASE_URL=http://localhost:3000` in `apps/mobile/.env`
+  (gitignored), restart Metro, and run `adb reverse tcp:3000 tcp:3000` on the emulator.
 - If the debug app is killed at launch ("failed to complete startup"), compile it ahead of time:
   `adb shell cmd package compile -m speed -f com.malekverse.almurshid`. Judge the Quran screens on a release
   build: in debug, Today's per-second updates starve the emulator's JS thread.

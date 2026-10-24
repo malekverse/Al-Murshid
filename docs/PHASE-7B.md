@@ -24,8 +24,8 @@ Still open:
 
 - **Move** (squats): the pose prototype and its go or no-go in Fajr's dim light.
 - **Aloud**: waits for the reviewed dua for waking.
-- **The printable "your spot" card**: built (`/[locale]/rise/card`); the phone links to it once
-  builds set `EXPO_PUBLIC_WEB_URL`. Any barcode works meanwhile.
+- **The printable "your spot" card**: built (`/[locale]/rise/card`), linked from the phone's
+  setup. Any barcode works too.
 - **A real iPhone** (Phase 9) and a real Android phone for a week of mornings (the gate).
 
 ## The morning, step by step

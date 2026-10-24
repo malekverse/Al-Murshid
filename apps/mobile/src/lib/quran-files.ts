@@ -3,6 +3,7 @@ import { reciterIds, type ReciterChoice } from '@murshid/data';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as Font from 'expo-font';
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { assetBaseUrl } from './addresses';
 import { mmkvValue } from './mmkv-value';
 
 // Files the reader keeps on the phone (SPEC 5.5, 9): recitations downloaded for offline
@@ -235,10 +236,10 @@ export function recitationSource(reciter: ReciterChoice, surah: number): string 
 
 // ---------- Mushaf page fonts ----------
 
-// Served with the web app (apps/web/public/fonts/quran-<edition>), or from the asset CDN once there
-// is one. In development, `adb reverse tcp:3000 tcp:3000` lets the emulator reach the web server.
-// Each Madani edition (Phase 5b: 1405H, 1421H, 1441H) has one font per page, kept once downloaded.
-const assetBase = process.env.EXPO_PUBLIC_ASSET_BASE_URL ?? 'http://localhost:3000';
+// Served by the asset Worker (lib/addresses), or by the web dev server when apps/mobile/.env sets
+// EXPO_PUBLIC_ASSET_BASE_URL=http://localhost:3000 (with `adb reverse tcp:3000 tcp:3000` on the
+// emulator). Each Madani edition (Phase 5b: 1405H, 1421H, 1441H) has one font per page, kept once
+// downloaded.
 
 export type GlyphEdition = 'v1' | 'v2' | 'v4';
 
@@ -261,7 +262,7 @@ function loadPageFont(page: number, edition: GlyphEdition): Promise<void> {
           intermediates: true,
           idempotent: true,
         });
-        await File.downloadFileAsync(`${assetBase}/fonts/quran-${edition}/p${page}.ttf`, file, {
+        await File.downloadFileAsync(`${assetBaseUrl}/fonts/quran-${edition}/p${page}.ttf`, file, {
           idempotent: true,
         });
       }
