@@ -20,7 +20,8 @@ const { values } = parseArgs({
     out: { type: 'string' },
   },
 });
-if (!values.screens) throw new Error('--screens <folder> is required');
+const folder = values.screens ?? '';
+if (!folder) throw new Error('--screens <folder> is required');
 const platform = values.platform === 'android' ? 'android' : 'ios';
 const root = resolve(import.meta.dirname, '../../..');
 const out = resolve(values.out ?? join(root, 'design/store/out', platform));
@@ -99,7 +100,7 @@ img{width:${Math.round(width * shot)}px;border-radius:${Math.round(width * shot 
 }
 
 async function main() {
-  const screens = screensIn(resolve(values.screens));
+  const screens = screensIn(resolve(folder));
   const browser = await chromium.launch({ channel: 'chromium' });
   const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
   for (const locale of ['ar', 'en', 'fr']) {
