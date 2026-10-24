@@ -15,6 +15,7 @@ import { CitySearch } from '@/components/city-search';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { IconButton } from '@/components/ui/icon-button';
+import { PaperLight } from '@/components/ui/paper-light';
 import { Text } from '@/components/ui/text';
 import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/cn';
@@ -81,6 +82,8 @@ function StepLayout({
           {t('onboarding.progress', { current: index + 1, total: steps.length })}
         </Text>
       </div>
+      {/* Paper and light (SPEC 6.7): Fajr's sky until a city is chosen, then the city's own. */}
+      <PaperLight seed={step} width={720} height={260} className="h-auto w-full" />
       <div className="flex flex-col gap-3">
         <Text as="h1" role="title1">
           {title}

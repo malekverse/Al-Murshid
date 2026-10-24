@@ -12,13 +12,14 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { ArrowLeft } from 'phosphor-react-native/src/icons/ArrowLeft';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { AppState, Linking, Pressable, ScrollView, View } from 'react-native';
+import { AppState, Linking, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFormatter, useTranslations } from 'use-intl';
 import { ChoiceList } from '@/components/choice-list';
 import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/ui/button';
 import { IconButton } from '@/components/ui/icon-button';
+import { PaperLight } from '@/components/ui/paper-light';
 import { ListGroup, ListRow } from '@/components/ui/list-row';
 import { Segmented } from '@/components/ui/segmented';
 import { Sheet } from '@/components/ui/sheet';
@@ -114,6 +115,7 @@ export function RiseSetup() {
   const tc = useTranslations('common.actions');
   const format = useFormatter();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const toast = useToast();
   const { locale } = useAppLocale();
   const settings = useSettings();
@@ -189,6 +191,8 @@ export function RiseSetup() {
           gap: space[8],
         }}
       >
+        {/* Paper and light (SPEC 6.7), in the sky of the moment. */}
+        <PaperLight seed="fajr-rise" width={width - 2 * space[4]} height={2 * space[16]} />
         <Text role="body" tone="muted" className="px-2">
           {t('intro')}
         </Text>

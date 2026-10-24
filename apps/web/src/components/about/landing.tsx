@@ -10,11 +10,21 @@ import {
 import type { Icon } from '@phosphor-icons/react';
 import { ayahWords, loadSurahText } from '@murshid/content/quran';
 import type { Locale } from '@murshid/i18n';
-import { glassToneFor, periodSun, skyAt, typeScale, type PrayerName } from '@murshid/tokens';
+import {
+  colors,
+  glassToneFor,
+  paperScene,
+  periodSun,
+  skyAt,
+  starlight,
+  typeScale,
+  type PrayerName,
+} from '@murshid/tokens';
 import { getTranslations } from 'next-intl/server';
 import { Fragment, type ReactNode } from 'react';
 import { buttonClass } from '@/components/ui/button-markup';
 import { Mark } from '@/components/ui/mark';
+import { PaperScene } from '@/components/ui/paper-scene';
 import { PrayerGlyph } from '@/components/ui/prayer-glyph';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
@@ -26,6 +36,18 @@ import { TasbihDemo } from './tasbih-demo';
 // promise and the way in. Server-rendered, with two small islands (the sky and the tasbih).
 
 type Moment = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+
+/** Paper and light (SPEC 6.7) after the evening: the night's sky over each theme's paper. */
+const night = (theme: 'light' | 'dark') =>
+  paperScene(
+    'landing',
+    skyAt(periodSun.night),
+    periodSun.night,
+    colors[theme].canvas,
+    starlight,
+    colors[theme].lantern,
+    { width: 1200, height: 260 },
+  );
 
 // Until Readex Pro is ready in the page's script, 2 s at most, the first card stays hidden
 // (globals.css), as the Quran pages wait for their font: the heading takes its real width while
@@ -443,6 +465,19 @@ export async function Landing({ locale }: { locale: Locale }) {
             <PromiseItem icon={DeviceMobile}>{t('promise.items.device')}</PromiseItem>
           </ul>
         </section>
+
+        <div className="mx-auto max-w-page px-4 pb-16">
+          <PaperScene
+            scene={night('light')}
+            id="landing-day"
+            className="h-auto w-full dark:hidden"
+          />
+          <PaperScene
+            scene={night('dark')}
+            id="landing-night"
+            className="hidden h-auto w-full dark:block"
+          />
+        </div>
 
         <section
           aria-labelledby="everywhere"

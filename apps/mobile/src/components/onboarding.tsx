@@ -14,13 +14,14 @@ import { Check } from 'phosphor-react-native/src/icons/Check';
 import { Crosshair } from 'phosphor-react-native/src/icons/Crosshair';
 import { MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 import { useState, type ReactNode } from 'react';
-import { PixelRatio, ScrollView, View } from 'react-native';
+import { PixelRatio, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslations } from 'use-intl';
 import { CitySearch } from './city-search';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { IconButton } from './ui/icon-button';
+import { PaperLight } from './ui/paper-light';
 import { PressableScale } from './ui/pressable-scale';
 import { Text } from './ui/text';
 import { countryName } from '@/lib/format';
@@ -55,6 +56,7 @@ function Layout({
 }) {
   const t = useTranslations();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   return (
     <ScrollView
       className="flex-1 bg-canvas"
@@ -76,6 +78,8 @@ function Layout({
           {t('onboarding.progress', { current: steps.indexOf(step) + 1, total: steps.length })}
         </Text>
       </View>
+      {/* Paper and light (SPEC 6.7): Fajr's sky until a city is chosen, then the city's own. */}
+      <PaperLight seed={step} width={width - 2 * space[4]} height={2 * space[16]} />
       <View className="gap-3">
         <Text role="title1" accessibilityRole="header">
           {title}

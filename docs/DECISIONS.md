@@ -86,7 +86,7 @@ Newest phase at the bottom.
 ### Content and assets
 
 - **`AyahText` and `DhikrCard` exist on both platforms but are not in the galleries yet.** They must show verified text, and the QPC Hafs font and its matching text come from QUL downloads that need the owner's sign-in and terms acceptance (SPEC 10). They join the galleries when those files land.
-- **Gemini illustrations are exported by `design/scripts/export_illustrations.py`: background re-keyed to the exact canvas, edges faded to transparent, WebP for both apps.** Empty states live on the canvas, not on cards, because their pictures are keyed to it.
+- **Gemini illustrations are exported by `design/scripts/export_illustrations.py`: background re-keyed to the exact canvas, edges faded to transparent, WebP for both apps.** Empty states live on the canvas, not on cards, because their pictures are keyed to it. (Superseded in Phase 7c: the empty states are drawn in code as paper and light.)
 
 ### Digits (owner decision, 2026-10-18)
 
@@ -563,3 +563,9 @@ open on what needs a real phone (PHASE-7B).
 - **The calligraphic name sits in a cartouche: two rules, each doubled by a fainter one, ending in pointed caps with a lattice star in each, in lantern ink, the way a printed mushaf frames each surah.** One frame for the verse-by-verse and Arabic-only views on both platforms, and on the public surah page, so the reader that takes it over moves nothing. It spans the reading column. The mushaf view keeps the frames drawn in its own page fonts. Alt: two medallions beside the name (they read as separate from the rules), a full-page ornament (too loud for Quiet Light).
 - **The geometry lives in the tokens (`surahFrameGlyph`, 42 × 84 caps, 84 being the header name size and two spacing steps), and so does the lattice star (`latticeStar`, `markGlyph`),** which the mark, the star puzzle, the share card and the frames had each computed for themselves.
 - **The frame is laid out left to right in every language:** it is symmetric, and its caps must open toward the rules; the name inside keeps its own direction.
+
+### Paper and light
+
+- **The illustration is drawn in code from one scene the tokens compute (`paperScene`): four paper horizons under a glass disc of light, in the colors of the sky above the person now.** The farthest layer takes the sky's lower color and each nearer one comes closer to the page's paper, so the picture settles into the canvas in both themes; the light rides the sun (high at noon, on the horizon at sunrise and sunset, a cool glow at night). Each place has its own seed, so no two share a skyline. Fajr's sky until a city is known. Alt: the painted pictures (objects, which SPEC 6.7 now rules out, and a fixed color that ignored the sky).
+- **Where: the empty states (replacing the painted pictures, whose exports and export script are gone), each onboarding step (the sky turns into the person's own once a city is chosen), the Fajr Rise setup, and the landing page,** where a static night scene follows the evening (a server drawing in each theme, so the page ships no script for it). Never behind text: each picture has its own box, its edges fading into the page (a mask on the web; the canvas color painted over the edges on the phone). Wide pictures fade along their sides and top.
+- **On the phone, tilting moves the nearer layers up to 8 points more than the far ones (the accelerometer, a gentle spring); with Reduce Motion they stay still.** The web has no tilt.

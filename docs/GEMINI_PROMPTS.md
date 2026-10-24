@@ -8,9 +8,9 @@ it, crops or color-corrects it, and wires it in. Nothing in a prompt needs editi
 
 All 34 images are in `design/source/`: six share backgrounds, four store backgrounds,
 `ramadan-night`, the 12 empty states (day and night), all nine feelings and two icon
-explorations. Claude exports them for the apps with `design/scripts/export_illustrations.py`
-(background re-keyed to the exact canvas, soft transparent edges). The prompts below stay
-here in case an image ever needs to be redone.
+explorations. The empty states are now drawn in code as paper and light (Phase 7c, SPEC 6.7), so
+their exports and their export script are gone; their sources stay. The prompts below stay here
+in case an image ever needs to be redone.
 
 ## Before you start
 
