@@ -27,6 +27,11 @@ import { TasbihDemo } from './tasbih-demo';
 
 type Moment = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
+// Until Readex Pro is ready in the page's script, 2 s at most, the first card stays hidden
+// (globals.css), as the Quran pages wait for their font: the heading takes its real width while
+// nothing is visible.
+const hideUntilUiFont = `(function(){var d=document.documentElement,f=document.fonts;if(!f||!f.load)return;d.setAttribute('data-ui-font','pending');var show=function(){d.removeAttribute('data-ui-font')};var done=function(){requestAnimationFrame(function(){requestAnimationFrame(show)})};f.load('600 1em "Readex Pro"',d.lang==='ar'?'\u0639':'a').then(done,done);setTimeout(show,2000)})()`;
+
 /** The sky band of each moment: literal class names, so Tailwind sees them. */
 const band: Record<Moment, string> = {
   fajr: 'bg-linear-to-b from-sky-fajr-top to-sky-fajr-bottom',
@@ -325,8 +330,13 @@ export async function Landing({ locale }: { locale: Locale }) {
               </a>
             </nav>
           </header>
+          {/* Runs before the card is parsed, so it is never painted in the fallback font. */}
+          <script dangerouslySetInnerHTML={{ __html: hideUntilUiFont }} />
           <div className="mx-auto flex min-h-[80dvh] max-w-reading flex-col justify-end px-4 pt-12 pb-6">
-            <div className="glass flex flex-col gap-5 rounded-sheet border border-hairline p-6 md:p-10">
+            <div
+              data-hero
+              className="glass flex flex-col gap-5 rounded-sheet border border-hairline p-6 md:p-10"
+            >
               <Text as="h1" role="display">
                 {t('hero.title')}
               </Text>

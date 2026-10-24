@@ -127,6 +127,13 @@
   visibility: hidden;
 }
 
+/* The same for the landing page's first card (Phase 7c): its large heading would wrap anew when
+   Readex Pro replaces the fallback (Arabic has no fallback of matching width, and next/font's
+   Latin one is close but not exact), moving the card that sits at the bottom of the sky. */
+:root[data-ui-font='pending'] [data-hero] {
+  visibility: hidden;
+}
+
 /*
  * The verse reader's repeated pieces (Phase 6): one short class each, shared by the reader and
  * the page the server sends first (reader-markup.ts), so a long surah's page stays small.

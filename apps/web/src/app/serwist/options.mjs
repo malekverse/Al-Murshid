@@ -15,7 +15,12 @@ export const serwistOptions = {
   // Precache only the shell: styles, icons and the offline pages (about 400 KB). Scripts (each
   // surah's words, translations and timings are script chunks), fonts (the Quran text's, and
   // each edition's mushaf page fonts, about 200 MB each) are cached as they are used (sw.ts).
-  globIgnores: ['**/node_modules/**/*', 'public/fonts/**', '.next/static/chunks/**/*.js'],
+  globIgnores: [
+    '**/node_modules/**/*',
+    'public/fonts/**',
+    'public/zones/**',
+    '.next/static/chunks/**/*.js',
+  ],
   swSrc: 'src/app/sw.ts',
   useNativeEsbuild: true,
 };

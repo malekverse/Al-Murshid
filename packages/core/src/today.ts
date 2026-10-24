@@ -7,7 +7,6 @@ import { toHijri, type HijriDate, type HijriOffset } from './hijri';
 import { shouldWelcomeBack, stepToOffer, type DayRecord, type Step, type Track } from './journey';
 import {
   prayers,
-  prayerState,
   prayerTimes,
   timeNames,
   type DayTimes,
@@ -15,6 +14,7 @@ import {
   type PrayerSettings,
   type TimeName,
 } from './prayer-times';
+import { prayerState } from './prayer-state';
 import { isReflectionTime, reflectionNight } from './reflection';
 import { dhulHijjahState, ramadanState, type DhulHijjahState, type RamadanState } from './seasons';
 import { addDays, civilDate, daysBetween, isoDate, weekday, type CivilDate } from './time';

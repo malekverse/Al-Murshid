@@ -7,6 +7,7 @@ export default defineConfig({
       // SPEC 8.1: core has 100% unit-test coverage of prayer, Qibla, Hijri and Journey logic.
       include: [
         'src/prayer-times.ts',
+        'src/prayer-state.ts',
         'src/qibla.ts',
         'src/hijri.ts',
         'src/journey.ts',
@@ -25,6 +26,7 @@ export default defineConfig({
         'src/widget.ts',
         'src/rise.ts',
         'src/tools.ts',
+        'src/zone-times.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

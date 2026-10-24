@@ -2,13 +2,8 @@ import { CalculationMethod } from 'adhan';
 import { describe, expect, it } from 'vitest';
 import reference from '../fixtures/reference-times.json';
 import { defaultMethodFor, methods, type MethodId } from './methods';
-import {
-  defaultSettings,
-  prayerState,
-  prayerTimes,
-  timeNames,
-  type DayTimes,
-} from './prayer-times';
+import { prayerState } from './prayer-state';
+import { defaultSettings, prayerTimes, timeNames, type DayTimes } from './prayer-times';
 import { cities } from './reference-cities';
 import { sunAltitude } from './sun';
 import { addDays, parseIsoDate } from './time';

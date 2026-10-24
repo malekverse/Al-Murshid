@@ -50,6 +50,18 @@ test('the sky and the next prayer where the visitor is, and the tasbih counts', 
   );
 });
 
+// The test above runs before the table written at dev start (from yesterday on), so the page
+// calculates the day itself; today reads the table.
+test('today the sky reads the times computed ahead', async ({ page }) => {
+  const table = page.waitForResponse((res) => res.url().endsWith('/zones/Africa/Tunis.json'));
+  await page.goto('/en/about');
+  expect((await table).ok()).toBe(true);
+  await expect(page.locator('p[aria-live="polite"]')).toHaveText(
+    /^(Now: .+ left|.+ in .+)· Tunis$/,
+  );
+  await expect(page.getByText('The sky in Tunis right now')).toBeVisible();
+});
+
 test('the landing page is in the sitemap', async ({ request }) => {
   const xml = await (await request.get('/sitemaps/places-1.xml')).text();
   expect(xml).toContain('/ar/about');

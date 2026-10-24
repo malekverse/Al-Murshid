@@ -3,11 +3,13 @@
 import {
   addDays,
   civilDate,
-  defaultMethodFor,
   prayerState,
-  prayerTimes,
   sunPosition,
+  zoneDay,
+  type CivilDate,
+  type DayTimes,
   type Prayer,
+  type ZoneTimes,
 } from '@murshid/core';
 import { intlLocale, type Locale } from '@murshid/i18n';
 import { glassToneFor, periodSun, skyAt } from '@murshid/tokens';
@@ -15,8 +17,9 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { StarField } from '@/components/ui/star-field';
 
 // The landing page's sky (SPEC 4): the sky at the visitor's own time, over the main city of the
-// browser's time zone, with the next prayer's countdown. No location is asked for; the city table
-// arrives after the page is on screen. Before that, and without script, it is Fajr's sky.
+// browser's time zone, with the next prayer's countdown. No location is asked for. The zone's
+// city and its prayer times, computed at build time (scripts/zone-times.ts), arrive after the page
+// is on screen; before that, and without script, it is Fajr's sky.
 
 export interface LiveSkyLabels {
   next: string;
@@ -25,7 +28,20 @@ export interface LiveSkyLabels {
   names: Record<Prayer | 'jumuah', string>;
 }
 
-type Zones = Record<string, [number, number, string, string, string, string]>;
+interface Zone extends ZoneTimes {
+  names: Record<Locale, string>;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
+/** The zone's day from its table; past the table's end, calculated here (loaded only then). */
+async function day(zone: Zone, date: CivilDate): Promise<DayTimes> {
+  const known = zoneDay(zone, date);
+  if (known) return known;
+  const { calculateDay } = await import('./calculate-day');
+  return calculateDay(zone, zone.country, date);
+}
 
 interface Live {
   top: string;
@@ -63,26 +79,15 @@ function duration(locale: string, ms: number): string {
   }).format(minutes);
 }
 
-function compute(zone: string, entry: Zones[string], locale: Locale, labels: LiveSkyLabels): Live {
-  const [latitude, longitude, en, ar, fr, country] = entry;
-  const place = { latitude, longitude };
+async function compute(zone: string, entry: Zone, locale: Locale, labels: LiveSkyLabels) {
   const now = new Date();
-  const sky = skyAt(sunPosition(now, place));
-  const settings = {
-    method: defaultMethodFor(country),
-    asr: 'standard',
-    highLatitude: 'auto',
-  } as const;
-  const today = civilDate(now, zone);
-  const state = prayerState(
-    now,
-    prayerTimes(place, today, settings),
-    prayerTimes(place, addDays(today, 1), settings),
-  );
-  const tag = intlLocale(locale, country);
-  const friday =
-    new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: zone }).format(now) === 'Fri';
-  const name = (p: Prayer) => labels.names[p === 'dhuhr' && friday ? 'jumuah' : p];
+  const sky = skyAt(sunPosition(now, entry));
+  const date = civilDate(now, zone);
+  const [today, tomorrow] = await Promise.all([day(entry, date), day(entry, addDays(date, 1))]);
+  const state = prayerState(now, today, tomorrow);
+  const tag = intlLocale(locale, entry.country);
+  // Dhuhr is always today's when it is current or next: on Friday it is Jumu'ah.
+  const name = (p: Prayer) => labels.names[p === 'dhuhr' && today.jumuah ? 'jumuah' : p];
   const line =
     state.current && state.currentEndsAt
       ? labels.now
@@ -91,7 +96,7 @@ function compute(zone: string, entry: Zones[string], locale: Locale, labels: Liv
       : labels.next
           .replace('{name}', name(state.next))
           .replace('{duration}', duration(tag, state.nextAt.getTime() - now.getTime()));
-  const city = locale === 'ar' ? ar : locale === 'fr' ? fr : en;
+  const city = entry.names[locale];
   return {
     top: sky.top,
     bottom: sky.bottom,
@@ -100,7 +105,7 @@ function compute(zone: string, entry: Zones[string], locale: Locale, labels: Liv
     line,
     city,
     place: labels.place.replace('{place}', city),
-  };
+  } satisfies Live;
 }
 
 export function LiveSky({
@@ -121,13 +126,19 @@ export function LiveSky({
     let timer: ReturnType<typeof setInterval> | undefined;
     let active = true;
     const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    void import('@murshid/content/zones').then((table) => {
-      const entry = (table.default.zones as unknown as Zones)[zone];
-      if (!active || !entry) return;
-      const update = () => setLive(compute(zone, entry, locale, labels));
-      update();
-      timer = setInterval(update, MINUTE / 2);
-    });
+    // A zone without a main city in the table keeps Fajr's sky.
+    fetch(`/zones/${zone.split('/').map(encodeURIComponent).join('/')}.json`)
+      .then((res) => (res.ok ? (res.json() as Promise<Zone>) : null))
+      .then((entry) => {
+        if (!active || !entry) return;
+        const update = () =>
+          void compute(zone, entry, locale, labels).then((next) => {
+            if (active) setLive(next);
+          });
+        update();
+        timer = setInterval(update, MINUTE / 2);
+      })
+      .catch(() => {});
     return () => {
       active = false;
       if (timer) clearInterval(timer);
@@ -165,7 +176,7 @@ export function LiveSky({
             </>
           )}
         </p>
-        <p className={`text-ink-muted ${caption}`}>{live ? live.place : ' '}</p>
+        <p className={`text-ink-muted ${caption}`}>{live ? live.place : ' '}</p>
       </div>
     </div>
   );

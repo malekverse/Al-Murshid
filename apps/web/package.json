@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node scripts/static-sw.mjs",
+    "dev": "tsx scripts/zone-times.ts && next dev",
+    "build": "tsx scripts/zone-times.ts && next build && node scripts/static-sw.mjs",
     "start": "next start",
     "typecheck": "next typegen && tsc",
     "lint": "eslint .",
@@ -44,6 +44,7 @@
     "eslint": "catalog:",
     "eslint-config-next": "16.4.2",
     "tailwindcss": "4.3.3",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }
