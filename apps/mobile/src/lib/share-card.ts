@@ -15,6 +15,7 @@ import {
 import {
   colors,
   glassToneFor,
+  markGlyph,
   quranSizeRange,
   radius,
   skyAt,
@@ -71,9 +72,7 @@ function shareFonts(): Promise<SkTypefaceFontProvider> {
   return fonts;
 }
 
-// The lattice's star {8/3} over the horizon arc, as in the web's mark (SPEC 6.7), on a 64 grid.
-const INNER = Math.cos((3 * Math.PI) / 8) / Math.cos(Math.PI / 8);
-
+// The mark (SPEC 6.7) from its 64 grid in the tokens, as on the web.
 function drawMark(
   canvas: SkCanvas,
   cx: number,
@@ -83,33 +82,23 @@ function drawMark(
   arcColor: string,
 ) {
   const unit = size / 64;
-  const x = (v: number) => cx + (v - 32) * unit;
-  const y = (v: number) => top + v * unit;
-  const star = Skia.PathBuilder.Make();
-  for (let k = 0; k < 16; k++) {
-    const r = k % 2 === 0 ? 15 : 15 * INNER;
-    const a = (Math.PI / 8) * k - Math.PI / 2;
-    const px = x(32 + r * Math.cos(a));
-    const py = y(26 + r * Math.sin(a));
-    if (k === 0) star.moveTo(px, py);
-    else star.lineTo(px, py);
-  }
-  star.close();
+  canvas.save();
+  canvas.translate(cx - 32 * unit, top);
+  canvas.scale(unit, unit);
   const fill = Skia.Paint();
   fill.setColor(Skia.Color(starColor));
   fill.setAntiAlias(true);
-  canvas.drawPath(star.build(), fill);
-
-  const curve = Skia.PathBuilder.Make();
-  curve.moveTo(x(6), y(52));
-  curve.quadTo(x(32), y(38), x(58), y(52));
+  const star = Skia.Path.MakeFromSVGString(`M${markGlyph.star.split(' ').join('L')}Z`);
+  if (star) canvas.drawPath(star, fill);
   const stroke = Skia.Paint();
   stroke.setColor(Skia.Color(arcColor));
   stroke.setStyle(PaintStyle.Stroke);
-  stroke.setStrokeWidth(3.5 * unit);
+  stroke.setStrokeWidth(markGlyph.arcStroke);
   stroke.setStrokeCap(StrokeCap.Round);
   stroke.setAntiAlias(true);
-  canvas.drawPath(curve.build(), stroke);
+  const arc = Skia.Path.MakeFromSVGString(markGlyph.arc);
+  if (arc) canvas.drawPath(arc, stroke);
+  canvas.restore();
 }
 
 /** Draws the card and opens the share sheet. */

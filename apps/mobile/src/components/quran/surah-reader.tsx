@@ -44,6 +44,7 @@ import { MemorizeSheet, useMemorize } from './memorize';
 import { AudioBar, ReaderBar } from './reader-bars';
 import { ReadingSettings, setQuranPrefs, type ReaderView } from './reading-settings';
 import { useRecitation } from './recitation';
+import { SurahFrame } from './surah-frame';
 import { pageGroups, TextPage } from './surah-text';
 
 /** The basmalah opening a surah: the words of Al-Fatihah 1 as published, without its number. */
@@ -194,7 +195,7 @@ export function SurahReader({ surah, startAyah = 1 }: { surah: number; startAyah
 
   const header = (
     <View className="items-center gap-2 py-8">
-      {fontReady && <SurahCalligraphy number={surah} size="header" />}
+      <SurahFrame>{fontReady && <SurahCalligraphy number={surah} size="header" />}</SurahFrame>
       {locale !== 'ar' && (
         <Text role="callout" tone="muted">
           {info.nameSimple}

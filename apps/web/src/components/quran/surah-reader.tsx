@@ -46,6 +46,7 @@ import {
   surahOpeningClass,
 } from './reader-markup';
 import type { ReaderIntent } from './reader-intent';
+import { SurahFrame } from './surah-frame';
 import { SurahNameOutline } from './surah-name-outline';
 import { useRecitation } from './recitation-store';
 import { SurahText } from './surah-text';
@@ -286,11 +287,13 @@ export function SurahReader({
       />
       <main id="main" className={readerMainClass}>
         <div className={surahOpeningClass}>
-          {initial?.name ? (
-            <SurahNameOutline name={initial.name} size={surahNameSize.header} />
-          ) : (
-            <SurahCalligraphy number={surah} size="header" />
-          )}
+          <SurahFrame>
+            {initial?.name ? (
+              <SurahNameOutline name={initial.name} size={surahNameSize.header} />
+            ) : (
+              <SurahCalligraphy number={surah} size="header" />
+            )}
+          </SurahFrame>
           {locale !== 'ar' && (
             <Text role="callout" tone="muted">
               {info.nameSimple}

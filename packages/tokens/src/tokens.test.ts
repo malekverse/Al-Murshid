@@ -4,7 +4,12 @@ import {
   contrastRatio,
   contrastRequirements,
   glassToneFor,
+  latticeInner,
+  latticeStar,
+  markGlyph,
   parseColor,
+  surahFrameGlyph,
+  surahNameSize,
   ramadanNight,
   sky,
   space,
@@ -64,3 +69,23 @@ function mix(fg: string, bg: string, alpha: number): string {
   const out = a.map((c, i) => Math.round(c * alpha + (b[i] ?? 0) * (1 - alpha)));
   return `#${out.map((c) => c.toString(16).padStart(2, '0')).join('')}`;
 }
+
+describe('the lattice star', () => {
+  it('has sixteen corners, the first at the top, the inner ones at the lattice ratio', () => {
+    const star = latticeStar(32, 26, 15);
+    expect(star).toHaveLength(16);
+    expect(star[0]).toEqual([32, 11]);
+    const [x, y] = star[1]!;
+    expect(Math.hypot(x - 32, y - 26)).toBeCloseTo(15 * latticeInner, 1);
+    expect(latticeInner).toBeCloseTo(0.414, 3);
+  });
+
+  it('frames a surah name at the header size, with room above and below', () => {
+    expect(surahFrameGlyph.height).toBe(surahNameSize.header + 2 * space[4]);
+  });
+
+  it('draws the mark the web and the phone share', () => {
+    expect(markGlyph.star.split(' ')).toHaveLength(16);
+    expect(markGlyph.star.startsWith('32,11 ')).toBe(true);
+  });
+});

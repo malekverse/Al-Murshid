@@ -1,5 +1,5 @@
 import { STAR_FIELD, STAR_ROUNDS, starSequence, tapStar } from '@murshid/core';
-import { duration } from '@murshid/tokens';
+import { duration, latticeStarPoints } from '@murshid/tokens';
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, View } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
@@ -13,13 +13,8 @@ import { useColors } from '@/lib/theme';
 const LIT_MS = duration.gentle + duration.quick;
 const GAP_MS = duration.standard;
 
-// The eight-pointed star of the lattice (SPEC 6.3), {8/3}, as one polygon.
-const INNER = Math.cos((3 * Math.PI) / 8) / Math.cos(Math.PI / 8);
-const STAR = Array.from({ length: 16 }, (_, k) => {
-  const r = k % 2 === 0 ? 22 : 22 * INNER;
-  const a = (Math.PI / 8) * k - Math.PI / 2;
-  return `${(24 + r * Math.cos(a)).toFixed(2)},${(24 + r * Math.sin(a)).toFixed(2)}`;
-}).join(' ');
+// The eight-pointed star of the lattice (SPEC 6.7), {8/3}, as one polygon.
+const STAR = latticeStarPoints(24, 24, 22);
 
 /**
  * Stars light in an order; the person taps them in the same order: four, then five. A slip

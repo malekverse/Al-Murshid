@@ -34,6 +34,7 @@ import {
   type IconButtonVariant,
 } from './reader-markup';
 import { ReaderUpgrade } from './reader-upgrade';
+import { SurahFrame } from './surah-frame';
 import { SurahNameOutline } from './surah-name-outline';
 
 // A surah as the server sends it (Phase 6): the published text with the translation of the
@@ -156,7 +157,9 @@ export async function StaticSurah({ locale, surah }: { locale: Locale; surah: nu
 
         <main id="main" className={readerMainClass}>
           <div className={surahOpeningClass}>
-            <SurahNameOutline name={calligraphy} size={surahNameSize.header} />
+            <SurahFrame>
+              <SurahNameOutline name={calligraphy} size={surahNameSize.header} />
+            </SurahFrame>
             {locale !== 'ar' && (
               <Text role="callout" tone="muted">
                 {info.nameSimple}

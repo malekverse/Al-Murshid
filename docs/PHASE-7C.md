@@ -56,4 +56,5 @@ marks on both platforms.
   computed at build time (DECISIONS, "The landing page").
 - Step 4, the ayah card: built on both platforms. The Names, dhikr and duas wait for their
   reviewed text; seasonal greeting cards follow with step 6's illustrations.
-- Open: alternate icons (no free module chosen yet), steps 5–7.
+- Step 5, the surah frames: built on both platforms and on the public surah page.
+- Open: alternate icons (no free module chosen yet), steps 6 and 7.
