@@ -38,10 +38,34 @@ public class FajrRiseModule: Module {
   private var backend: FajrRiseBackend.Type? {
     NSClassFromString("FajrRiseAlarms") as? FajrRiseBackend.Type
   }
+  private var opened: NSObjectProtocol?
+
+  private func ringingObject() -> [String: Any]? {
+    guard
+      let json = backend?.ringing(),
+      let object = try? JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any]
+    else { return nil }
+    return object
+  }
 
   public func definition() -> ModuleDefinition {
     Name("FajrRise")
     Events("onRing")
+
+    // The alarm's "Wake up" button ran (FajrRiseAlarms.swift): the ring screen opens, also when
+    // the app was already up.
+    OnStartObserving {
+      self.opened = NotificationCenter.default.addObserver(
+        forName: Notification.Name("FajrRiseOpened"), object: nil, queue: .main
+      ) { [weak self] _ in
+        guard let self, let alarm = self.ringingObject() else { return }
+        self.sendEvent("onRing", alarm)
+      }
+    }
+    OnStopObserving {
+      if let opened = self.opened { NotificationCenter.default.removeObserver(opened) }
+      self.opened = nil
+    }
 
     AsyncFunction("schedule") { (alarms: [AlarmRecord], config: ConfigRecord, promise: Promise) in
       guard let backend = self.backend else {
@@ -75,11 +99,7 @@ public class FajrRiseModule: Module {
     }
 
     Function("ringing") { () -> [String: Any]? in
-      guard
-        let json = self.backend?.ringing(),
-        let object = try? JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any]
-      else { return nil }
-      return object
+      self.ringingObject()
     }
 
     AsyncFunction("finish") { (morning: String?, _: Bool) in

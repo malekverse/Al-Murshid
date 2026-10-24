@@ -50,6 +50,10 @@ struct OpenFajrRiseIntent: LiveActivityIntent {
 
   func perform() async throws -> some IntentResult {
     FajrRiseAlarms.markOpened(alarm)
+    // The app may already be up (the button opens it first): the module tells the screens.
+    await MainActor.run {
+      NotificationCenter.default.post(name: Notification.Name("FajrRiseOpened"), object: nil)
+    }
     return .result()
   }
 }
@@ -58,6 +62,8 @@ struct OpenFajrRiseIntent: LiveActivityIntent {
 final class FajrRiseAlarms: NSObject, FajrRiseBackend {
   private static let planKey = "fajrRise.plan"
   private static let openedKey = "fajrRise.opened"
+  /** Setup's test ring (core's TRY_MORNING). */
+  private static let tryMorning = "try"
   /** An "Open" tap counts as ringing for this long, while the challenge is worked on. */
   private static let openedFor: TimeInterval = 30 * 60
 
@@ -128,6 +134,17 @@ final class FajrRiseAlarms: NSObject, FajrRiseBackend {
   @available(iOS 26.0, *)
   private static func replace(_ alarms: [Planned], _ settings: Settings) async throws {
     let manager = AlarmManager.shared
+    let now = Date().timeIntervalSince1970 * 1000
+    // A new plan comes each time the app opens. An alarm that rang in the last half hour stays
+    // until its morning is finished, so opening the app on it (or from its button) neither stops
+    // it nor loses it; so does a test ring still to come, which the app does not plan (as on
+    // Android).
+    let ids = Set(alarms.map(\.id))
+    let kept = plan.filter { old in
+      !ids.contains(old.id)
+        && (old.at <= now ? old.at > now - openedFor * 1000 : old.morning == tryMorning)
+    }
+    let alarms = alarms + kept
     plan = alarms
     // Only scheduled when allowed; setup asks first.
     guard manager.authorizationState == .authorized else { return }
@@ -137,7 +154,6 @@ final class FajrRiseAlarms: NSObject, FajrRiseBackend {
       try? manager.cancel(id: alarm.id)
     }
     let scheduled = Set(existing.map(\.id))
-    let now = Date().timeIntervalSince1970 * 1000
     let tint = color(settings.tint)
     for (id, alarm) in wanted where !scheduled.contains(id) && alarm.at > now {
       let alert = AlarmPresentation.Alert(

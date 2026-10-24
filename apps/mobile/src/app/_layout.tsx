@@ -11,7 +11,7 @@ import {
 } from '@expo-google-fonts/readex-pro';
 import { fonts } from '@murshid/tokens';
 import { useFonts } from 'expo-font';
-import { LocaleProvider, router, Stack, usePathname } from 'expo-router';
+import { LocaleProvider, router, Stack, useNavigationContainerRef, usePathname } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -109,10 +109,14 @@ function ReminderSync() {
  * whenever its settings or a setting that moves the prayer times change. An alarm that rings while
  * the app is open brings the ring screen up at once.
  */
+/** Whether the app has looked for a ringing alarm since it started. */
+let riseChecked = false;
+
 function RiseSync() {
   const s = useSettings();
   const rise = riseSettings.useValue();
   const pathname = usePathname();
+  const navigation = useNavigationContainerRef();
   const key = JSON.stringify([
     s.onboarded,
     s.location,
@@ -122,6 +126,22 @@ function RiseSync() {
     s.adjustments,
     rise,
   ]);
+
+  // Started while an alarm rings, or by its "Wake up" button on iOS, which has no link to follow
+  // (Android's full-screen alarm opens /rise itself): the ring screen, once the screens are up.
+  useEffect(() => {
+    const check = () => {
+      if (riseChecked || !navigation.isReady()) return riseChecked;
+      riseChecked = true;
+      if (riseNative?.ringing() && pathname !== '/rise') router.push('/rise');
+      return true;
+    };
+    if (check()) return;
+    const unsubscribe = navigation.addListener('state', () => {
+      if (check()) unsubscribe();
+    });
+    return unsubscribe;
+  }, [navigation, pathname]);
 
   // Coming back while an alarm rings (or from its "Wake up" button on iOS) opens the ring screen.
   useEffect(() => {
