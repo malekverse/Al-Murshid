@@ -14,7 +14,7 @@ import { Check } from 'phosphor-react-native/src/icons/Check';
 import { Crosshair } from 'phosphor-react-native/src/icons/Crosshair';
 import { MagnifyingGlass } from 'phosphor-react-native/src/icons/MagnifyingGlass';
 import { useState, type ReactNode } from 'react';
-import { PixelRatio, ScrollView, useWindowDimensions, View } from 'react-native';
+import { Keyboard, PixelRatio, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslations } from 'use-intl';
 import { CitySearch } from './city-search';
@@ -269,6 +269,8 @@ export function Onboarding() {
           {finding === 'search' ? (
             <CitySearch
               onPick={(city) => {
+                // The keyboard would otherwise stay over the Continue button below.
+                Keyboard.dismiss();
                 setPicked(locationFromCity(city));
                 setFinding('idle');
               }}
