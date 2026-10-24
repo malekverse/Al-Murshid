@@ -37,8 +37,16 @@ export function RollingNumber({
       {chars.map((ch, i) => {
         const place = chars.length - i;
         if (!isDigit(ch)) {
+          // Left to right on its own: in an Arabic screen iOS otherwise takes the font's Arabic
+          // colon, which sits half a line lower than the digits.
           return (
-            <Text key={`s${place}`} role={role} tone={tone} script="latin">
+            <Text
+              key={`s${place}`}
+              role={role}
+              tone={tone}
+              script="latin"
+              style={{ writingDirection: 'ltr' }}
+            >
               {ch}
             </Text>
           );

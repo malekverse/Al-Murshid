@@ -59,4 +59,6 @@ marks on both platforms.
 - Step 5, the surah frames: built on both platforms and on the public surah page.
 - Step 6, paper and light: built on both platforms (empty states, onboarding, Fajr Rise, the
   landing page).
-- Open: alternate icons (no free module chosen yet), step 7.
+- Step 7, store screenshots: the composer is built; a first iOS set in Arabic (7) and English
+  (8). French comes with the next iOS run; Android from the emulator.
+- Open: alternate icons (no free module chosen yet), the rest of step 7.

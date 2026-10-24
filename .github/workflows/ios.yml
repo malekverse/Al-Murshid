@@ -143,6 +143,9 @@ jobs:
           echo "UDID=$udid" >> "$GITHUB_ENV"
           xcrun simctl boot "$udid"
           xcrun simctl bootstatus "$udid" -b
+          # A clean status bar for the screenshots, which become the store's (design/store).
+          xcrun simctl status_bar "$udid" override --time 9:41 --batteryState charged \
+            --batteryLevel 100 --wifiBars 3 --cellularMode active --cellularBars 4
           app=$(ls -d build/Build/Products/Release-iphonesimulator/*.app | head -1)
           codesign -d --entitlements - "$app" 2>&1 | head -30 || true
           xcrun simctl install "$udid" "$app"
@@ -154,7 +157,7 @@ jobs:
           curl -fsSL "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
-      - name: Tour in Arabic and English, light and dark
+      - name: Tour in Arabic, English and French, light and dark
         working-directory: apps/mobile/.maestro
         run: |
           # Every tour runs, so one failure still leaves the others' screenshots. A tour that fails
@@ -163,7 +166,7 @@ jobs:
           status=0
           for theme in light dark; do
             xcrun simctl ui "$UDID" appearance "$theme"
-            for locale in ar en; do
+            for locale in ar en fr; do
               tour "$locale" "$theme" || tour "$locale" "$theme" || status=1
             done
           done

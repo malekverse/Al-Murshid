@@ -1,30 +1,30 @@
 # The iOS tour (SPEC 11 polish checklist): onboarding by city, then Today, the Quran, Remember and
-# the tasbih, You and its privacy section, with a screenshot of each. Run with LOCALE (ar or en) and
+# the tasbih, You and its privacy section, with a screenshot of each. Run with LOCALE (ar, en or fr) and
 # THEME (light or dark); the iOS build workflow runs it on the simulator.
 appId: com.malekverse.almurshid
 name: Tour ${LOCALE} ${THEME}
 ---
 - launchApp:
     clearState: true
-- tapOn: "${LOCALE == 'ar' ? 'العربية' : 'English'}"
-- tapOn: "${LOCALE == 'ar' ? 'اختيار مدينة' : 'Choose a city'}"
-- tapOn: "${LOCALE == 'ar' ? 'المدينة' : 'City'}"
+- tapOn: "${LOCALE == 'ar' ? 'العربية' : LOCALE == 'fr' ? 'Français' : 'English'}"
+- tapOn: "${LOCALE == 'ar' ? 'اختيار مدينة' : LOCALE == 'fr' ? 'Choisir une ville' : 'Choose a city'}"
+- tapOn: "${LOCALE == 'ar' ? 'المدينة' : LOCALE == 'fr' ? 'Ville' : 'City'}"
 - inputText: Tunis
 - tapOn:
-    text: "${LOCALE == 'ar' ? '.*Tunis Governorate.*' : 'Tunis, Tunisia'}"
-- tapOn: "${LOCALE == 'ar' ? 'متابعة' : 'Continue'}"
-- tapOn: "${LOCALE == 'ar' ? 'أصلّي في أغلب الأيام' : 'I pray most days'}"
-- tapOn: "${LOCALE == 'ar' ? 'ليس الآن' : 'Not now'}"
+    text: "${LOCALE == 'ar' ? '.*Tunis Governorate.*' : LOCALE == 'fr' ? 'Tunis, Tunisie' : 'Tunis, Tunisia'}"
+- tapOn: "${LOCALE == 'ar' ? 'متابعة' : LOCALE == 'fr' ? 'Continuer' : 'Continue'}"
+- tapOn: "${LOCALE == 'ar' ? 'أصلّي في أغلب الأيام' : LOCALE == 'fr' ? 'Je prie presque tous les jours' : 'I pray most days'}"
+- tapOn: "${LOCALE == 'ar' ? 'ليس الآن' : LOCALE == 'fr' ? 'Pas maintenant' : 'Not now'}"
 - extendedWaitUntil:
-    visible: "${LOCALE == 'ar' ? 'صلّيتُ' : 'I prayed'}"
+    visible: "${LOCALE == 'ar' ? 'صلّيتُ' : LOCALE == 'fr' ? 'J’ai prié' : 'I prayed'}"
     timeout: 30000
 - takeScreenshot: ${LOCALE}-${THEME}-today
 
-- tapOn: "${LOCALE == 'ar' ? 'القرآن' : 'Quran'}"
+- tapOn: "${LOCALE == 'ar' ? 'القرآن' : LOCALE == 'fr' ? 'Coran' : 'Quran'}"
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-quran
 
-- tapOn: "${LOCALE == 'ar' ? 'الذِّكر' : 'Remember'}"
+- tapOn: "${LOCALE == 'ar' ? 'الذِّكر' : LOCALE == 'fr' ? 'Rappel' : 'Remember'}"
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-remember
 # On iOS the whole card is one element, its label the title and the description together.
@@ -35,9 +35,9 @@ name: Tour ${LOCALE} ${THEME}
     delay: 150
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-tasbih
-- tapOn: "${LOCALE == 'ar' ? 'رجوع' : 'Back'}"
+- tapOn: "${LOCALE == 'ar' ? 'رجوع' : LOCALE == 'fr' ? 'Retour' : 'Back'}"
 
-- tapOn: "${LOCALE == 'ar' ? 'أنت' : 'You'}"
+- tapOn: "${LOCALE == 'ar' ? 'أنت' : LOCALE == 'fr' ? 'Vous' : 'You'}"
 - waitForAnimationToEnd
 - takeScreenshot: ${LOCALE}-${THEME}-you
 # Privacy is far down You, and each step reads the whole screen: give it time, and stop with the

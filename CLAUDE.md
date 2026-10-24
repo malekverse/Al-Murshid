@@ -63,6 +63,10 @@ Read docs/SPEC.md before any task. It is the source of truth and overrides gener
   `apps/web/.next/cache/turbopack` and build again.
 - Share images (`opengraph-image.tsx`) draw text through `apps/web/src/lib/og`, shaped with HarfBuzz:
   Satori's own text cannot join Arabic letters.
+- Store screenshots: download a run's screenshots with
+  `gh run download <run> -n ios-simulator-screens -D <folder>`, then run
+  `pnpm --filter @murshid/web store -- --screens <folder> --platform ios`.
+  The frames land in `design/store/out` (not committed).
 - Commands run from the repo root through Turborepo: `pnpm dev`, `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 - Design tokens live in `packages/tokens`; run `pnpm --filter @murshid/tokens build` after editing them
   (it regenerates `theme.css` for both apps).
