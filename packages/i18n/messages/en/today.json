@@ -72,6 +72,26 @@
   "tools": {
     "label": "Tools",
     "qibla": "Qibla",
-    "calendar": "Hijri calendar"
+    "calendar": "Hijri calendar",
+    "rise": "Fajr Rise",
+    "tasbih": "Tasbih",
+    "title": "Tools",
+    "all": "All tools",
+    "intro": "Pin up to four to Today.",
+    "notes": {
+      "qibla": "The direction of the Kaaba from where you are",
+      "calendar": "The Hijri months and their days",
+      "rise": "An alarm that stops once you’re up",
+      "tasbih": "Count your dhikr"
+    },
+    "pin": "Pin to Today",
+    "unpin": "Remove from Today",
+    "pinned": "On Today",
+    "full": "Today holds four tools. Remove one first."
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
   }
 }

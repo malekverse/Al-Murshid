@@ -207,3 +207,13 @@ describe('prayer logs', () => {
     expect(newLog(today, 'fajr', 'app').source).toBe('app');
   });
 });
+
+describe('pinned tools (SPEC 5.11)', () => {
+  it('pins Qibla and the calendar by default, keeps four distinct, and recovers from damage', () => {
+    expect(defaultSettings().pinnedTools).toEqual(['qibla', 'calendar']);
+    expect(
+      parseSettings({ pinnedTools: ['rise', 'rise', 'qibla', 'tasbih', 'calendar'] }).pinnedTools,
+    ).toEqual(['rise', 'qibla', 'tasbih', 'calendar']);
+    expect(parseSettings({ pinnedTools: ['nonsense'] }).pinnedTools).toEqual(['qibla', 'calendar']);
+  });
+});

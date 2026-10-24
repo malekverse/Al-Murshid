@@ -252,7 +252,7 @@ export function TodayScreen() {
 
           <FocusLine settings={settings} />
           <PrayerList view={view} timeZone={place.timeZone} onPressRow={setReminderFor} />
-          <Tools />
+          <Tools settings={settings} />
         </>,
       )}
       {sheets}

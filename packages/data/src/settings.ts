@@ -27,6 +27,9 @@ import {
   type Step,
   type TimeName,
   type Track,
+  MAX_PINNED,
+  defaultPinned,
+  toolIds,
 } from '@murshid/core';
 import { z } from 'zod';
 import { defaultQuranPrefs, quranPrefsSchema } from './quran';
@@ -162,6 +165,11 @@ export const settingsSchema = z.object({
   tasbihTarget: z.number().int().min(1).max(TASBIH_MAX).nullable().catch(33),
   /** One setting turns every haptic off (SPEC 6.5). */
   haptics: z.boolean().catch(true),
+  /** The tools pinned to Today's row (SPEC 5.11), four at most, in the order pinned. */
+  pinnedTools: z
+    .array(z.enum(toolIds))
+    .transform((ids) => [...new Set(ids)].slice(0, MAX_PINNED))
+    .catch(() => [...defaultPinned]),
   /** Reading preferences for the Quran (SPEC 5.5; synced as SPEC 9's Quran preferences). */
   quran: quranPrefsSchema.catch(() => defaultQuranPrefs()),
   /** The last day the app was opened, and the one before it (for "Welcome back"). */

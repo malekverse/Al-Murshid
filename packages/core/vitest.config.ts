@@ -24,6 +24,7 @@ export default defineConfig({
         'src/tasbih.ts',
         'src/widget.ts',
         'src/rise.ts',
+        'src/tools.ts',
       ],
       thresholds: { lines: 100, functions: 100, statements: 100, branches: 100 },
       reporter: ['text-summary', 'text'],

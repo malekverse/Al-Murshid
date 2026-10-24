@@ -46,7 +46,12 @@ name: Fajr Rise
     visible: Wake up
     timeout: 40000
 - takeScreenshot: rise-alarm
-- tapOn: Wake up
+# A script's tap may not press a system alert's button; opening the app while the alarm rings
+# brings up the ring screen either way (a path people take too).
+- tapOn:
+    text: Wake up
+    optional: true
+- launchApp
 - extendedWaitUntil:
     visible: 'Solve to stop the alarm.*'
     timeout: 30000

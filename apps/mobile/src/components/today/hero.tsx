@@ -224,6 +224,7 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
       <View className="min-h-96 justify-end p-4 pt-24">
         <GlassCard tone={tone} className="gap-6 p-6">
           <View className="gap-1">
+            <Text role="callout">{t(`today.greeting.${view.greeting}`)}</Text>
             <Text role="caption" tone="muted">
               {`${gregorian} · ${hijri(view.hijri)}`}
             </Text>

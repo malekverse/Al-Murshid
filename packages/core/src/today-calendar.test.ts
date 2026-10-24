@@ -307,3 +307,14 @@ describe('todayView: the Fajr Rise offer (SPEC 5.10)', () => {
     ).toBeNull();
   });
 });
+
+describe('todayView: the greeting (SPEC 5.11)', () => {
+  const t = timesOn(sunday);
+  it('says good morning from Fajr, good afternoon from Dhuhr, good evening from Maghrib', () => {
+    expect(view(plus(t.fajr, -5)).greeting).toBe('evening');
+    expect(view(plus(t.fajr, 5)).greeting).toBe('morning');
+    expect(view(plus(t.dhuhr, 5)).greeting).toBe('afternoon');
+    expect(view(plus(t.maghrib, -5)).greeting).toBe('afternoon');
+    expect(view(plus(t.maghrib, 5)).greeting).toBe('evening');
+  });
+});

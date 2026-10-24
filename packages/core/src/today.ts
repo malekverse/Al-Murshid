@@ -122,6 +122,18 @@ export interface TodayView {
   dhulHijjah: DhulHijjahState | null;
   /** The evening a reflection written now belongs to (SPEC 5.7). */
   night: CivilDate;
+  /** Today's greeting for the time of day (SPEC 5.11). */
+  greeting: Greeting;
+}
+
+/** Morning from Fajr to Dhuhr, afternoon until Maghrib, evening through the night. */
+export type Greeting = 'morning' | 'afternoon' | 'evening';
+
+export function greetingAt(now: Date, times: DayTimes): Greeting {
+  const t = now.getTime();
+  if (t >= times.fajr.getTime() && t < times.dhuhr.getTime()) return 'morning';
+  if (t >= times.dhuhr.getTime() && t < times.maghrib.getTime()) return 'afternoon';
+  return 'evening';
 }
 
 const FRIDAY = 5;
@@ -274,6 +286,7 @@ export function todayView(input: TodayInput): TodayView {
     card: chooseCard(input, date, times, input.logs, seasons, night),
     ...seasons,
     night,
+    greeting: greetingAt(now, times),
   };
 }
 

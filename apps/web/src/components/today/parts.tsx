@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarBlank, Compass, PencilSimpleLine } from '@phosphor-icons/react';
+import { PencilSimpleLine } from '@phosphor-icons/react';
 import {
   isoDate,
   type ContextCard as Card_,
@@ -8,6 +8,7 @@ import {
   type Prayer,
   type Step,
   type TodayView,
+  pinnedTools,
 } from '@murshid/core';
 import type { Settings } from '@murshid/data';
 import { motion as tokens } from '@murshid/tokens';
@@ -27,6 +28,7 @@ import { Toggle } from '@/components/ui/toggle';
 import { Link } from '@/i18n/navigation';
 import type { ReaderPlace } from '@/components/quran/common';
 import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
+import { webToolIds, webTools } from '@/components/tools-screen';
 import { usePrayerName, useTimeFormat } from '@/lib/format';
 import { useScript } from '@/lib/use-direction';
 
@@ -198,29 +200,43 @@ export function PrayerList({ view, timeZone }: { view: TodayView; timeZone: stri
   );
 }
 
-export function Tools() {
+/** Today's tools row (SPEC 5.11): the pinned tools, and the way to all of them. */
+export function Tools({ settings }: { settings: Settings }) {
   const t = useTranslations('today.tools');
-  const tools = [
-    { href: '/qibla', icon: Compass, label: t('qibla') },
-    { href: '/calendar', icon: CalendarBlank, label: t('calendar') },
-  ] as const;
+  const tools = pinnedTools(settings.pinnedTools, webToolIds).map((id) =>
+    webTools.find((tool) => tool.id === id)!,
+  );
   return (
-    <nav aria-label={t('label')} className="grid grid-cols-2 gap-4">
-      {tools.map(({ href, icon: IconComponent, label }) => (
-        <MotionLink
-          key={href}
-          href={href}
-          whileTap={{ scale: tokens.pressScale }}
-          className="flex min-h-touch items-center gap-3 rounded-card border border-card-edge bg-surface p-4 shadow-card hover:bg-ink/5"
-        >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-control bg-lantern/10 text-lantern-ink">
-            <IconComponent size={22} aria-hidden />
-          </span>
-          <Text as="span" role="body">
-            {label}
+    <nav aria-label={t('label')} className="flex flex-col gap-3">
+      <div className="flex items-center justify-between gap-2 px-2">
+        <Text as="h2" role="headline">
+          {t('label')}
+        </Text>
+        <Link href="/tools" className="rounded-full px-3 py-2 text-lantern-ink hover:bg-lantern/10">
+          <Text as="span" role="callout" tone="inherit">
+            {t('all')}
           </Text>
-        </MotionLink>
-      ))}
+        </Link>
+      </div>
+      {tools.length > 0 && (
+        <div className="grid grid-cols-2 gap-4">
+          {tools.map(({ id, href, icon: IconComponent }) => (
+            <MotionLink
+              key={id}
+              href={href}
+              whileTap={{ scale: tokens.pressScale }}
+              className="flex min-h-touch items-center gap-3 rounded-card border border-card-edge bg-surface p-4 shadow-card hover:bg-ink/5"
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-control bg-lantern/10 text-lantern-ink">
+                <IconComponent size={22} aria-hidden />
+              </span>
+              <Text as="span" role="body">
+                {t(id)}
+              </Text>
+            </MotionLink>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }

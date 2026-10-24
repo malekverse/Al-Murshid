@@ -113,6 +113,7 @@ export function Hero({ state, now, justLogged, onLog, onEarlier }: HeroProps) {
         <div data-theme={tone}>
           <Card variant="glass" className="relative flex flex-col gap-6 p-6">
             <div className="flex flex-col gap-1">
+              <Text role="callout">{t(`today.greeting.${view.greeting}`)}</Text>
               <Text role="caption" tone="muted">
                 {gregorian} · {hijri(view.hijri)}
               </Text>

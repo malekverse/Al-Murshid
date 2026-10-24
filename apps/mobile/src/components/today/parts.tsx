@@ -4,15 +4,14 @@ import {
   type EarlierPrayer,
   type Prayer,
   type TodayView,
+  pinnedTools,
 } from '@murshid/core';
 import type { Settings } from '@murshid/data';
 import { router } from 'expo-router';
 import { Alarm } from 'phosphor-react-native/src/icons/Alarm';
-import { CalendarBlank } from 'phosphor-react-native/src/icons/CalendarBlank';
-import { Compass } from 'phosphor-react-native/src/icons/Compass';
 import { PencilSimpleLine } from 'phosphor-react-native/src/icons/PencilSimpleLine';
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useTranslations } from 'use-intl';
 import { AyahText } from '@/components/ui/ayah-text';
 import { Button } from '@/components/ui/button';
@@ -30,6 +29,7 @@ import { DhulHijjahCard, JumuahCard, RamadanCard } from './season-cards';
 import { dismissRiseOffer, markRiseOfferShown, nextAlarm, riseSettings } from '@/lib/rise';
 import { useColors } from '@/lib/theme';
 import { useNow } from '@/lib/use-now';
+import { mobileToolIds, mobileTools } from '@/components/tools-screen';
 
 export interface WelcomeVerse {
   text: string;
@@ -247,29 +247,49 @@ export function PrayerList({
   );
 }
 
-export function Tools() {
+/** Today's tools row (SPEC 5.11): the pinned tools, and the way to all of them. */
+export function Tools({ settings }: { settings: Settings }) {
   const t = useTranslations('today.tools');
   const color = useColors();
-  const tools = [
-    { href: '/qibla', icon: Compass, label: t('qibla') },
-    { href: '/calendar', icon: CalendarBlank, label: t('calendar') },
-  ] as const;
+  const tools = pinnedTools(settings.pinnedTools, mobileToolIds).map((id) =>
+    mobileTools.find((tool) => tool.id === id)!,
+  );
   return (
-    <View className="flex-row gap-4" accessibilityLabel={t('label')}>
-      {tools.map(({ href, icon: IconComponent, label }) => (
-        <PressableScale
-          key={href}
-          onPress={() => router.push(href)}
+    <View className="gap-3" accessibilityLabel={t('label')}>
+      <View className="flex-row items-center justify-between gap-2 px-2">
+        <Text role="headline" accessibilityRole="header">
+          {t('label')}
+        </Text>
+        <Pressable
+          onPress={() => router.push('/tools')}
           accessibilityRole="button"
-          className="min-h-touch flex-1 flex-row items-center gap-3 rounded-card border border-card-edge bg-surface p-4 shadow-card dark:shadow-none"
+          className="min-h-touch justify-center rounded-full px-3"
         >
-          <View className="size-10 items-center justify-center rounded-control bg-lantern/10">
-            <IconComponent size={22} color={color.lanternInk} />
-          </View>
-          <Text role="body" className="flex-1">
-            {label}
+          <Text role="callout" tone="lantern">
+            {t('all')}
           </Text>
-        </PressableScale>
+        </Pressable>
+      </View>
+      {/* Two to a row; an odd last tool keeps its half. */}
+      {Array.from({ length: Math.ceil(tools.length / 2) }, (_, row) => (
+        <View key={row} className="flex-row gap-4">
+          {tools.slice(row * 2, row * 2 + 2).map(({ id, href, icon: IconComponent }) => (
+            <PressableScale
+              key={id}
+              onPress={() => router.push(href)}
+              accessibilityRole="button"
+              className="min-h-touch flex-1 flex-row items-center gap-3 rounded-card border border-card-edge bg-surface p-4 shadow-card dark:shadow-none"
+            >
+              <View className="size-10 items-center justify-center rounded-control bg-lantern/10">
+                <IconComponent size={22} color={color.lanternInk} />
+              </View>
+              <Text role="body" className="flex-1">
+                {t(id)}
+              </Text>
+            </PressableScale>
+          ))}
+          {row * 2 + 1 >= tools.length && <View className="flex-1" />}
+        </View>
       ))}
     </View>
   );

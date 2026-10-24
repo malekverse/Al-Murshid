@@ -201,7 +201,7 @@ export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
 
       <FocusLine settings={settings} />
       <PrayerList view={view} timeZone={place.timeZone} />
-      <Tools />
+      <Tools settings={settings} />
       {sheet}
     </Main>
   );

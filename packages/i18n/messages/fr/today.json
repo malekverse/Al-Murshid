@@ -72,6 +72,26 @@
   "tools": {
     "label": "Outils",
     "qibla": "Qibla",
-    "calendar": "Calendrier hégirien"
+    "calendar": "Calendrier hégirien",
+    "rise": "Réveil du Fajr",
+    "tasbih": "Tasbih",
+    "title": "Outils",
+    "all": "Tous les outils",
+    "intro": "Épinglez jusqu’à quatre outils sur Aujourd’hui.",
+    "notes": {
+      "qibla": "La direction de la Kaaba depuis l’endroit où vous êtes",
+      "calendar": "Les mois hégiriens et leurs jours",
+      "rise": "Une alarme qui s’arrête quand vous êtes debout",
+      "tasbih": "Comptez votre dhikr"
+    },
+    "pin": "Épingler sur Aujourd’hui",
+    "unpin": "Retirer d’Aujourd’hui",
+    "pinned": "Sur Aujourd’hui",
+    "full": "Aujourd’hui accueille quatre outils. Retirez-en un d’abord."
+  },
+  "greeting": {
+    "morning": "Bonjour",
+    "afternoon": "Bon après-midi",
+    "evening": "Bonsoir"
   }
 }
