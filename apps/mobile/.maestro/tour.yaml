@@ -10,6 +10,11 @@ name: Tour ${LOCALE} ${THEME}
 - tapOn: "${LOCALE == 'ar' ? 'اختيار مدينة' : LOCALE == 'fr' ? 'Choisir une ville' : 'Choose a city'}"
 - tapOn: "${LOCALE == 'ar' ? 'المدينة' : LOCALE == 'fr' ? 'Ville' : 'City'}"
 - inputText: Tunis
+# The keyboard's first-use tutorial ("slide to type"), if the simulator still shows it: its
+# Continue is the only one on screen at this step.
+- tapOn:
+    text: Continue
+    optional: true
 - tapOn:
     text: "${LOCALE == 'ar' ? '.*Tunis Governorate.*' : LOCALE == 'fr' ? 'Tunis, Tunisie' : 'Tunis, Tunisia'}"
 - tapOn: "${LOCALE == 'ar' ? 'متابعة' : LOCALE == 'fr' ? 'Continuer' : 'Continue'}"
