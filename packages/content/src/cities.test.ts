@@ -52,6 +52,12 @@ describe('nearest city (naming a device location offline)', () => {
     expect(fiji.countryCode).toBe('FJ');
     expect(cities.nearest(-18.14, -179.99).countryCode).toBe('FJ');
   });
+
+  it('knows the main city of a time zone', () => {
+    expect(cities.mainCityOf('Europe/Istanbul')?.name).toBe('Istanbul');
+    expect(cities.mainCityOf('Africa/Tunis')?.id).toBe(2464470);
+    expect(cities.mainCityOf('Etc/GMT+3')).toBeUndefined();
+  });
 });
 
 describe('names', () => {

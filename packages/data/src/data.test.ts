@@ -15,7 +15,9 @@ import {
   placeOf,
   prayerSettings,
   previousVisit,
+  setTravelNotNow,
   stepBackJourney,
+  travelZone,
   withFocusPrayer,
   withJourneyStep,
   withLocation,
@@ -215,5 +217,27 @@ describe('pinned tools (SPEC 5.11)', () => {
       parseSettings({ pinnedTools: ['rise', 'rise', 'qibla', 'tasbih', 'calendar'] }).pinnedTools,
     ).toEqual(['rise', 'qibla', 'tasbih', 'calendar']);
     expect(parseSettings({ pinnedTools: ['nonsense'] }).pinnedTools).toEqual(['qibla', 'calendar']);
+  });
+});
+
+describe('travel times (docs/PHASE-7D.md)', () => {
+  const now = new Date('2026-10-24T12:00:00Z');
+  const inTunis = withLocation(defaultSettings(), tunis);
+
+  it('offers the phone’s time zone when its clock differs from the city’s', () => {
+    expect(travelZone(inTunis, 'Europe/Istanbul', now)).toBe('Europe/Istanbul');
+    expect(travelZone(inTunis, 'Africa/Tunis', now)).toBeNull();
+  });
+
+  it('stays quiet on the same clock, without a city, an unknown zone or after "Not now"', () => {
+    // Tunis and Algiers keep the same time all year.
+    expect(travelZone(inTunis, 'Africa/Algiers', now)).toBeNull();
+    expect(travelZone(defaultSettings(), 'Europe/Istanbul', now)).toBeNull();
+    expect(travelZone(inTunis, null, now)).toBeNull();
+    expect(travelZone(inTunis, 'Mars/Olympus_Mons', now)).toBeNull();
+    const notNow = setTravelNotNow(inTunis, 'Europe/Istanbul');
+    expect(travelZone(notNow, 'Europe/Istanbul', now)).toBeNull();
+    expect(travelZone(notNow, 'Asia/Dubai', now)).toBe('Asia/Dubai');
+    expect(parseSettings({ travelNotNow: 7 }).travelNotNow).toBeNull();
   });
 });

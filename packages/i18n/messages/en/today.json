@@ -69,6 +69,11 @@
     "update": "Update",
     "keep": "Not now"
   },
+  "travel": {
+    "title": "Your phone is on {city} time. Use the prayer times for {city}?",
+    "use": "Use {city}",
+    "keep": "Not now"
+  },
   "tools": {
     "label": "Tools",
     "qibla": "Qibla",

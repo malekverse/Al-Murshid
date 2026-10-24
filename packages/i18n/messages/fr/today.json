@@ -69,6 +69,11 @@
     "update": "Mettre à jour",
     "keep": "Pas maintenant"
   },
+  "travel": {
+    "title": "Votre téléphone a changé de fuseau horaire ({city}). Afficher les horaires de prière pour {city} ?",
+    "use": "Oui, {city}",
+    "keep": "Pas maintenant"
+  },
   "tools": {
     "label": "Outils",
     "qibla": "Qibla",

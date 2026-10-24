@@ -114,3 +114,7 @@ sensor on a real Android phone, and Family Controls on an iPhone, in Phase 9.
 ## Status
 
 - Planned 2026-10-24.
+- Step 1, travel times: built on web and Android, in `ar`, `en` and `fr`. Verified in the browser
+  (Lagos and Istanbul clocks against a city chosen by hand), by an end-to-end test on Istanbul time
+  (desktop and phone sizes), and on the Android emulator, including a zone changed while the app
+  was in the background.

@@ -6,6 +6,8 @@ import {
   answerStepOffer,
   dismissCard,
   setAsideReflection,
+  setTravelNotNow,
+  travelZone,
   markOpened,
   withLocation,
   type Settings,
@@ -74,6 +76,29 @@ function useMoved(settings: Settings | null | undefined) {
   return [moved, () => setMoved(null)] as const;
 }
 
+/**
+ * Travel times (docs/PHASE-7D.md): when the browser's clock is no longer the chosen city's, offer
+ * the main city of its time zone. It needs no permission, so it also covers a city chosen by hand.
+ */
+function useTravel(settings: Settings | null | undefined, now: Date | null) {
+  const [city, setCity] = useState<City | null>(null);
+  const deviceZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const zone = settings && now ? travelZone(settings, deviceZone, now) : null;
+
+  useEffect(() => {
+    if (!zone) return;
+    let live = true;
+    void loadCities().then((cities) => {
+      if (live) setCity(cities.mainCityOf(zone) ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [zone]);
+
+  return zone && city?.timeZone === zone ? city : null;
+}
+
 export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
   const t = useTranslations('today');
   const locale = useLocale();
@@ -83,6 +108,7 @@ export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
   const [earlierOpen, setEarlierOpen] = useState(false);
   const [justLogged, setJustLogged] = useState<Prayer | null>(null);
   const [moved, clearMoved] = useMoved(state?.settings);
+  const travel = useTravel(state?.settings, now);
 
   // Record today's visit once, for "Welcome back" (SPEC 3).
   const dayKey = state
@@ -141,11 +167,47 @@ export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
     />
   );
 
+  // Wrong prayer times matter more than a quiet screen: simple view shows these too.
+  const placeCard = moved ? (
+    <Card className="flex flex-col gap-4 p-6" role="status">
+      <Text role="body">{t('moved.title', { city: cityName(moved.city, locale) })}</Text>
+      <div className="flex flex-wrap gap-3">
+        <Button
+          onClick={() => {
+            updateSettings((s) => withLocation(s, locationFromCity(moved.city, moved)));
+            clearMoved();
+          }}
+        >
+          {t('moved.update')}
+        </Button>
+        <Button variant="ghost" onClick={clearMoved}>
+          {t('moved.keep')}
+        </Button>
+      </div>
+    </Card>
+  ) : travel ? (
+    <Card className="flex flex-col gap-4 p-6" role="status">
+      <Text role="body">{t('travel.title', { city: cityName(travel, locale) })}</Text>
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={() => updateSettings((s) => withLocation(s, locationFromCity(travel)))}>
+          {t('travel.use', { city: cityName(travel, locale) })}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => updateSettings((s) => setTravelNotNow(s, travel.timeZone))}
+        >
+          {t('travel.keep')}
+        </Button>
+      </div>
+    </Card>
+  ) : null;
+
   // Simple view: the prayer times and one large button (SPEC 3).
   if (settings.simpleView) {
     return (
       <Main>
         {hero}
+        {placeCard}
         <PrayerList view={view} timeZone={place.timeZone} />
         {sheet}
       </Main>
@@ -156,24 +218,7 @@ export function TodayScreen({ verse }: { verse: WelcomeVerse }) {
     <Main>
       {hero}
 
-      {moved && (
-        <Card className="flex flex-col gap-4 p-6" role="status">
-          <Text role="body">{t('moved.title', { city: cityName(moved.city, locale) })}</Text>
-          <div className="flex flex-wrap gap-3">
-            <Button
-              onClick={() => {
-                updateSettings((s) => withLocation(s, locationFromCity(moved.city, moved)));
-                clearMoved();
-              }}
-            >
-              {t('moved.update')}
-            </Button>
-            <Button variant="ghost" onClick={clearMoved}>
-              {t('moved.keep')}
-            </Button>
-          </div>
-        </Card>
-      )}
+      {placeCard}
 
       {view.card && (
         <ContextCard

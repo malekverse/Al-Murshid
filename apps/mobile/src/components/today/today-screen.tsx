@@ -4,6 +4,8 @@ import {
   answerStepOffer,
   dismissCard,
   setAsideReflection,
+  setTravelNotNow,
+  travelZone,
   locationFromCity,
   markOpened,
   withLocation,
@@ -20,6 +22,7 @@ import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { useToast } from '@/components/ui/toast';
 import { usePrayerName } from '@/lib/format';
+import { useDeviceZone } from '@/lib/device-zone';
 import { useAppLocale } from '@/lib/locale';
 import { quietPosition } from '@/lib/locate';
 import { setPrayerLogged } from '@/lib/prayer-logs';
@@ -73,6 +76,29 @@ function useMoved(settings: Settings | null | undefined) {
   return [moved, () => setMoved(null)] as const;
 }
 
+/**
+ * Travel times (docs/PHASE-7D.md): when the phone's clock is no longer the chosen city's, offer
+ * the main city of its time zone. It needs no permission, so it also covers a city chosen by hand.
+ */
+function useTravel(settings: Settings | null | undefined, now: Date) {
+  const [city, setCity] = useState<City | null>(null);
+  const deviceZone = useDeviceZone();
+  const zone = settings ? travelZone(settings, deviceZone, now) : null;
+
+  useEffect(() => {
+    if (!zone) return;
+    let live = true;
+    void loadCities().then((cities) => {
+      if (live) setCity(cities.mainCityOf(zone) ?? null);
+    });
+    return () => {
+      live = false;
+    };
+  }, [zone]);
+
+  return zone && city?.timeZone === zone ? city : null;
+}
+
 export function TodayScreen() {
   const t = useTranslations();
   const { locale } = useAppLocale();
@@ -85,6 +111,7 @@ export function TodayScreen() {
   const [reminderFor, setReminderFor] = useState<Prayer | null>(null);
   const [justLogged, setJustLogged] = useState<Prayer | null>(null);
   const [moved, clearMoved] = useMoved(state?.settings);
+  const travel = useTravel(state?.settings, now);
 
   // Az-Zumar 39:53 for "Welcome back" (SPEC 3), verbatim from packages/content. The Quran text
   // loads only when the card shows, so it never weighs on a cold start.
@@ -167,6 +194,41 @@ export function TodayScreen() {
     </>
   );
 
+  // Wrong prayer times matter more than a quiet screen: simple view shows these too.
+  const placeCard = moved ? (
+    <Card className="gap-4 p-6" accessibilityLiveRegion="polite">
+      <Text role="body">{t('today.moved.title', { city: cityName(moved.city, locale) })}</Text>
+      <View className="flex-row flex-wrap gap-3">
+        <Button
+          onPress={() => {
+            updateSettings((s) => withLocation(s, locationFromCity(moved.city, moved)));
+            clearMoved();
+          }}
+        >
+          {t('today.moved.update')}
+        </Button>
+        <Button variant="ghost" onPress={clearMoved}>
+          {t('today.moved.keep')}
+        </Button>
+      </View>
+    </Card>
+  ) : travel ? (
+    <Card className="gap-4 p-6" accessibilityLiveRegion="polite">
+      <Text role="body">{t('today.travel.title', { city: cityName(travel, locale) })}</Text>
+      <View className="flex-row flex-wrap gap-3">
+        <Button onPress={() => updateSettings((s) => withLocation(s, locationFromCity(travel)))}>
+          {t('today.travel.use', { city: cityName(travel, locale) })}
+        </Button>
+        <Button
+          variant="ghost"
+          onPress={() => updateSettings((s) => setTravelNotNow(s, travel.timeZone))}
+        >
+          {t('today.travel.keep')}
+        </Button>
+      </View>
+    </Card>
+  ) : null;
+
   // Simple view: the prayer times and one large button (SPEC 3).
   if (settings.simpleView) {
     return (
@@ -174,6 +236,7 @@ export function TodayScreen() {
         {scroll(
           <>
             {hero}
+            {placeCard}
             <PrayerList view={view} timeZone={place.timeZone} onPressRow={setReminderFor} />
           </>,
         )}
@@ -188,26 +251,7 @@ export function TodayScreen() {
         <>
           {hero}
 
-          {moved && (
-            <Card className="gap-4 p-6" accessibilityLiveRegion="polite">
-              <Text role="body">
-                {t('today.moved.title', { city: cityName(moved.city, locale) })}
-              </Text>
-              <View className="flex-row flex-wrap gap-3">
-                <Button
-                  onPress={() => {
-                    updateSettings((s) => withLocation(s, locationFromCity(moved.city, moved)));
-                    clearMoved();
-                  }}
-                >
-                  {t('today.moved.update')}
-                </Button>
-                <Button variant="ghost" onPress={clearMoved}>
-                  {t('today.moved.keep')}
-                </Button>
-              </View>
-            </Card>
-          )}
+          {placeCard}
 
           {settings.remindersReduced && (
             <Card className="gap-3 p-6">

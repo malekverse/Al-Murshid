@@ -114,6 +114,12 @@ export class CityIndex {
     return groups.flat().slice(0, limit);
   }
 
+  /** The most populous city of a time zone (Travel times, docs/PHASE-7D.md), if the table has one. */
+  mainCityOf(timeZone: string): City | undefined {
+    // The table is sorted by population.
+    return this.cities.find((c) => c.timeZone === timeZone);
+  }
+
   /**
    * The city to name a device location by, without any network call: the most populous place
    * within 10 km (so a district of Paris reads "Paris"), or else simply the nearest one.

@@ -30,6 +30,7 @@ import {
   MAX_PINNED,
   defaultPinned,
   toolIds,
+  zoneOffsetMinutes,
 } from '@murshid/core';
 import { z } from 'zod';
 import { defaultQuranPrefs, quranPrefsSchema } from './quran';
@@ -179,6 +180,8 @@ export const settingsSchema = z.object({
     .object({ date: isoDateString, kinds: z.array(z.enum(cardKinds)) })
     .nullable()
     .catch(null),
+  /** Travel times: the phone's time zone whose offer was answered "Not now" (docs/PHASE-7D.md). */
+  travelNotNow: z.string().nullable().catch(null),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;
@@ -219,6 +222,26 @@ export function withLocation(s: Settings, location: LocationSetting): Settings {
     location,
     method: s.methodSource === 'user' ? s.method : defaultMethodFor(location.countryCode),
   };
+}
+
+/**
+ * Travel times (docs/PHASE-7D.md): the phone's time zone when its clock differs from the chosen
+ * city's, so Today can offer that zone's main city. Null when the clocks agree (an alias such as
+ * Asia/Calcutta for Asia/Kolkata, or a neighbour on the same time), when that zone was answered
+ * "Not now", or when the zone is unknown.
+ */
+export function travelZone(s: Settings, deviceZone: string | null, now: Date): string | null {
+  const zone = s.location?.timeZone;
+  if (!zone || !deviceZone || deviceZone === zone || deviceZone === s.travelNotNow) return null;
+  try {
+    return zoneOffsetMinutes(now, deviceZone) === zoneOffsetMinutes(now, zone) ? null : deviceZone;
+  } catch {
+    return null;
+  }
+}
+
+export function setTravelNotNow(s: Settings, zone: string): Settings {
+  return { ...s, travelNotNow: zone };
 }
 
 export function withMethod(s: Settings, method: MethodId): Settings {
