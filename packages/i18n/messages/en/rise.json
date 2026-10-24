@@ -61,6 +61,7 @@
     "saved": "Your spot’s code is saved.",
     "scan": "Scan a code",
     "rescan": "Scan another code",
+    "print": "Print a card",
     "scanTitle": "Scan your spot",
     "scanHint": "Hold the code inside the frame.",
     "torch": "Light",
@@ -166,5 +167,13 @@
     "body": "Fajr Rise follows Fajr every day, and keeps ringing until you’re really up.",
     "action": "Set it up",
     "notNow": "Not now"
+  },
+  "card": {
+    "title": "Your spot",
+    "line": "Put me where you’ll go after waking.",
+    "how": "Scan me in Fajr Rise’s setup, then leave me there: the alarm stops when you scan me again.",
+    "print": "Print",
+    "another": "Another code",
+    "note": "Each card has its own code. This page keeps none of them."
   }
 }

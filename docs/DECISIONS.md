@@ -523,6 +523,7 @@ The owner's go-ahead (2026-10-23): build Fajr Rise without stopping to ask. Plan
 - **Challenges at this step: sums (three levels) or the star order, steps, shaking, and scanning "your spot".** Move waits for a pose prototype that works in Fajr's dim light, Aloud for the reviewed dua for waking (PHASE-7B). A phone that cannot count steps, or a refused permission, offers sums instead; a spot challenge without a saved code becomes the puzzle.
 - **Sums read left to right and the keypad is never mirrored, in every language; digits follow the person's digits.**
 - **The sound is the phone's alarm sound or the soft tone; the adhan joins with its recordings,** as for the reminders.
+- **The printable "Your spot" card is a web page (`/[locale]/rise/card`): the mark, a QR code holding a random value made in the browser and kept nowhere, the line "Put me where you'll go after waking", and how it works; print styles keep only the card.** Any barcode still works. The phone's setup links to it through `EXPO_PUBLIC_WEB_URL`, which builds do not set yet (the ayah share links wait for it too), so until then the button stays hidden. The QR code comes from `qrcode-generator` (MIT, no dependencies), drawn as one SVG path, dark on light in both themes for scanners. Alt: printing from the phone (a print dialog in the app for a once-only task).
 
 ## Phase 7c · Identity and home (2026-10-24)
 

@@ -109,6 +109,8 @@ function usePermissions() {
   return [state, refresh] as const;
 }
 
+const webUrl = process.env.EXPO_PUBLIC_WEB_URL;
+
 /** Fajr Rise's setup (SPEC 5.10): when, which days, the challenge, the sound, and the checks. */
 export function RiseSetup() {
   const t = useTranslations('rise');
@@ -409,6 +411,15 @@ export function RiseSetup() {
                   action={rise.spotCode ? t('spot.rescan') : t('spot.scan')}
                   onAction={() => setScanning(true)}
                 />
+              )}
+              {/* A card with a code of its own, printed from the web, to scan and leave there. */}
+              {rise.challenge === 'spot' && webUrl && (
+                <Button
+                  variant="ghost"
+                  onPress={() => void Linking.openURL(`${webUrl}/${locale}/rise/card`)}
+                >
+                  {t('spot.print')}
+                </Button>
               )}
 
               <Button variant="secondary" onPress={() => router.push('/rise?trying=1')}>

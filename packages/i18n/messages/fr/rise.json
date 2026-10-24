@@ -61,6 +61,7 @@
     "saved": "Le code de votre repère est enregistré.",
     "scan": "Scanner un code",
     "rescan": "Scanner un autre code",
+    "print": "Imprimer une carte",
     "scanTitle": "Scanner votre repère",
     "scanHint": "Placez le code dans le cadre.",
     "torch": "Lampe",
@@ -166,5 +167,13 @@
     "body": "Le Réveil du Fajr suit l’heure du Fajr chaque jour, et sonne jusqu’à ce que vous soyez vraiment debout.",
     "action": "Le régler",
     "notNow": "Pas maintenant"
+  },
+  "card": {
+    "title": "Votre endroit",
+    "line": "Posez-moi là où vous irez au réveil.",
+    "how": "Scannez-moi dans les réglages du Réveil du Fajr, puis laissez-moi là : l’alarme s’arrête quand vous me scannez à nouveau.",
+    "print": "Imprimer",
+    "another": "Un autre code",
+    "note": "Chaque carte a son propre code. Cette page n’en garde aucun."
   }
 }
