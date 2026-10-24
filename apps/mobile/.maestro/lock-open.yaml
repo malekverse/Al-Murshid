@@ -1,5 +1,6 @@
 # The app lock, part 3: with a matching face, You opens. If the first prompt has gone by the time
-# this flow starts, Unlock asks again.
+# this flow starts, Unlock asks again. Then the lock goes off again, so the flows after this one
+# find You open.
 appId: com.malekverse.almurshid
 name: Lock You (opens)
 ---
@@ -12,3 +13,17 @@ name: Lock You (opens)
     visible: Your Sky
     timeout: 60000
 - takeScreenshot: lock-open
+- scrollUntilVisible:
+    element:
+      id: you-lock
+    direction: DOWN
+    timeout: 90000
+    centerElement: true
+- tapOn:
+    id: you-lock
+# The switch reads 0 once it is off.
+- extendedWaitUntil:
+    visible:
+      id: you-lock
+      text: '0'
+    timeout: 15000
